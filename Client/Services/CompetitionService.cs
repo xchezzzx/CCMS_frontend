@@ -11,12 +11,6 @@ namespace BlazorWeb.Services
             
         }
 
-
-        public Task AddCompetition(CompetitionDT competitionDT)
-        {
-            throw new NotImplementedException();
-        }
-
         private List<CompetitionDT> _getAllCompetitions { get; set; }
         private CompetitionDT getCompetition { get; set; }
 
@@ -37,6 +31,25 @@ namespace BlazorWeb.Services
             return _getAllCompetitions;
         }
 
-    }
+		public async Task<CompetitionDT> GetCompetitionByIdAsync(int id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task AddCompetitionAsync(CompetitionDT competitionDT)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task UpdateCompetitionAsync(CompetitionDT competitionDT)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task DeleteCompetitionAsync(int id)
+		{
+			throw new NotImplementedException();
+		}
+	}
     
 }
