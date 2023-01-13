@@ -1,0 +1,448 @@
+﻿@page "/tasks/add"
+@attribute [Authorize]
+
+@using BlazorWeb.Models.DataTransferModels;
+@using Microsoft.AspNetCore.SignalR.Client;
+
+@if (!flag)
+{
+	<div class="row mb-4">
+
+		<div class="col-1 text-start">
+			<a class="btn btn-primary"
+				href="/tasks/"
+				role="button">
+				<span class="oi oi-arrow-left" aria-hidden="true"></span>
+			</a>
+		</div>
+
+		<div class="col-6">
+			<h3>Adding new task:</h3>
+		</div>
+
+	</div>
+
+	<div class="row">
+
+		<EditForm Model="@newExercise" OnValidSubmit="@sendNewTask">
+			<div class="row">
+				<div class="col-6 offset-1">
+
+					<DataAnnotationsValidator />
+
+					<div class="row mb-4">
+						<label for="taskName" class="col-sm-3 col-form-label">Name</label>
+						<div class="col-sm-9">
+							<InputText type="text"
+								   class="form-control"
+								   id="taskName"
+								   placeholder="Enter task label name"
+								   @bind-Value="newExercise.Name" />
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="taskContent" class="col-sm-3 col-form-label">Description</label>
+						<div class="col-sm-9">
+							<InputTextArea type="text"
+									   class="form-control"
+									   id="taskContent"
+									   placeholder="Enter task"
+									   @bind-Value="newExercise.Content" />
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="taskCat" class="col-sm-3 col-form-label">Category</label>
+						<div class="col-sm-9">
+							<InputSelect class="form-select"
+									 @bind-Value="newExercise.CategoryId">
+								@foreach (var cat in categoryList)
+								{
+									<option value="@cat.Id">@cat.Name</option>
+								}
+								<option selected>Choose a category</option>
+							</InputSelect>
+							<div id="passHelp" class="form-text">Choose a task category</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="taskLang" class="col-sm-3 col-form-label">Language</label>
+						<div class="col-sm-9">
+							<InputSelect class="form-select"
+									 @bind-Value="newExercise.LangId">
+								@foreach (var lang in langList)
+								{
+									<option value="@lang.Id">@lang.Name</option>
+								}
+								<option selected>Choose a language</option>
+							</InputSelect>
+							<div id="passHelp" class="form-text">Choose a task language</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="taskPltfrm" class="col-sm-3 col-form-label">Platfrom</label>
+						<div class="col-sm-9">
+							<InputSelect class="form-select"
+									 @bind-Value="newExercise.PlatformId">
+								@foreach (var pltfrm in platformList)
+								{
+									<option value="@pltfrm.Id">@pltfrm.Name</option>
+								}
+								<option selected>Choose a language</option>
+							</InputSelect>
+							<div id="passHelp" class="form-text">Choose a task platform for task</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="taskTimeframe" class="col-sm-3 col-form-label">Timeframe</label>
+						<div class="col-sm-9">
+							<div class="row">
+								<div class="col-10">
+									<input type="range"
+									   class="form-range"
+									   id="taskTimeframe"
+									   list="markers"
+									   min="0"
+									   max="240"
+									   step="15"
+									   @bind-value="@TimeToTimespan"
+									   @bind-value:event="oninput">
+									<div id="taskTimeframe" class="form-text">Choose timeframe for a task</div>
+
+								</div>
+								<div class="col-2">
+									<span class="input-group-text">
+										@CalcTime(TimeToTimespan).ToString(@"hh\:mm")
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="taskPoints" class="col-sm-3 col-form-label">Points</label>
+						<div class="col-sm-9">
+							<InputNumber class="form-control"
+									 id="taskPoints"
+									 @bind-Value="@newExercise.Points" />
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="finePoints" class="col-sm-3 col-form-label">Fine</label>
+						<div class="col-sm-9">
+							<InputNumber class="form-control"
+									 id="finePoints"
+									 @bind-Value="@newExercise.Fine" />
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="taskPltfrm" class="col-sm-3 col-form-label">Bonus</label>
+						<div class="col-sm-9">
+							<InputCheckbox class="form-check-input"
+									   @bind-Value="newExercise.IfHasBonus">
+							</InputCheckbox>
+							<div id="passHelp" class="form-text">Check if yes</div>
+						</div>
+					</div>
+
+					@if (newExercise.IfHasBonus)
+					{
+						<div class="row mb-4">
+							<label for="taskBonusContent" class="col-sm-3 col-form-label">Bonus description</label>
+							<div class="col-sm-9">
+								<InputTextArea type="text"
+									   class="form-control"
+									   id="taskBonusContent"
+									   placeholder="Enter task label name"
+									   @bind-Value="newExercise.BonusContent" />
+							</div>
+						</div>
+
+						<div class="row mb-4">
+							<label for="taskTimeframeBonus" class="col-sm-3 col-form-label">Bonus timeframe</label>
+							<div class="col-sm-9">
+								<div class="row">
+									<div class="col-10">
+										<input type="range"
+									   class="form-range"
+									   id="taskTimeframe"
+									   list="markers"
+									   min="0"
+									   max="120"
+									   step="15"
+									   @bind-value="@TimeToTimespanBonus"
+									   @bind-value:event="oninput">
+										<div id="taskTimeframeBonus" class="form-text">Choose timeframe for a bonus task</div>
+
+									</div>
+									<div class="col-2">
+										<span class="input-group-text">
+											@CalcTime(TimeToTimespanBonus).ToString(@"hh\:mm")
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row mb-4">
+							<label for="taskPointsBonus" class="col-sm-3 col-form-label">Bonus points</label>
+							<div class="col-sm-9">
+								<InputNumber class="form-control"
+									 id="taskPointsBonus"
+									 @bind-Value="@newExercise.BonusPoints" />
+							</div>
+						</div>
+					}
+
+					@*buttons*@
+					<div class="row mb-4">
+						<div class="col-sm-6 offset-3">
+							<button type="submit" class="btn btn-primary">Add task</button>
+							<button type="reset" class="btn btn-danger">Clear fields</button>
+						</div>
+					</div>
+
+					<!-- Datalist -->
+					<datalist id="markers">
+						<option value="0">•</option>
+						<option value="15">•</option>
+						<option value="30">0,5</option>
+						<option value="45">•</option>
+						<option value="60">1</option>
+						<option value="75">•</option>
+						<option value="90">1,5</option>
+						<option value="105">•</option>
+						<option value="120">2</option>
+						<option value="135">•</option>
+						<option value="150">2,5</option>
+						<option value="165">•</option>
+						<option value="180">3</option>
+						<option value="195">•</option>
+						<option value="210">3,5</option>
+						<option value="225">•</option>
+						<option value="240">4</option>
+					</datalist>
+				</div>
+
+				<div class="col-4">
+					<ValidationSummary />
+				</div>
+
+			</div>
+
+		</EditForm>
+	</div>
+}
+else
+{
+	<div class="row">
+		<div class="row col-6 offset-1">
+			<h3>@messageFromServer</h3>
+		</div>
+	</div>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				...
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@*<div class="row">
+	<div class="col-12">
+		@if (newExercise != null)
+		{
+			<div class="table-responsive">
+				<table class="table table-striped table-hover table-sm text-center">
+					<thead class="table-light">
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Content</th>
+							<th>Category</th>
+							<th>Language</th>
+							<th>Platform</th>
+							<th>Timeframe</th>
+							<th>Points</th>
+							<th>Fine</th>
+							<th>Has bonus</th>
+							<th>Bonus content</th>
+							<th>Bonus time</th>
+							<th>Bonus points</th>
+							<th>Created at</th>
+							<th>Created by</th>
+							<th>Updated at</th>
+							<th>Updated by</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>@newExercise.Id</td>
+							<td>
+								<a href="tasks/@newExercise.Id">
+									@newExercise.Name
+								</a>
+							</td>
+							<td>@newExercise.Content</td>
+							<td>@newExercise.CategoryId</td>
+							<td>@newExercise.LangId</td>
+							<td>@newExercise.PlatformId</td>
+							<td>@newExercise.Timeframe</td>
+							<td>@newExercise.Points</td>
+							<td>@newExercise.Fine</td>
+							<td>@newExercise.IfHasBonus.ToString()</td>
+							<td>@newExercise.BonusContent</td>
+							<td>@newExercise.BonusTimeframe</td>
+							<td>@newExercise.BonusPoints</td>
+							<td>@newExercise.CreateDate.ToString("G")</td>
+							<td>@newExercise.CreateUserId</td>
+							<td>@newExercise.UpdateDate.ToString("G")</td>
+							<td>@newExercise.UpdateUserId</td>
+							<td>@((Status)newExercise.StatusId)</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		}
+
+	</div>
+</div>
+*@
+@code {
+
+	private ExerciseDT newExercise = new();
+	private List<ExerciseCategoryDT> categoryList = new();
+	private List<ExercisePlatformDT> platformList = new();
+	private List<ExerciseLangDT> langList = new();
+
+	private int TimeToTimespan;
+	private int TimeToTimespanBonus;
+
+
+
+	string messageFromServer = string.Empty;
+	bool flag = false;
+
+	protected override void OnInitialized()
+	{
+		newExercise.Name = "The Very New task";
+		TimeToTimespan = 120;
+		TimeToTimespanBonus = 60;
+
+
+		categoryList = new()
+		{
+			new ExerciseCategoryDT()
+			{
+				Id = 0,
+				Name = "Without category"
+			},
+			new ExerciseCategoryDT() {
+				Id = 1,
+				Name = "Math"
+			},
+			new ExerciseCategoryDT()
+			{
+				Id = 2,
+				Name = "Physics"
+			},
+			new ExerciseCategoryDT()
+			{
+				Id = 3,
+				Name = "Graphs"
+			}
+		};
+
+		langList = new()
+		{
+			new ExerciseLangDT()
+				{
+					Id = 0,
+					Name = "Any"
+				},
+			new ExerciseLangDT()
+			{
+				Id = 1,
+				Name = "C"
+			},
+			new ExerciseLangDT()
+			{
+				Id = 2,
+				Name = "JS/TS"
+			}
+		};
+		platformList = new()
+		{
+			new ExercisePlatformDT()
+				{
+					Id = 0,
+					Name = "Any"
+				},
+			new ExercisePlatformDT()
+			{
+				Id = 1,
+				Name = "Windows"
+			},
+			new ExercisePlatformDT()
+			{
+				Id = 2,
+				Name = "MacOS"
+			}
+		};
+	}
+
+	private TimeSpan CalcTime(int min)
+	{
+		TimeSpan res = new(
+			((int)(min / 60)),
+			((int)(min % 60)),
+			0);
+
+		return res;
+	}
+
+	public async Task sendNewTask()
+	{
+		newExercise.Timeframe = CalcTime(TimeToTimespan);
+		newExercise.BonusTimeframe = CalcTime(TimeToTimespanBonus);
+		Console.WriteLine("TF: {0}", newExercise.Timeframe.ToString("c"));
+		Console.WriteLine("TFB: {0}", newExercise.BonusTimeframe?.ToString("c"));
+
+		HubConnection connection = new HubConnectionBuilder()
+				.WithUrl("https://localhost:7206/exercises")
+				.WithAutomaticReconnect()
+				.Build();
+
+		connection.On<string>("Add", msg =>
+		{
+			messageFromServer = msg;
+			flag = true;
+		});
+
+		await connection.StartAsync();
+		await connection.InvokeAsync("AddNewExercise", newExercise);
+		await connection.DisposeAsync();
+	}
+}

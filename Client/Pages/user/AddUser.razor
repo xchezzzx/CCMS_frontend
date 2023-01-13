@@ -1,0 +1,162 @@
+﻿@page "/users/add"
+@using BlazorWeb.Enums;
+@attribute [Authorize]
+
+<div class="row mb-4">
+
+	<div class="col-1 text-start">
+		<a class="btn btn-primary"
+		   href="/users/"
+		   role="button">
+			<span class="oi oi-arrow-left" aria-hidden="true"></span>
+		</a>
+	</div>
+
+	<div class="col-6">
+		<h3>Adding new user:</h3>
+	</div>
+
+</div>
+
+<div class="row">
+
+	<EditForm Model="@newUser" OnValidSubmit="@sendNewUser">
+		<div class="row">
+
+			<div class="col-6 offset-1">
+
+				<DataAnnotationsValidator />
+
+				<div class="row mb-4">
+					<label for="firstName" class="col-sm-3 col-form-label">First Name</label>
+					<div class="col-sm-9">
+						<InputText type="text"
+								   class="form-control"
+								   id="firstName"
+								   DisplayName="First Name"
+								   placeholder="Enter user first name"
+								   @bind-Value=newUser.FirstName />
+						<ValidationMessage For="() => newUser.FirstName" />
+					</div>
+				</div>
+
+				<div class="row mb-4">
+					<label for="lastName" class="col-sm-3 col-form-label">Last Name</label>
+					<div class="col-sm-9">
+						<InputText type="text"
+								   class="form-control"
+								   id="lastName"
+								   placeholder="Enter user last name"
+								   @bind-Value=newUser.LastName />
+						<ValidationMessage For="() => newUser.LastName" />
+					</div>
+				</div>
+
+				<div class="row mb-4">
+					<label for="email" class="col-sm-3 col-form-label">E-mail</label>
+					<div class="col-sm-9">
+						<InputText type="email"
+								   class="form-control"
+								   id="email"
+								   placeholder="Enter user email"
+								   @bind-Value=newUser.Email />
+						<ValidationMessage For="(() => newUser.Email)" />
+					</div>
+				</div>
+
+				<div class="row mb-4">
+					<label for="password" class="col-sm-3 col-form-label">Password</label>
+					<div class="col-sm-9">
+						<InputText type="password"
+								   class="form-control"
+								   id="password"
+								   placeholder="Enter password"
+								   @bind-Value="newUser.Password" />
+						<div id="passHelp" class="form-text">Enter password if necessary</div>
+					</div>
+				</div>
+
+				<div class="row mb-4">
+					<label for="password" class="col-sm-3 col-form-label">Role</label>
+					<div class="col-sm-9">
+						<InputSelect class="form-select"
+									 @bind-Value="_newUserRole">
+							<option selected>Choose a role</option>
+							@foreach (var role in Enum.GetValues(typeof(Roles)))
+							{
+								<option value="@role">@role</option>
+							}
+						</InputSelect>
+						<div id="passHelp" class="form-text">Choose a role for user</div>
+					</div>
+				</div>
+
+				<div class="row mb-4">
+					<label for="points" class="col-sm-3 col-form-label">Points</label>
+					<div class="col-sm-9">
+						<InputNumber type="number"
+									 class="form-control"
+									 id="points"
+									 DisplayName="Points"
+									 @bind-Value="newUser.PointsSummary"
+									 ParsingErrorMessage="{0} must be an integer value" />
+						<div id="passHelp" class="form-text">Enter points if person has</div>
+					</div>
+				</div>
+
+				<div class="row mb-4">
+					<div class="col-sm-6 offset-3">
+						<button type="submit" class="btn btn-primary">Add user</button>
+						<button type="reset" class="btn btn-danger">Clear fields</button>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="col-5">
+				<ValidationSummary />
+			</div>
+
+		</div>
+
+	</EditForm>
+
+</div>
+
+
+
+@code {
+
+	private UserDT newUser = new();
+	private Roles _newUserRole;
+
+	string messageFromServer = string.Empty;
+	bool flag = false;
+
+	protected override void OnInitialized()
+	{
+		//newUser.RoleId = (int)Roles.Participant;
+		newUser.PointsSummary = 0;
+	}
+
+
+	private async Task sendNewUser()
+	{
+		newUser.RoleId = (int)_newUserRole;
+
+		HubConnection connection = new HubConnectionBuilder()
+				.WithUrl("https://localhost:7206/users")
+				.WithAutomaticReconnect()
+				.Build();
+
+		connection.On<string>("Add", msg =>
+		{
+			messageFromServer = msg;
+			flag = true;
+		});
+
+		await connection.StartAsync();
+		await connection.InvokeAsync("AddNewCompetition", newUser);
+		await connection.DisposeAsync();
+	}
+}

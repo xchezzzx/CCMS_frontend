@@ -1,0 +1,133 @@
+﻿@page "/competitions"
+@attribute [Authorize]
+
+@using BlazorWeb.Interfaces;
+@using BlazorWeb.Models.DataTransferModels;
+@using BlazorWeb.Services;
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject ICompetitionService CompetitionService
+
+<PageTitle>Competition page</PageTitle>
+
+<div class="row">
+	<div class="col-10 text-center align-content-center">
+		<h1>Competitions</h1>
+	</div>
+	<div class="col-2 text-end">
+		<a class="btn btn-primary"
+		   href="/competitions/add"
+		   role="button">
+			<span class="oi oi-plus" aria-hidden="true"></span>
+			<span>&nbsp;Add competiton</span>
+		</a>
+	</div>
+</div>
+
+
+
+@if (!dataFetched)
+{
+	<div class="text-center">
+		<img src="./images/loading-waiting.gif" />
+	</div>
+}
+else
+{
+	<div class="table-responsive">
+		<table class="table table-striped text-center table-hover">
+			<thead class="table-light">
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Date of competition</th>
+					<th>Start Time</th>
+					<th>End Time</th>
+					<th>Duration</th>
+					<th>Concurrent Tasks</th>
+					<th>Twitter Hashtag</th>
+					<th>State</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if (competitions.Count == 0)
+				{
+					<tr>
+						<td colspan="9">
+							<div class="text-center">
+								Sorry, the list is empty
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="9">
+							<div class="text-center">
+								<img src="./images/empty.gif" height="200" />
+							</div>
+
+						</td>
+					</tr>
+				}
+				else
+				{
+					@foreach (var comp in competitions)
+					{
+						<tr>
+							<td>@comp.Id</td>
+							<td>@comp.Name</td>
+							<td>@comp.StartDateTime.ToLongDateString()</td>
+							<td>@comp.StartDateTime.ToString("t")</td>
+							<td>@comp.EndDateTime.ToString("t")</td>
+							<td>@comp.Duration.ToString("%h") hour(s)</td>
+							<td>@comp.NumberConcTasks</td>
+							<td>
+								<a href="https://twitter.com/search?q=@comp.Hashtag&src=trend_click&vertical=trends" target="_blank">
+									#@comp.Hashtag
+								</a>
+							</td>
+							<td>@comp.State</td>
+						</tr>
+					}
+				}
+
+			</tbody>
+		</table>
+	</div>
+
+	<div class="row">
+		<div class="col text-center">
+			<button class="btn btn-success" @onclick="fetchData">
+				<span class="oi oi-loop-circular" aria-hidden="true"></span>
+				<span>&nbsp;Refresh List</span>
+			</button>
+		</div>
+	</div>
+}
+
+
+@code {
+	//[Parameter]
+	//public string Message { get; set; }
+
+	[Parameter]
+	public RenderFragment NullList { get; set; }
+
+	[Parameter]
+	public RenderFragment EmptyList { get; set; }
+
+	string messageFromServer = String.Empty;
+	bool dataFetched;
+
+	List<CompetitionDT> competitions = new List<CompetitionDT>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		dataFetched = false;
+		await fetchData();
+	}
+
+	public async Task fetchData()
+	{
+		competitions = await CompetitionService.GetAllCompetitionsAsync();
+		dataFetched = true;
+	}
+}

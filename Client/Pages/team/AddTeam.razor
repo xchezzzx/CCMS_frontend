@@ -1,0 +1,135 @@
+﻿@page "/teams/add"
+@attribute [Authorize]
+
+@using BlazorWeb.Models.DataTransferModels;
+@using Microsoft.AspNetCore.SignalR.Client;
+
+@if (!flag)
+{
+	<div class="row mb-4">
+
+		<div class="col-1 text-start">
+			<a class="btn btn-primary"
+				href="/teams/"
+				role="button">
+				<span class="oi oi-arrow-left" aria-hidden="true"></span>
+			</a>
+		</div>
+
+		<div class="col-6">
+			<h3>Adding new team:</h3>
+		</div>
+
+	</div>
+
+	<div class="row">
+
+		<EditForm Model="@newTeam" OnValidSubmit="@sendNewTeam">
+			<div class="row">
+				<div class="col-6 offset-1">
+
+					<DataAnnotationsValidator />
+
+					<div class="row mb-4">
+						<label for="teamName" class="col-sm-3 col-form-label">Name</label>
+						<div class="col-sm-9">
+							<InputText type="text"
+								   class="form-control"
+								   id="teamName"
+								   placeholder="Enter team name"
+								   @bind-Value="newTeam.Name" />
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="teamPoints" class="col-sm-3 col-form-label">Points</label>
+						<div class="col-sm-9">
+							<InputNumber class="form-control"
+									 id="teamPoints"
+									 @bind-Value="@newTeam.SumPoints" />
+						</div>
+					</div>
+
+										@*buttons*@
+					<div class="row mb-4">
+						<div class="col-sm-6 offset-3">
+							<button
+									type="submit"
+									class="btn btn-primary"
+									data-bs-toggle="modal"
+									data-bs-target="#addTeam">
+										Add team
+									</button>
+							<button type="reset" class="btn btn-danger">Clear fields</button>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-4">
+					<ValidationSummary />
+				</div>
+
+			</div>
+
+		</EditForm>
+	</div>
+}
+else
+{
+	<div class="row">
+		<div class="row col-6 offset-1">
+			<h3>@messageFromServer</h3>
+		</div>
+	</div>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				...
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+
+	private TeamDT newTeam = new();
+
+	string messageFromServer = string.Empty;
+	bool flag = false;
+
+	protected override void OnInitialized()
+	{
+		newTeam.Name = "The Very New Team";
+	}
+
+	public async Task sendNewTeam()
+	{
+		HubConnection connection = new HubConnectionBuilder()
+				.WithUrl("https://localhost:7206/teams")
+				.WithAutomaticReconnect()
+				.Build();
+
+		connection.On<string>("Add", msg =>
+		{
+			messageFromServer = msg;
+			flag = true;
+		});
+
+		await connection.StartAsync();
+		await connection.InvokeAsync("AddNewExercise", newTeam);
+		await connection.DisposeAsync();
+	}
+}
