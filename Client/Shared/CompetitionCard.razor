@@ -1,0 +1,148 @@
+﻿<div class="col">
+
+	<div class="card text-start">
+
+		<div class="card-header">
+			<ul class="nav nav-tabs card-header-tabs" id="myTab">
+				<li class="nav-item">
+					<a href="#task(@Competition.Id)" class="nav-link active" data-bs-toggle="tab">
+						<span class="oi oi-clipboard" aria-hidden="true"></span> Task
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a href="#bonus(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+						<span class="oi oi-puzzle-piece" aria-hidden="true"></span> Bonus
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a href="#hints(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+						<span class="oi oi-lightbulb" aria-hidden="true"></span> Hints
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a href="#info(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+						<span class="oi oi-wrench" aria-hidden="true"></span> Info
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="card-body">
+			<div class="tab-content">
+
+				<div class="tab-pane fade show active" id="task(@Competition.Id)">
+					<h5 class="card-title font-large">@Competition.Id. @Competition.Name</h5>
+					<p>
+						Date: @Competition.StartDateTime.ToLongDateString()
+						<br />
+						Start at: @Competition.StartDateTime.ToString("t")
+						<br />
+						End at: @Competition.EndDateTime.ToString("t")
+						<br />
+						Duration: @Competition.Duration.ToString("%h")
+					</p>
+
+				</div>
+
+				<div class="tab-pane fade" id="bonus(@Competition.Id)">
+					<h5 class="card-title">Bonus task</h5>
+					<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
+				</div>
+
+				<div class="tab-pane fade" id="hints(@Competition.Id)">
+					<h5 class="card-title">Messages tab content</h5>
+					<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
+				</div>
+
+				<div class="tab-pane fade" id="info(@Competition.Id)">
+					<h5 class="card-title">Messages tab content</h5>
+					<p class="card-text">
+						Created at @Competition.CreateDate.ToString("G")
+						<br />
+						Created by @Competition.CreateUserId
+						<br />
+						Updated at @Competition.UpdateDate
+						<br />
+						Updated by @Competition.UpdateUserId
+						<br />
+						Status: @((Status)Competition.StatusId)
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-footer">
+			<div class="row">
+
+				<div class="col-5 mb-1 align-self-end">
+					<small class="text-muted">Last updated @_updated.ToString("%h") hours @_updated.ToString("%m") mins ago</small>
+				</div>
+
+				<div class="col-1 mb-0 text-end">
+					<button class="btn btn-outline-secondary" @onclick="Expand">
+						<span class="oi oi-chevron-bottom"></span>
+					</button>
+				</div>
+
+				<div class="col-6 text-end mb-1">
+
+					<button class="btn btn-success" @onclick="Start">
+						<span class="oi oi-media-play"></span>
+						<span>&nbsp;Start</span>
+					</button>
+
+					<button class="btn btn-secondary" @onclick="Duplicate">
+						<span class="oi oi-copywriting"></span>
+						<span>&nbsp;Duplicate</span>
+					</button>
+
+					<button class="btn btn-danger" @onclick="Delete">
+						<span class="oi oi-x"></span>
+						<span>&nbsp;Delete</span>
+					</button>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+@code {
+	[Parameter]
+	public CompetitionDT Competition { get; set; }
+
+	private TimeSpan _updated;
+
+	private void LastUpdated()
+	{
+		_updated = DateTime.Now - Competition.UpdateDate;
+	}
+
+	private void Duplicate()
+	{
+		Console.WriteLine("Duplicated");
+	}
+
+	private void Start()
+	{
+		Console.WriteLine("Duplicated");
+	}
+
+	private void Delete()
+	{
+		Console.WriteLine("Duplicated");
+	}
+
+	private void Expand()
+	{
+		Console.WriteLine("Expanded");
+	}
+
+}

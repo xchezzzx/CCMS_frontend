@@ -33,7 +33,7 @@ namespace BlazorWeb.Services
 					.WithUrl("https://localhost:7206/teams")
 					.Build();
 
-				HubConnection.On<List<TeamDT>>("Send", c => getAllExercises = c);
+				HubConnection.On<List<ExerciseDT>>("Send", c => getAllExercises = c);
 
 				await HubConnection.StartAsync();
 				await HubConnection.InvokeAsync("SendTeams");

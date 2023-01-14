@@ -16,6 +16,10 @@ namespace BlazorWeb.Models.DataTransferModels
         [Required]
 		public string Hashtag { get; set; } = null!;
         public string State { get; set; }
-        public string Status { get; set; }
+		public DateTime CreateDate { get; set; }
+		public int CreateUserId { get; set; }
+		public DateTime UpdateDate { get; set; }
+		public int UpdateUserId { get; set; }
+		public int StatusId { get; set; }
     }
 }
