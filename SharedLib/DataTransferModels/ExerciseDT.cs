@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SharedLib.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
 namespace SharedLib.DataTransferModels
@@ -12,6 +13,7 @@ namespace SharedLib.DataTransferModels
 		[Required, Display(Name = "description")]
 		[MaxLength(2000, ErrorMessage = "The maximum length is 2000 charachters.")]
 		public string Content { get; set; } = null!;
+
 		[Required, Display(Name = "category")]
 		public int CategoryId { get; set; }
 
@@ -35,6 +37,8 @@ namespace SharedLib.DataTransferModels
 		public int CreateUserId { get; set; }
 		public DateTime UpdateDate { get; set; }
 		public int UpdateUserId { get; set; }
-		public int StatusId { get; set; }
+
+		public string Status { get; set; }
+		public EntityStatuses StatusId { get; set; }
 	}
 }
