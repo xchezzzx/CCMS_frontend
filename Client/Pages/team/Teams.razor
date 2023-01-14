@@ -114,7 +114,8 @@ else
 				CreateUserId = 1,
 				UpdateDate = DateTime.Now,
 				UpdateUserId = 1,
-				StatusId = (int)EntityStatuses.Active
+				Status = EntityStatuses.Active.ToString(),
+				StatusId = EntityStatuses.Active
 			};
 
 		teams.Add(testTeam);
