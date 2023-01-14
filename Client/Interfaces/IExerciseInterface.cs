@@ -1,4 +1,4 @@
-﻿using BlazorWeb.Models.DataTransferModels;
+﻿using SharedLib.DataTransferModels;
 
 namespace BlazorWeb.Interfaces
 {

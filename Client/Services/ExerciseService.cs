@@ -1,12 +1,11 @@
 ﻿using BlazorWeb.Interfaces;
-using BlazorWeb.Models.DataTransferModels;
 using Microsoft.AspNetCore.SignalR.Client;
+using SharedLib.DataTransferModels;
 
 namespace BlazorWeb.Services
 {
 	public class ExerciseService : IExerciseInterface
 	{
-
 		public ExerciseService()
 		{
 

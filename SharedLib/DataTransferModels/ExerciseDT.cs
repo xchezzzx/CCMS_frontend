@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace BlazorWeb.Models.DataTransferModels
+namespace SharedLib.DataTransferModels
 {
 	public class ExerciseDT
 	{

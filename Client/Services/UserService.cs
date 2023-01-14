@@ -1,5 +1,5 @@
 ﻿using BlazorWeb.Interfaces;
-using BlazorWeb.Models.DataTransferModels;
+using SharedLib.DataTransferModels;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace BlazorWeb.Services

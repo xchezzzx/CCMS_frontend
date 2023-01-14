@@ -1,4 +1,4 @@
-﻿namespace BlazorWeb.Enums
+﻿namespace SharedLib.Enums
 {
 	public enum EntityStatuses : short
 	{
