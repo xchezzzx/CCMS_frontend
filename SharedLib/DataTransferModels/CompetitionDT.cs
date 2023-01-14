@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SharedLib.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace BlazorWeb.Models.DataTransferModels
+namespace SharedLib.DataTransferModels
 {
     public class CompetitionDT
     {
@@ -16,6 +17,7 @@ namespace BlazorWeb.Models.DataTransferModels
         [Required]
 		public string Hashtag { get; set; } = null!;
         public string State { get; set; }
+        public CompetitionStates StateId { get; set; }
 		public DateTime CreateDate { get; set; }
 		public int CreateUserId { get; set; }
 		public DateTime UpdateDate { get; set; }

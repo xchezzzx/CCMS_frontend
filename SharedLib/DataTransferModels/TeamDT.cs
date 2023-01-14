@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BlazorWeb.Models.DataTransferModels
+namespace SharedLib.DataTransferModels
 {
 	public class TeamDT
 	{
