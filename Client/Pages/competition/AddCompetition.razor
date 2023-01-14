@@ -1,0 +1,274 @@
+﻿@page "/competitions/add"
+@attribute [Authorize]
+
+@using BlazorWeb.Models.DataTransferModels;
+@using Microsoft.AspNetCore.SignalR.Client;
+
+@if (!flag)
+{
+	<div class="row mb-4">
+
+		<div class="col-1 text-start">
+			<a class="btn btn-primary"
+		   href="/competitions/"
+		   role="button">
+				<span class="oi oi-arrow-left" aria-hidden="true"></span>
+			</a>
+		</div>
+
+		<div class="col-6">
+			<h3>Adding new competition:</h3>
+		</div>
+
+	</div>
+
+	<div class="row text-left">
+
+		<EditForm Model="@newComp" OnValidSubmit="@sendNewCompetition">
+			<div class="row">
+				<div class="col-6 offset-1">
+
+					<DataAnnotationsValidator />
+
+					<div class="row mb-4">
+						<label for="compName" class="col-sm-3 col-form-label">Name</label>
+						<div class="col-sm-9">
+							<InputText type="text"
+								   class="form-control"
+								   id="compName"
+								   placeholder="Enter competition name"
+								   @bind-Value="newComp.Name" />
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="compStartDate" class="col-sm-3 col-form-label">Start date</label>
+						<div class="col-sm-9">
+							<InputDate class="form-control"
+								   id="compStartDate"
+								   @bind-Value="newCompStartDate"
+								   ParsingErrorMessage="Must be a date" />
+							<div id="compDate" class="form-text">Enter competition start date</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="compStartTime" class="col-sm-3 col-form-label">Start time</label>
+						<div class="col-sm-9">
+							<input type="time"
+							   class="form-control"
+							   id="compStartTime"
+							   @bind="newCompStartTime"
+							   ParsingErrorMessage="Must be a date" />
+							<div id="compTime" class="form-text">Enter competition start time</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="compEndDate" class="col-sm-3 col-form-label">End date</label>
+						<div class="col-sm-9">
+							<InputDate class="form-control"
+								   id="compEndDate"
+								   @bind-Value="newCompEndDate"
+								   ParsingErrorMessage="Must be a date" />
+							<div id="compEndDate" class="form-text">Enter competition end date</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="compEndTime" class="col-sm-3 col-form-label">End time</label>
+						<div class="col-sm-9">
+							-
+							<input type="time"
+							   class="form-control"
+							   id="compDate"
+							   @bind="newCompEndTime" />
+							<div id="compEndTime" class="form-text">Enter competition start time</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="customRange3" class="col-sm-3 col-form-label">Concurrent tasks</label>
+						<div class="col-sm-9">
+							<InputSelect class="form-select"
+									 aria-label="Default select example"
+									 @bind-Value="newComp.NumberConcTasks">
+								<option selected>Choose from 1 to 5</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</InputSelect>
+							<div id="emailHelp" class="form-text">Choose amount of concurrent tasks</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<label for="inputHashtag" class="col-sm-3 col-form-label">Hashtag</label>
+						<div class="col-sm-9">
+							<div class="input-group">
+								<span class="input-group-text">#</span>
+								<InputText type="text"
+									   class="form-control"
+									   id="inputHashtag"
+									   placeholder="hashtag"
+									   @bind-Value="newComp.Hashtag" />
+
+							</div>
+							<div id="HashtagHelp" class="form-text">Enter the competition hashtag for Twitter</div>
+						</div>
+					</div>
+
+					<div class="row mb-4">
+						<div class="col-sm-6 offset-3">
+							<button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addingCompetition">Add competition</button>
+							<button type="reset" class="btn btn-danger">Clear fields</button>
+						</div>
+					</div>
+
+				</div>
+				
+				<div class="col-4">
+					<ValidationSummary />
+				</div>
+
+			</div>
+
+		</EditForm>
+	</div>
+}
+else
+{
+	<div class="row">
+		<div class="row col-6 offset-1">
+			<h3>@messageFromServer</h3>
+		</div>
+	</div>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="addingCompetition" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Hooray!</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				@if (messageFromServer == "success")
+				{
+					<p>Competition added sucesfully.</p>
+				}
+				else if (messageFromServer == "failed")
+				{
+					<p>Competition added failed. Please, try again.</p>
+				}
+				else
+				{
+					<p>Something went wrong. We're fixing it.</p>
+				}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back to competitions</button>
+				<button type="button" class="btn btn-primary">Add another</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-9">
+		@if (newCompetition != null)
+		{
+			<div class="table-responsive">
+				<table class="table table-striped table-hover table-sm text-center">
+					<thead class="table-light">
+						<tr>
+							<th>Name</th>
+							<th>Date</th>
+							<th>Start Time</th>
+							<th>End Time</th>
+							<th>Duration</th>
+							<th>Tasks</th>
+							<th>Event Twitter Hashtag</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>@newCompetition.Name</td>
+							<td>@newCompetition.StartDateTime.ToLongDateString()</td>
+							<td>@newCompetition.StartDateTime.ToString("t")</td>
+							<td>@newCompetition.EndDateTime.ToString("t")</td>
+							<td>@newCompetition.Duration.ToString("%h") hour(s)</td>
+							<td>@newCompetition.NumberConcTasks</td>
+							<td>@newCompetition.Hashtag</td>
+
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		}
+
+	</div>
+</div>
+
+@code {
+
+	DateOnly newCompStartDate;
+	DateOnly newCompEndDate;
+	TimeOnly newCompStartTime;
+	TimeOnly newCompEndTime;
+	//double newCompDurationInt;
+
+	//int newCompetitionDurationInt;/* = Convert.ToInt32(newCompetitionDuration.Hours());*/
+
+	private CompetitionDT newComp = new();
+
+	string messageFromServer = string.Empty;
+	bool flag = false;
+
+	CompetitionDT newCompetition;
+
+	protected override void OnInitialized()
+	{
+		newComp.Name = "The Very New Competition";
+		newCompStartDate = DateOnly.FromDateTime(DateTime.Now);
+		newCompEndDate = DateOnly.FromDateTime(DateTime.Now);
+		newCompStartTime = new TimeOnly(10, 0);
+		newCompEndTime = new TimeOnly(18, 00);
+		//newCompDurationInt = ((newCompEndDate.ToDateTime(newCompEndTime) - newCompStartDate.ToDateTime(newCompStartTime)).TotalMinutes) / 60;
+		//newCompetitionDuration = newCompetitionEndTime - newCompetitionStartTime;
+		newComp.NumberConcTasks = 3;
+		newComp.Hashtag = "TheCompHashtag";
+
+	}
+
+
+	public void AddNewCompetition()
+	{
+		newComp.StartDateTime = newCompStartDate.ToDateTime(newCompStartTime);
+		newComp.EndDateTime = newCompEndDate.ToDateTime(newCompEndTime);
+		newComp.Duration = newComp.EndDateTime - newComp.StartDateTime;
+	}
+
+	public async Task sendNewCompetition()
+	{
+		AddNewCompetition();
+
+		HubConnection connection = new HubConnectionBuilder()
+				.WithUrl("https://localhost:7206/competitions")
+				.WithAutomaticReconnect()
+				.Build();
+
+		connection.On<string>("Add", msg =>
+		{
+			messageFromServer = msg;
+			flag = true;
+		});
+
+		await connection.StartAsync();
+		await connection.InvokeAsync("AddNewCompetition", newComp);
+		await connection.DisposeAsync();
+	}
+}

@@ -1,0 +1,171 @@
+﻿<div class="col">
+
+	<div class="card text-start">
+
+		<div class="card-header">
+			<ul class="nav nav-tabs card-header-tabs" id="myTab">
+				<li class="nav-item">
+					<a href="#task(@Competition.Id)" class="nav-link active" data-bs-toggle="tab">
+						<span class="oi oi-aperture" aria-hidden="true"></span> About
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a href="#bonus(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+						<span class="oi oi-people" aria-hidden="true"></span> Teams
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a href="#info(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+						<span class="oi oi-wrench" aria-hidden="true"></span> Info
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="card-body">
+			<div class="tab-content">
+
+				<div class="tab-pane fade show active" id="task(@Competition.Id)">
+
+					<div class="row">
+
+						<div class="col-4">
+							<img src="./images/HackathonLogoDef.jpg" width="200" />
+						</div>
+
+						<div class="col-8">
+
+							<div class="row">
+								<div class="col m-0 p-0">
+									<h4 class="card-title font-large"><u>@Competition.Name</u></h4>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-6 m-0 p-0">
+									<p>
+										Date: @Competition.StartDateTime.ToLongDateString()
+										<br />
+										Start at: @Competition.StartDateTime.ToString("t")
+										<br />
+										End at: @Competition.EndDateTime.ToString("t")
+										<br />
+
+									</p>
+								</div>
+
+								<div class="col-6 m-0 p-0">
+									Duration: @Competition.Duration.Hours hours @if (Competition.Duration.Minutes != 0)
+									{
+										@Competition.Duration.Minutes <span>minutes</span>
+									}
+									
+									<br />
+									Hashtag: <a href="https://twitter.com/search?q=@Competition.Hashtag&src=trend_click&vertical=trends" target="_blank">#@Competition.Hashtag</a>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+
+				<div class="tab-pane fade" id="bonus(@Competition.Id)">
+					<h5 class="card-title">Bonus task</h5>
+					<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
+				</div>
+
+				<div class="tab-pane fade" id="info(@Competition.Id)">
+					<h5 class="card-title">Service info</h5>
+					<p class="card-text">
+						ID: @Competition.Id.
+						<br />
+						Created at @Competition.CreateDate.ToString("R")
+						<br />
+						Created by @Competition.CreateUserId
+						<br />
+						Updated at @Competition.UpdateDate.ToString("R")
+						<br />
+						Updated by @Competition.UpdateUserId
+						<br />
+						Status: @Competition.Status
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-footer">
+			<div class="row">
+
+				<div class="col-5 mb-1 align-self-end">
+					<small class="text-muted">Last updated @_updated.ToString("%h") hours @_updated.ToString("%m") mins ago</small>
+				</div>
+
+				<div class="col-1 mb-0 text-end">
+					<button class="btn btn-outline-secondary" @onclick="Expand">
+						<span class="oi oi-chevron-bottom"></span>
+					</button>
+				</div>
+
+				<div class="col-6 text-end mb-1">
+
+					<button class="btn btn-success" @onclick="Start">
+						<span class="oi oi-media-play"></span>
+						<span>&nbsp;Start</span>
+					</button>
+
+					<button class="btn btn-secondary" @onclick="Duplicate">
+						<span class="oi oi-copywriting"></span>
+						<span>&nbsp;Duplicate</span>
+					</button>
+
+					<button class="btn btn-danger" @onclick="Delete">
+						<span class="oi oi-x"></span>
+						<span>&nbsp;Delete</span>
+					</button>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+@code {
+	[Parameter]
+	public CompetitionDT Competition { get; set; }
+
+	private TimeSpan _updated;
+
+	private void LastUpdated()
+	{
+		_updated = DateTime.Now - Competition.UpdateDate;
+	}
+
+	private void Duplicate()
+	{
+		Console.WriteLine("Duplicated");
+	}
+
+	private void Start()
+	{
+		Console.WriteLine("Duplicated");
+	}
+
+	private void Delete()
+	{
+		Console.WriteLine("Duplicated");
+	}
+
+	private void Expand()
+	{
+		Console.WriteLine("Expanded");
+	}
+
+}
