@@ -6,19 +6,13 @@
 			<ul class="nav nav-tabs card-header-tabs" id="myTab">
 				<li class="nav-item">
 					<a href="#task(@Competition.Id)" class="nav-link active" data-bs-toggle="tab">
-						<span class="oi oi-clipboard" aria-hidden="true"></span> Task
+						<span class="oi oi-aperture" aria-hidden="true"></span> About
 					</a>
 				</li>
 
 				<li class="nav-item">
 					<a href="#bonus(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
-						<span class="oi oi-puzzle-piece" aria-hidden="true"></span> Bonus
-					</a>
-				</li>
-
-				<li class="nav-item">
-					<a href="#hints(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
-						<span class="oi oi-lightbulb" aria-hidden="true"></span> Hints
+						<span class="oi oi-people" aria-hidden="true"></span> Teams
 					</a>
 				</li>
 
@@ -34,16 +28,48 @@
 			<div class="tab-content">
 
 				<div class="tab-pane fade show active" id="task(@Competition.Id)">
-					<h5 class="card-title font-large">@Competition.Id. @Competition.Name</h5>
-					<p>
-						Date: @Competition.StartDateTime.ToLongDateString()
-						<br />
-						Start at: @Competition.StartDateTime.ToString("t")
-						<br />
-						End at: @Competition.EndDateTime.ToString("t")
-						<br />
-						Duration: @Competition.Duration.ToString("%h")
-					</p>
+
+					<div class="row">
+
+						<div class="col-4">
+							<img src="./images/HackathonLogoDef.jpg" width="200" />
+						</div>
+
+						<div class="col-8">
+
+							<div class="row">
+								<div class="col m-0 p-0">
+									<h4 class="card-title font-large"><u>@Competition.Name</u></h4>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-6 m-0 p-0">
+									<p>
+										Date: @Competition.StartDateTime.ToLongDateString()
+										<br />
+										Start at: @Competition.StartDateTime.ToString("t")
+										<br />
+										End at: @Competition.EndDateTime.ToString("t")
+										<br />
+
+									</p>
+								</div>
+
+								<div class="col-6 m-0 p-0">
+									Duration: @Competition.Duration.Hours hours @if (Competition.Duration.Minutes != 0)
+									{
+										@Competition.Duration.Minutes <span>minutes</span>
+									}
+									
+									<br />
+									Hashtag: <a href="https://twitter.com/search?q=@Competition.Hashtag&src=trend_click&vertical=trends" target="_blank">#@Competition.Hashtag</a>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
 
 				</div>
 
@@ -52,23 +78,20 @@
 					<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
 				</div>
 
-				<div class="tab-pane fade" id="hints(@Competition.Id)">
-					<h5 class="card-title">Messages tab content</h5>
-					<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
-				</div>
-
 				<div class="tab-pane fade" id="info(@Competition.Id)">
-					<h5 class="card-title">Messages tab content</h5>
+					<h5 class="card-title">Service info</h5>
 					<p class="card-text">
-						Created at @Competition.CreateDate.ToString("G")
+						ID: @Competition.Id.
+						<br />
+						Created at @Competition.CreateDate.ToString("R")
 						<br />
 						Created by @Competition.CreateUserId
 						<br />
-						Updated at @Competition.UpdateDate
+						Updated at @Competition.UpdateDate.ToString("R")
 						<br />
 						Updated by @Competition.UpdateUserId
 						<br />
-						Status: @((Status)Competition.StatusId)
+						Status: @Competition.Status
 					</p>
 				</div>
 			</div>

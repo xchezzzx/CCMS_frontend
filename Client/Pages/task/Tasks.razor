@@ -110,7 +110,7 @@ else
 								<td>@task.CreateUserId</td>
 								<td>@task.UpdateDate.ToString("G")</td>
 								<td>@task.UpdateUserId</td>
-								<td>@((Status)task.StatusId)</td>
+								<td>@((EntityStatuses)task.StatusId)</td>
 							</tr>
 						}
 
@@ -191,7 +191,7 @@ else
 											<br />
 											Updated by @task.UpdateUserId
 											<br />
-											Status: @((Status)task.StatusId)
+											Status: @((EntityStatuses)task.StatusId)
 										</p>
 									</div>
 								</div>
@@ -254,7 +254,7 @@ b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
 				CreateUserId = 1,
 				UpdateDate = DateTime.Now,
 				UpdateUserId = 1,
-				StatusId = (int)Status.Active
+				StatusId = (int)EntityStatuses.Active
 			},
 					new()
 			{
@@ -284,7 +284,7 @@ b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
 				CreateUserId = 1,
 				UpdateDate = DateTime.Now,
 				UpdateUserId = 1,
-				StatusId = (int)Status.Active
+				StatusId = (int)EntityStatuses.Active
 			},
 					new()
 			{
@@ -314,7 +314,7 @@ b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
 				CreateUserId = 1,
 				UpdateDate = DateTime.Now,
 				UpdateUserId = 1,
-				StatusId = (int)Status.Active
+				StatusId = (int)EntityStatuses.Active
 			},
 					new()
 			{
@@ -344,7 +344,7 @@ b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
 				CreateUserId = 1,
 				UpdateDate = DateTime.Now,
 				UpdateUserId = 1,
-				StatusId = (int)Status.Active
+				StatusId = (int)EntityStatuses.Active
 			}
 
 	};

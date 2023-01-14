@@ -158,7 +158,15 @@ else
 			<div class="modal-body">
 				@if (messageFromServer == "success")
 				{
-					<p>Competition added sucesfully</p>
+					<p>Competition added sucesfully.</p>
+				}
+				else if (messageFromServer == "failed")
+				{
+					<p>Competition added failed. Please, try again.</p>
+				}
+				else
+				{
+					<p>Something went wrong. We're fixing it.</p>
 				}
 			</div>
 			<div class="modal-footer">

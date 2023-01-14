@@ -22,10 +22,10 @@ namespace BlazorWeb.Services
                     .WithUrl("https://localhost:7206/competitions")
                     .Build();
 
-                HubConnection.On<List<CompetitionDT>>("Send", c => _getAllCompetitions = c);
+                HubConnection.On<List<CompetitionDT>>("Get", c => _getAllCompetitions = c);
 
                 await HubConnection.StartAsync();
-                await HubConnection.InvokeAsync("SendCompetitions");
+                await HubConnection.InvokeAsync("GetAllCompetitions");
                 await HubConnection.StopAsync();
             }
             return _getAllCompetitions;
