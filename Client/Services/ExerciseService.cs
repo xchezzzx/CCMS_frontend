@@ -29,7 +29,7 @@ namespace BlazorWeb.Services
 			});
 
 			await HubConnection.StartAsync();
-			await HubConnection.InvokeAsync("Add", exerciseDT);
+			await HubConnection.InvokeAsync("AddNewExercise", exerciseDT);
 			await HubConnection.DisposeAsync();
 
 			return messageFromServer;
