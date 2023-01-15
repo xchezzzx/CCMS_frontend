@@ -4,14 +4,21 @@
 
 		<div class="card-header">
 			<ul class="nav nav-tabs card-header-tabs" id="myTab">
+
 				<li class="nav-item">
-					<a href="#task(@Competition.Id)" class="nav-link active" data-bs-toggle="tab">
+					<a href="" class="nav-link @ColorByState disabled" data-bs-toggle="tab">
+						<span class="oi oi-bookmark" aria-hidden="true"></span>
+					</a>
+				</li>
+
+				<li class="nav-item">
+					<a href="#event(@Competition.Id)" class="nav-link active" data-bs-toggle="tab">
 						<span class="oi oi-aperture" aria-hidden="true"></span> About
 					</a>
 				</li>
 
 				<li class="nav-item">
-					<a href="#bonus(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+					<a href="#teams(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
 						<span class="oi oi-people" aria-hidden="true"></span> Teams
 					</a>
 				</li>
@@ -27,7 +34,7 @@
 		<div class="card-body">
 			<div class="tab-content">
 
-				<div class="tab-pane fade show active" id="task(@Competition.Id)">
+				<div class="tab-pane fade show active" id="event(@Competition.Id)">
 
 					<div class="row">
 
@@ -61,9 +68,13 @@
 									{
 										@Competition.Duration.Minutes <span>minutes</span>
 									}
-									
+
 									<br />
 									Hashtag: <a href="https://twitter.com/search?q=@Competition.Hashtag&src=trend_click&vertical=trends" target="_blank">#@Competition.Hashtag</a>
+									<br />
+									State: @Competition.State
+									<br />
+									Color: @ColorByState
 								</div>
 
 							</div>
@@ -73,26 +84,36 @@
 
 				</div>
 
-				<div class="tab-pane fade" id="bonus(@Competition.Id)">
+				<div class="tab-pane fade" id="teams(@Competition.Id)">
 					<h5 class="card-title">Bonus task</h5>
 					<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
 				</div>
 
 				<div class="tab-pane fade" id="info(@Competition.Id)">
-					<h5 class="card-title">Service info</h5>
-					<p class="card-text">
-						ID: @Competition.Id.
-						<br />
-						Created at @Competition.CreateDate.ToString("R")
-						<br />
-						Created by @Competition.CreateUserId
-						<br />
-						Updated at @Competition.UpdateDate.ToString("R")
-						<br />
-						Updated by @Competition.UpdateUserId
-						<br />
-						Status: @Competition.Status
-					</p>
+
+					<div class="row">
+						<h5 class="card-title">Service info</h5>
+					</div>
+
+					<div class="row card-text">
+
+						<div class="col-6">
+							ID: @Competition.Id.
+							<br />
+							Status: @Competition.Status
+						</div>
+
+						<div class="col-6">
+							Created at @Competition.CreateDate.ToString("R")
+							<br />
+							Created by @Competition.CreateUserId
+							<br />
+							Updated at @Competition.UpdateDate.ToString("R")
+							<br />
+							Updated by @Competition.UpdateUserId
+						</div>
+
+					</div>
 				</div>
 			</div>
 		</div>
@@ -134,14 +155,46 @@
 	</div>
 </div>
 
-
-
-
 @code {
 	[Parameter]
 	public CompetitionDT Competition { get; set; }
 
 	private TimeSpan _updated;
+
+	private string ColorByState = "text-bg-primary";
+
+	protected override async void OnInitialized()
+	{
+		ColorByState = "text-bg-primary";
+
+		ChangeCardColorByState();
+	}
+
+	private void ChangeCardColorByState()
+	{
+		switch (Competition.StateId)
+		{
+			case CompetitionStates.InProgress:
+			ColorByState = "text-bg-success";
+			break;
+
+			case CompetitionStates.Canceled:
+			ColorByState = "text-bg-warning";
+			break;
+
+			case CompetitionStates.Ended:
+			ColorByState = "text-bg-light";
+			break;
+
+			case CompetitionStates.Planned:
+			ColorByState = "text-bg-primary";
+			break;
+
+			case CompetitionStates.Dropped:
+			ColorByState = "text-bg-dark";
+			break;
+		}
+	}
 
 	private void LastUpdated()
 	{
@@ -150,17 +203,19 @@
 
 	private void Duplicate()
 	{
+		ChangeCardColorByState();
+
 		Console.WriteLine("Duplicated");
 	}
 
 	private void Start()
 	{
-		Console.WriteLine("Duplicated");
+		Console.WriteLine("Started");
 	}
 
 	private void Delete()
 	{
-		Console.WriteLine("Duplicated");
+		Console.WriteLine("Deleted");
 	}
 
 	private void Expand()

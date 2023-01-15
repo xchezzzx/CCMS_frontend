@@ -1,9 +1,6 @@
 ﻿@page "/competitions"
 @attribute [Authorize]
 
-@using BlazorWeb.Interfaces;
-@using BlazorWeb.Services;
-@using Microsoft.AspNetCore.SignalR.Client;
 @inject ICompetitionService CompetitionService
 
 <PageTitle>Competition page</PageTitle>
@@ -40,20 +37,13 @@
 
 @if (!dataFetched)
 {
-	<div class="text-center">
-		<img src="./images/loading-waiting.gif" />
-	</div>
+	<Loader />
 }
 else
 {
 	if (competitions.Count == 0)
 	{
-		<div class="text-center">
-			<h4>
-				Sorry, the list is empty
-			</h4>
-			<img src="./images/empty.gif" />
-		</div>
+		<EmptyList />
 	}
 	else
 	{
@@ -75,44 +65,23 @@ else
 						</tr>
 					</thead>
 					<tbody>
-						@if (competitions.Count == 0)
+						@foreach (var comp in competitions)
 						{
 							<tr>
-								<td colspan="9">
-									<div class="text-center">
-										Sorry, the list is empty
-									</div>
+								<td>@comp.Id</td>
+								<td>@comp.Name</td>
+								<td>@comp.StartDateTime.ToLongDateString()</td>
+								<td>@comp.StartDateTime.ToString("t")</td>
+								<td>@comp.EndDateTime.ToString("t")</td>
+								<td>@comp.Duration.ToString("%h") hour(s)</td>
+								<td>@comp.NumberConcTasks</td>
+								<td>
+									<a href="https://twitter.com/search?q=@comp.Hashtag&src=trend_click&vertical=trends" target="_blank">
+										#@comp.Hashtag
+									</a>
 								</td>
+								<td>@comp.State</td>
 							</tr>
-							<tr>
-								<td colspan="9">
-									<div class="text-center">
-										<img src="./images/empty.gif" height="200" />
-									</div>
-
-								</td>
-							</tr>
-						}
-						else
-						{
-							@foreach (var comp in competitions)
-							{
-								<tr>
-									<td>@comp.Id</td>
-									<td>@comp.Name</td>
-									<td>@comp.StartDateTime.ToLongDateString()</td>
-									<td>@comp.StartDateTime.ToString("t")</td>
-									<td>@comp.EndDateTime.ToString("t")</td>
-									<td>@comp.Duration.ToString("%h") hour(s)</td>
-									<td>@comp.NumberConcTasks</td>
-									<td>
-										<a href="https://twitter.com/search?q=@comp.Hashtag&src=trend_click&vertical=trends" target="_blank">
-											#@comp.Hashtag
-										</a>
-									</td>
-									<td>@comp.State</td>
-								</tr>
-							}
 						}
 
 					</tbody>
@@ -122,19 +91,17 @@ else
 		else
 		{
 			<div class="row row-cols-1 row-cols-md-2 g-4">
-					@foreach (var comp in competitions)
-					{
-						<CompetitionCard Competition="@comp" />
-					}
-				</div>
+				@foreach (var comp in competitions)
+				{
+					<CompetitionCard Competition="@comp" />
+				}
+			</div>
 		}
 	}
 }
 
 
 @code {
-	//[Parameter]
-	//public string Message { get; set; }
 
 	private bool _isTable;
 	private string ToggleCaption => _isTable ? "Card view" : "Table view";
@@ -170,7 +137,7 @@ else
 		//	UpdateDate = new DateTime(2022, 12, 28, 19, 00, 00),
 		//	UpdateUserId = 1,
 		//	Status = EntityStatuses.Active.ToString()
-		//}, 
+		//},
 		//new()
 		//{
 		//	Id = 2,
@@ -415,7 +382,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		dataFetched = true;
+		dataFetched = false;
 		await fetchData();
 	}
 
