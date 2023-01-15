@@ -12,30 +12,44 @@ namespace BlazorWeb.Services
 		private TeamDT getTeam { get; set; }
 
 
-		public async Task AddTeam(TeamDT TeamDT)
+		public async Task<string> AddTeamAsync(TeamDT teamDT)
 		{
-			throw new NotImplementedException();
+			string messageFromServer = string.Empty;
+
+			HubConnection connection = new HubConnectionBuilder()
+							.WithUrl("https://localhost:7206/teams")
+							.WithAutomaticReconnect()
+							.Build();
+
+			connection.On<string>("Add", msg =>
+			{
+				messageFromServer = msg;
+			});
+
+			await connection.StartAsync();
+			await connection.InvokeAsync("AddNewTeam", teamDT);
+			await connection.DisposeAsync();
+
+			return messageFromServer;
 		}
 
-		public async Task DeleteTeam(int id)
+		public async Task DeleteTeamAsync(int id)
 		{
 			throw new NotImplementedException();
 		}
 
 		public async Task<List<TeamDT>> GetAllTeamsAsync()
 		{
-			if (_getAllTeams == null)
-			{
-				HubConnection HubConnection = new HubConnectionBuilder()
-					.WithUrl("https://localhost:7206/teams")
-					.Build();
+			HubConnection HubConnection = new HubConnectionBuilder()
+				.WithUrl("https://localhost:7206/teams")
+				.Build();
 
-				HubConnection.On<List<TeamDT>>("Send", c => _getAllTeams = c);
+			HubConnection.On<List<TeamDT>>("Get", c => _getAllTeams = c);
 
-				await HubConnection.StartAsync();
-				await HubConnection.InvokeAsync("SendTeams");
-				await HubConnection.StopAsync();
-			}
+			await HubConnection.StartAsync();
+			await HubConnection.InvokeAsync("GetAllTeams");
+			await HubConnection.StopAsync();
+
 			return _getAllTeams;
 		}
 
@@ -44,7 +58,7 @@ namespace BlazorWeb.Services
 			throw new NotImplementedException();
 		}
 
-		public async Task UpdateTeam(int id)
+		public async Task UpdateTeamAsync(int id)
 		{
 			throw new NotImplementedException();
 		}

@@ -105,18 +105,6 @@ else
 
 	private bool _isTable;
 	private string ToggleCaption => _isTable ? "Card view" : "Table view";
-
-	private void Toggle()
-	{
-		_isTable = !_isTable;
-	}
-
-	[Parameter]
-	public RenderFragment NullList { get; set; }
-
-	[Parameter]
-	public RenderFragment EmptyList { get; set; }
-
 	string messageFromServer = String.Empty;
 	bool dataFetched;
 
@@ -379,6 +367,11 @@ else
 		//	StatusId = (int)EntityStatuses.Active
 		//},
 	};
+
+	private void Toggle()
+	{
+		_isTable = !_isTable;
+	}
 
 	protected override async Task OnInitializedAsync()
 	{

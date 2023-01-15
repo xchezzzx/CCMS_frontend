@@ -1,6 +1,8 @@
 ﻿@page "/teams"
 @attribute [Authorize]
 
+@inject ITeamService TeamService
+
 <PageTitle>Teams page</PageTitle>
 
 <div class="row">
@@ -28,20 +30,13 @@
 
 @if (!_dataFetched)
 {
-	<div class="text-center">
-		<img src="./images/loading-waiting.gif" />
-	</div>
+	<Loader />
 }
 else
 {
-	@if (teams.Count == 0)
+	if (teams.Count == 0)
 	{
-		<div class="text-center">
-			<h4>
-				Sorry, the list is empty
-			</h4>
-			<img src="./images/empty.gif" />
-		</div>
+		<EmptyList />
 	}
 	else
 	{
@@ -87,45 +82,23 @@ else
 
 @code {
 
-	List<TeamDT> teams = new List<TeamDT>();
+	List<TeamDT> teams = new ();
 
 	private bool _dataFetched;
-
 
 	////[Parameter]
 	////public string Message { get; set; }
 	//string messageFromServer = String.Empty;
 
-
 	protected override async Task OnInitializedAsync()
 	{
-		//NOTE: make false in prod
 		_dataFetched = false;
-
-		//await fetchData();
-
-		//just for testing
-		TeamDT testTeam = new()
-			{
-				Id = 0,
-				Name = "Шлошим",
-				SumPoints = 42,
-				CreateDate = DateTime.Now,
-				CreateUserId = 1,
-				UpdateDate = DateTime.Now,
-				UpdateUserId = 1,
-				Status = EntityStatuses.Active.ToString(),
-				StatusId = EntityStatuses.Active
-			};
-
-		teams.Add(testTeam);
+		await fetchData();
 	}
 
 	public async Task fetchData()
 	{
-		Console.WriteLine("Fetching data...");
-
+		teams = await TeamService.GetAllTeamsAsync();
 		_dataFetched = true;
-		//users = await CompetitionService.GetAllCompetitionsAsync();
 	}
 }
