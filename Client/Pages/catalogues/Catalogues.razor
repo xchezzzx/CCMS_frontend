@@ -41,7 +41,7 @@
 			<h2>Categories</h2>
 		</div>
 
-		@if (!_dataCatFetched)
+		@if (!_dataFetched)
 		{
 			<Loader />
 		}
@@ -110,7 +110,7 @@
 			<h2>Languages</h2>
 		</div>
 
-		@if (!_dataCatFetched)
+		@if (!_dataFetched)
 		{
 			<Loader />
 		}
@@ -179,7 +179,7 @@
 			<h2>Platforms</h2>
 		</div>
 
-		@if (!_dataCatFetched)
+		@if (!_dataFetched)
 		{
 			<Loader />
 		}
@@ -248,7 +248,7 @@
 
 
 @code {
-	private bool _dataCatFetched;
+	private bool _dataFetched;
 	private bool _isTable;
 	private string ToggleCaption => _isTable ? "Card view" : "Table view";
 
@@ -256,9 +256,11 @@
 	List<ExerciseLangDT> langs = new();
 	List<ExercisePlatformDT> platforms = new();
 
-	private void Toggle()
+	protected override async Task OnInitializedAsync()
 	{
-		_isTable = !_isTable;
+		_dataFetched = false;
+		_isTable = true;
+		await fetchData();
 	}
 
 	public async Task fetchData()
@@ -269,6 +271,11 @@
 		langs = await CatalogueService.GetAllExerciseLanguagesAsync();
 		platforms = await CatalogueService.GetAllExercisePlatformsAsync();
 
-		_dataCatFetched = true;
+		_dataFetched = true;
+	}
+
+	private void Toggle()
+	{
+		_isTable = !_isTable;
 	}
 }

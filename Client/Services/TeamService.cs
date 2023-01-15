@@ -44,7 +44,7 @@ namespace BlazorWeb.Services
 				.WithUrl("https://localhost:7206/teams")
 				.Build();
 
-			HubConnection.On<List<TeamDT>>("Get", c => _getAllTeams = c);
+			HubConnection.On<List<TeamDT>>("GetAllTeams", c => _getAllTeams = c);
 
 			await HubConnection.StartAsync();
 			await HubConnection.InvokeAsync("GetAllTeams");

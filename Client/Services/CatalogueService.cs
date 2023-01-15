@@ -119,7 +119,7 @@ namespace BlazorWeb.Services
 			HubConnection.On<List<ExerciseLangDT>>("Get", c => _getAllLangs = c);
 
 			await HubConnection.StartAsync();
-			await HubConnection.InvokeAsync("GetAllExerciseCategories");
+			await HubConnection.InvokeAsync("GetAllExerciseLangs");
 			await HubConnection.StopAsync();
 
 			return _getAllLangs;
