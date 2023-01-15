@@ -1,8 +1,6 @@
 ﻿@page "/competitions/add"
 @attribute [Authorize]
 
-@using Microsoft.AspNetCore.SignalR.Client;
-
 @inject ICompetitionService CompetitionService
 
 <div class="row mb-4">
@@ -257,7 +255,6 @@
 
 	}
 
-
 	public void AddNewCompetition()
 	{
 		newCompetition.StateId = CompetitionStates.Planned;
@@ -275,6 +272,4 @@
 		ChangeModal();
 		messageFromServer = string.Empty;
 	}
-
-
 }

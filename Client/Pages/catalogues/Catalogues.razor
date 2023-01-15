@@ -1,6 +1,8 @@
 ﻿@page "/catalogues"
 @attribute [Authorize]
 
+@inject ICatalogueService CatalogueService
+
 <PageTitle>Catalogues page</PageTitle>
 
 <div class="row">
@@ -151,11 +153,11 @@
 								}
 								else
 								{
-									@foreach (var comp in categories)
+									@foreach (var lang in langs)
 									{
 										<tr>
-											<td>@comp.Id</td>
-											<td>@comp.Name</td>
+											<td>@lang.Id</td>
+											<td>@lang.Name</td>
 										</tr>
 									}
 								}
@@ -220,11 +222,11 @@
 								}
 								else
 								{
-									@foreach (var comp in categories)
+									@foreach (var pltfrm in platforms)
 									{
 										<tr>
-											<td>@comp.Id</td>
-											<td>@comp.Name</td>
+											<td>@pltfrm.Id</td>
+											<td>@pltfrm.Name</td>
 										</tr>
 									}
 								}
@@ -235,7 +237,7 @@
 				}
 				else
 				{
-
+					//TODO cat cards
 				}
 			}
 		}
@@ -263,7 +265,10 @@
 	{
 		Console.WriteLine("Fetching data...");
 
+		categories = await CatalogueService.GetAllExerciseCategoriesAsync();
+		langs = await CatalogueService.GetAllExerciseLanguagesAsync();
+		platforms = await CatalogueService.GetAllExercisePlatformsAsync();
+
 		_dataCatFetched = true;
-		//users = await CompetitionService.GetAllCompetitionsAsync();
 	}
 }

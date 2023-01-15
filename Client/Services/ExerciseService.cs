@@ -4,41 +4,57 @@ using SharedLib.DataTransferModels;
 
 namespace BlazorWeb.Services
 {
-	public class ExerciseService : IExerciseInterface
+	public class ExerciseService : IExerciseService
 	{
 		public ExerciseService()
 		{
 
 		}
 
-		private ExerciseDT getExercise { get; set; }
-		private List<ExerciseDT> getAllExercises { get; set; }
+		private ExerciseDT _getExercise { get; set; }
+		private List<ExerciseDT> _getAllExercises { get; set; }
 
-		public async Task AddExercise(ExerciseDT ExerciseDT)
+		public async Task<string> AddExercise(ExerciseDT exerciseDT)
 		{
-			throw new NotImplementedException();
+			string messageFromServer = string.Empty;
+
+			HubConnection HubConnection = new HubConnectionBuilder()
+							.WithUrl("https://localhost:7206/exercises")
+							.WithAutomaticReconnect()
+							.Build();
+
+			HubConnection.On<string>("Add", msg =>
+			{
+				messageFromServer = msg;
+			});
+
+			await HubConnection.StartAsync();
+			await HubConnection.InvokeAsync("Add", exerciseDT);
+			await HubConnection.DisposeAsync();
+
+			return messageFromServer;
 		}
 
-		public async Task DeleteExercise(ExerciseDT ExerciseDT)
+		public async Task DeleteExercise(ExerciseDT exerciseDT)
 		{
 			throw new NotImplementedException();
 		}
 
 		public async Task<List<ExerciseDT>> GetAllExercisesAsync()
 		{
-			if (getAllExercises == null)
+			if (_getAllExercises == null)
 			{
 				HubConnection HubConnection = new HubConnectionBuilder()
-					.WithUrl("https://localhost:7206/teams")
+					.WithUrl("https://localhost:7206/exercises")
 					.Build();
 
-				HubConnection.On<List<ExerciseDT>>("Send", c => getAllExercises = c);
+				HubConnection.On<List<ExerciseDT>>("GetAllExercises", c => _getAllExercises = c);
 
 				await HubConnection.StartAsync();
-				await HubConnection.InvokeAsync("SendTeams");
+				await HubConnection.InvokeAsync("GetAllExercises");
 				await HubConnection.StopAsync();
 			}
-			return getAllExercises;
+			return _getAllExercises;
 		}
 
 		public async Task<ExerciseDT> GetExerciseByIdAsync(int id)
@@ -46,7 +62,7 @@ namespace BlazorWeb.Services
 			throw new NotImplementedException();
 		}
 
-		public async Task UpdateExercise(ExerciseDT ExerciseDT)
+		public async Task UpdateExercise(ExerciseDT exerciseDT)
 		{
 			throw new NotImplementedException();
 		}

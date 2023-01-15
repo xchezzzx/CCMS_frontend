@@ -16,19 +16,19 @@ namespace BlazorWeb.Services
 		{
 			string messageFromServer = string.Empty;
 
-			HubConnection connection = new HubConnectionBuilder()
+			HubConnection HubConnection = new HubConnectionBuilder()
 							.WithUrl("https://localhost:7206/teams")
 							.WithAutomaticReconnect()
 							.Build();
 
-			connection.On<string>("Add", msg =>
+			HubConnection.On<string>("Add", msg =>
 			{
 				messageFromServer = msg;
 			});
 
-			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewTeam", teamDT);
-			await connection.DisposeAsync();
+			await HubConnection.StartAsync();
+			await HubConnection.InvokeAsync("AddNewTeam", teamDT);
+			await HubConnection.DisposeAsync();
 
 			return messageFromServer;
 		}

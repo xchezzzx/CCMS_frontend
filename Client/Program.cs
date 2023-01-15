@@ -11,6 +11,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddSingleton<ICompetitionService, CompetitionService>();
 builder.Services.AddSingleton<ITeamService, TeamService>();
+builder.Services.AddSingleton<IExerciseService, ExerciseService>();
+builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<ICatalogueService, CatalogueService>();
 
 var app = builder.Build();
 

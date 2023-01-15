@@ -1,7 +1,9 @@
 ﻿@page "/catalogues/add"
 @attribute [Authorize]
 
-@if (!flag)
+@inject ICatalogueService CatalogueService
+
+@if (!_dataSent)
 {
 	<div class="row mb-4">
 
@@ -202,7 +204,7 @@ else
 
 
 	string messageFromServer = string.Empty;
-	bool flag = false;
+	bool _dataSent = false;
 
 	protected override void OnInitialized()
 	{
@@ -214,55 +216,19 @@ else
 
 	public async Task sendNewCategory()
 	{
-		HubConnection connection = new HubConnectionBuilder()
-				.WithUrl("https://localhost:7206/teams")
-				.WithAutomaticReconnect()
-				.Build();
-
-		connection.On<string>("Add", msg =>
-		{
-			messageFromServer = msg;
-			flag = true;
-		});
-
-		await connection.StartAsync();
-		await connection.InvokeAsync("AddNewExercise", newCategory);
-		await connection.DisposeAsync();
+		messageFromServer = await CatalogueService.AddNewExerciseCategoryAsync(newCategory);
+		_dataSent = true;
 	}
 
 	public async Task sendNewLang()
 	{
-		HubConnection connection = new HubConnectionBuilder()
-				.WithUrl("https://localhost:7206/teams")
-				.WithAutomaticReconnect()
-				.Build();
-
-		connection.On<string>("Add", msg =>
-		{
-			messageFromServer = msg;
-			flag = true;
-		});
-
-		await connection.StartAsync();
-		await connection.InvokeAsync("AddNewExercise", newLang);
-		await connection.DisposeAsync();
+		messageFromServer = await CatalogueService.AddNewExerciseLanguageAsync(newLang);
+		_dataSent = true;
 	}
 
 	public async Task sendNewPlatform()
 	{
-		HubConnection connection = new HubConnectionBuilder()
-				.WithUrl("https://localhost:7206/teams")
-				.WithAutomaticReconnect()
-				.Build();
-
-		connection.On<string>("Add", msg =>
-		{
-			messageFromServer = msg;
-			flag = true;
-		});
-
-		await connection.StartAsync();
-		await connection.InvokeAsync("AddNewExercise", newPlatform);
-		await connection.DisposeAsync();
+		messageFromServer = await CatalogueService.AddNewExercisePlatformAsync(newPlatform);
+		_dataSent = true;
 	}
 }
