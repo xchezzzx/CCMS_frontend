@@ -3,7 +3,9 @@
 
 @using Microsoft.AspNetCore.SignalR.Client;
 
-@if (!flag)
+@inject ICompetitionService CompetitionService
+
+@if (!dataFetched)
 {
 	<div class="row mb-4">
 
@@ -23,7 +25,7 @@
 
 	<div class="row text-left">
 
-		<EditForm Model="@newComp" OnValidSubmit="@sendNewCompetition">
+		<EditForm Model="@newCompetition" OnValidSubmit="@sendNewCompetition">
 			<div class="row">
 				<div class="col-6 offset-1">
 
@@ -36,7 +38,7 @@
 								   class="form-control"
 								   id="compName"
 								   placeholder="Enter competition name"
-								   @bind-Value="newComp.Name" />
+								   @bind-Value="newCompetition.Name" />
 						</div>
 					</div>
 
@@ -77,7 +79,6 @@
 					<div class="row mb-4">
 						<label for="compEndTime" class="col-sm-3 col-form-label">End time</label>
 						<div class="col-sm-9">
-							-
 							<input type="time"
 							   class="form-control"
 							   id="compDate"
@@ -91,7 +92,7 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 aria-label="Default select example"
-									 @bind-Value="newComp.NumberConcTasks">
+									 @bind-Value="newCompetition.NumberConcTasks">
 								<option selected>Choose from 1 to 5</option>
 								<option value="1">1</option>
 								<option value="2">2</option>
@@ -112,7 +113,7 @@
 									   class="form-control"
 									   id="inputHashtag"
 									   placeholder="hashtag"
-									   @bind-Value="newComp.Hashtag" />
+									   @bind-Value="newCompetition.Hashtag" />
 
 							</div>
 							<div id="HashtagHelp" class="form-text">Enter the competition hashtag for Twitter</div>
@@ -222,52 +223,39 @@ else
 
 	//int newCompetitionDurationInt;/* = Convert.ToInt32(newCompetitionDuration.Hours());*/
 
-	private CompetitionDT newComp = new();
+	CompetitionDT newCompetition = new();
 
 	string messageFromServer = string.Empty;
-	bool flag = false;
-
-	CompetitionDT newCompetition;
+	bool dataFetched = false;
 
 	protected override void OnInitialized()
 	{
-		newComp.Name = "The Very New Competition";
+		newCompetition.Name = "The Very New Competition";
 		newCompStartDate = DateOnly.FromDateTime(DateTime.Now);
 		newCompEndDate = DateOnly.FromDateTime(DateTime.Now);
 		newCompStartTime = new TimeOnly(10, 0);
 		newCompEndTime = new TimeOnly(18, 00);
 		//newCompDurationInt = ((newCompEndDate.ToDateTime(newCompEndTime) - newCompStartDate.ToDateTime(newCompStartTime)).TotalMinutes) / 60;
 		//newCompetitionDuration = newCompetitionEndTime - newCompetitionStartTime;
-		newComp.NumberConcTasks = 3;
-		newComp.Hashtag = "TheCompHashtag";
+		newCompetition.NumberConcTasks = 3;
+		newCompetition.Hashtag = "TheCompHashtag";
 
 	}
 
 
 	public void AddNewCompetition()
 	{
-		newComp.StartDateTime = newCompStartDate.ToDateTime(newCompStartTime);
-		newComp.EndDateTime = newCompEndDate.ToDateTime(newCompEndTime);
-		newComp.Duration = newComp.EndDateTime - newComp.StartDateTime;
+		newCompetition.StateId = CompetitionStates.Planned;
+		newCompetition.StartDateTime = newCompStartDate.ToDateTime(newCompStartTime);
+		newCompetition.EndDateTime = newCompEndDate.ToDateTime(newCompEndTime);
+		newCompetition.Duration = newCompetition.EndDateTime - newCompetition.StartDateTime;
 	}
 
 	public async Task sendNewCompetition()
 	{
 		AddNewCompetition();
 
-		HubConnection connection = new HubConnectionBuilder()
-				.WithUrl("https://localhost:7206/competitions")
-				.WithAutomaticReconnect()
-				.Build();
-
-		connection.On<string>("Add", msg =>
-		{
-			messageFromServer = msg;
-			flag = true;
-		});
-
-		await connection.StartAsync();
-		await connection.InvokeAsync("AddNewCompetition", newComp);
-		await connection.DisposeAsync();
+		messageFromServer = await CompetitionService.AddCompetitionAsync(newCompetition);
+		dataFetched = true;
 	}
 }

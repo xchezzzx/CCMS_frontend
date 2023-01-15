@@ -34,9 +34,25 @@ namespace BlazorWeb.Services
 			throw new NotImplementedException();
 		}
 
-		public async Task AddCompetitionAsync(CompetitionDT competitionDT)
+		public async Task<string> AddCompetitionAsync(CompetitionDT competitionDT)
 		{
-			throw new NotImplementedException();
+			string messageFromServer = string.Empty;
+
+			HubConnection connection = new HubConnectionBuilder()
+							.WithUrl("https://localhost:7206/competitions")
+							.WithAutomaticReconnect()
+							.Build();
+
+			connection.On<string>("Add", msg =>
+			{
+				messageFromServer = msg;
+			});
+
+			await connection.StartAsync();
+			await connection.InvokeAsync("AddNewCompetition", competitionDT);
+			await connection.DisposeAsync();
+
+			return messageFromServer;
 		}
 
 		public async Task UpdateCompetitionAsync(CompetitionDT competitionDT)
