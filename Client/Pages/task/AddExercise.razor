@@ -87,11 +87,19 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.PlatformId">
-								@foreach (var pltfrm in platforms)
+@*								@foreach (var pltfrm in platforms)
 								{
 									<option value="@pltfrm.Id">@pltfrm.Name</option>
-								}
-								<option selected>Choose a language</option>
+								}*@
+							<option selected>Choose a language</option>
+							<option >Choose a language1</option>
+
+							<option >Choose a language2</option>
+
+								<option >Choose a language3</option>
+
+								<option >Choose a language4</option>
+
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task platform for task</div>
 						</div>
@@ -352,72 +360,11 @@ else
 
 		newExercise.Name = "The Very New task";
 		TimeToTimespan = 120;
-		TimeToTimespanBonus = 60;
+		//TimeToTimespanBonus = 60;
 
 		categories = await CatalogueService.GetAllExerciseCategoriesAsync();
 		langs = await CatalogueService.GetAllExerciseLanguagesAsync();
 		platforms = await CatalogueService.GetAllExercisePlatformsAsync();
-
-
-		//categoryList = new()
-		//{
-		//	new ExerciseCategoryDT()
-		//	{
-		//		Id = 0,
-		//		Name = "Without category"
-		//	},
-		//	new ExerciseCategoryDT() {
-		//		Id = 1,
-		//		Name = "Math"
-		//	},
-		//	new ExerciseCategoryDT()
-		//	{
-		//		Id = 2,
-		//		Name = "Physics"
-		//	},
-		//	new ExerciseCategoryDT()
-		//	{
-		//		Id = 3,
-		//		Name = "Graphs"
-		//	}
-		//};
-
-		//langList = new()
-		//{
-		//	new ExerciseLangDT()
-		//		{
-		//			Id = 0,
-		//			Name = "Any"
-		//		},
-		//	new ExerciseLangDT()
-		//	{
-		//		Id = 1,
-		//		Name = "C"
-		//	},
-		//	new ExerciseLangDT()
-		//	{
-		//		Id = 2,
-		//		Name = "JS/TS"
-		//	}
-		//};
-		//platformList = new()
-		//{
-		//	new ExercisePlatformDT()
-		//		{
-		//			Id = 0,
-		//			Name = "Any"
-		//		},
-		//	new ExercisePlatformDT()
-		//	{
-		//		Id = 1,
-		//		Name = "Windows"
-		//	},
-		//	new ExercisePlatformDT()
-		//	{
-		//		Id = 2,
-		//		Name = "MacOS"
-		//	}
-		//};
 	}
 
 	public async Task sendNewTask()

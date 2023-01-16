@@ -45,9 +45,10 @@
 						<div class="col-sm-6 offset-3">
 							<button type="submit"
 								class="btn btn-primary"
-								data-bs-toggle="modal"
+@*								data-bs-toggle="modal"
 								data-bs-target="#addTeam">
-								Add category
+
+*@								>Add category
 							</button>
 							<button type="reset" class="btn btn-danger">Clear fields</button>
 						</div>
@@ -177,7 +178,7 @@ else
 	</div>
 }
 
-<!-- Modal -->
+@*<!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -195,7 +196,7 @@ else
 		</div>
 	</div>
 </div>
-
+*@
 @code {
 
 	private ExerciseCategoryDT newCategory = new();
@@ -217,6 +218,7 @@ else
 	public async Task sendNewCategory()
 	{
 		messageFromServer = await CatalogueService.AddNewExerciseCategoryAsync(newCategory);
+		Console.WriteLine("CatAdded");
 		_dataSent = true;
 	}
 

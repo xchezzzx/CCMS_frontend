@@ -26,14 +26,19 @@ namespace BlazorWeb.Services
 							.WithAutomaticReconnect()
 							.Build();
 
+			Console.WriteLine("1. HubConnction");
+
 			HubConnection.On<string>("Add", msg =>
 			{
 				messageFromServer = msg;
 			});
 
 			await HubConnection.StartAsync();
+			Console.WriteLine("2 Start");
+
 			await HubConnection.InvokeAsync("AddNewExerciseCategory", ExerciseCategoryDT);
-			await HubConnection.DisposeAsync();
+
+			Console.WriteLine("3 Invoke");
 
 			return messageFromServer;
 		}

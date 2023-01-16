@@ -1,4 +1,4 @@
-﻿using SharedLib.Enums;
+﻿using SharedLib.Constants.Enums;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 

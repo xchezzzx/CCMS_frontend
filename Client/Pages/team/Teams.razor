@@ -98,6 +98,7 @@ else
 
 	public async Task fetchData()
 	{
+		_dataFetched = false;
 		teams = await TeamService.GetAllTeamsAsync();
 		_dataFetched = true;
 	}

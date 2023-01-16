@@ -204,7 +204,16 @@
 
 	private void LastUpdated()
 	{
-		_updated = DateTime.Now - Competition.UpdateDate;
+		TimeSpan updated = DateTime.Now - Competition.UpdateDate;
+		string hoursUpd = "Last updated";
+		if (updated.Days != 0)
+		{
+			if (updated.Days == 1)
+				hoursUpd += $"1 day";
+			else hoursUpd += $"{updated.Days} days";
+		}
+
+
 	}
 
 	private void Duplicate()

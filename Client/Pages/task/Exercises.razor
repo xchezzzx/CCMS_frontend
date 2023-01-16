@@ -18,7 +18,7 @@
 				<span>&nbsp;@ToggleCaption</span>
 			</button>
 
-			<button class="btn btn-success" @onclick="fetchData">
+			<button class="btn btn-success" @onclick="FetchHandler">
 				<span class="oi oi-loop-circular" aria-hidden="true"></span>
 				<span>&nbsp;Refresh</span>
 			</button>
@@ -36,20 +36,13 @@
 
 @if (!_dataFetched)
 {
-	<div class="text-center">
-		<img src="./images/loading-waiting.gif" />
-	</div>
+	<Loader />
 }
 else
 {
 	@if (exercises.Count == 0)
 	{
-		<div class="text-center">
-			<h4>
-				Sorry, the list is empty
-			</h4>
-			<img src="./images/empty.gif" />
-		</div>
+		<EmptyList />
 	}
 	else
 	{
@@ -168,7 +161,13 @@ else
 
 									<div class="tab-pane fade" id="bonus(@task.Id)">
 										<h5 class="card-title">Bonus task</h5>
-										<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
+										<p class="card-text">
+											Bonus task: @task.BonusContent
+											<br />
+											Bonus time: @task.BonusTimeframe?.TotalHours hour(s)
+											<br />
+											Bonus points: @task.BonusPoints
+										</p>
 									</div>
 
 									<div class="tab-pane fade" id="hints(@task.Id)">
@@ -358,8 +357,16 @@ else
 	public async Task fetchData()
 	{
 		//Console.WriteLine("Fetching data...");
+		_dataFetched = false;
 
 		exercises = await ExerciseService.GetAllExercisesAsync();
 		_dataFetched = true;
+	}
+
+	private async void FetchHandler()
+	{
+		await fetchData();
+		StateHasChanged();
+
 	}
 }
