@@ -122,7 +122,7 @@
 			<div class="row">
 
 				<div class="col-5 mb-1 align-self-end">
-					<small class="text-muted">Last updated @_updated.Days day(s) @_updated.Hours hours @_updated.Minutes mins ago</small>
+					<small class="text-muted">@LastUpdated()</small>
 				</div>
 
 				<div class="col-1 mb-0 text-end">
@@ -202,18 +202,40 @@
 		}
 	}
 
-	private void LastUpdated()
+	private string LastUpdated()
 	{
 		TimeSpan updated = DateTime.Now - Competition.UpdateDate;
-		string hoursUpd = "Last updated";
-		if (updated.Days != 0)
+		string timeFromUpdate = "Last updated";
+
+		if (updated.Days == 0 && updated.Hours == 0 && updated.Minutes <=5)
+			timeFromUpdate += $" just now";
+		else
 		{
-			if (updated.Days == 1)
-				hoursUpd += $"1 day";
-			else hoursUpd += $"{updated.Days} days";
+			if (updated.Days != 0)
+			{
+				if (updated.Days == 1)
+					timeFromUpdate += $" 1 day";
+				else timeFromUpdate += $" {updated.Days} days";
+			}
+
+			if (updated.Hours != 0)
+			{
+				if (updated.Hours == 1)
+					timeFromUpdate += $" 1 hour";
+				else timeFromUpdate += $" {updated.Hours} hours";
+			}
+
+			if (updated.Minutes != 0)
+			{
+				if (updated.Minutes == 1)
+					timeFromUpdate += $" 1 minute";
+				else timeFromUpdate += $" {updated.Minutes} minutes";
+			}
+
+			timeFromUpdate += " ago";	
 		}
 
-
+		return timeFromUpdate;
 	}
 
 	private void Duplicate()
