@@ -87,19 +87,11 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.PlatformId">
-@*								@foreach (var pltfrm in platforms)
+								@foreach (var pltfrm in platforms)
 								{
 									<option value="@pltfrm.Id">@pltfrm.Name</option>
-								}*@
+								}
 							<option selected>Choose a language</option>
-							<option >Choose a language1</option>
-
-							<option >Choose a language2</option>
-
-								<option >Choose a language3</option>
-
-								<option >Choose a language4</option>
-
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task platform for task</div>
 						</div>
