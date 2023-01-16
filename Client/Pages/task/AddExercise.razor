@@ -57,11 +57,11 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.CategoryId">
+								<option value="" selected>Choose a category</option>
 								@foreach (var cat in categories)
 								{
 									<option value="@cat.Id">@cat.Name</option>
 								}
-								<option selected>Choose a category</option>
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task category</div>
 						</div>
@@ -72,11 +72,11 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.LangId">
+								<option value="" selected>Choose a language</option>
 								@foreach (var lang in langs)
 								{
 									<option value="@lang.Id">@lang.Name</option>
 								}
-								<option selected>Choose a language</option>
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task language</div>
 						</div>
@@ -87,11 +87,11 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.PlatformId">
+								<option value="" selected>Choose a platform</option>
 								@foreach (var pltfrm in platforms)
 								{
 									<option value="@pltfrm.Id">@pltfrm.Name</option>
 								}
-							<option selected>Choose a language</option>
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task platform for task</div>
 						</div>
