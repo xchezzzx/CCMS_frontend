@@ -6,8 +6,8 @@ namespace BlazorWeb.Interfaces
 	{
 		Task<List<TeamDT>> GetAllTeamsAsync();
 		Task<TeamDT> GetTeamByIdAsync(int id);
-		Task AddTeam(TeamDT TeamDT);
-		Task UpdateTeam(int id);
-		Task DeleteTeam(int id);
+		Task<string> AddTeamAsync(TeamDT TeamDT);
+		Task UpdateTeamAsync(int id);
+		Task DeleteTeamAsync(int id);
 	}
 }

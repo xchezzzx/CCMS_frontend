@@ -1,0 +1,281 @@
+﻿@page "/catalogues"
+@attribute [Authorize]
+
+@inject ICatalogueService CatalogueService
+
+<PageTitle>Catalogues page</PageTitle>
+
+<div class="row">
+
+	<div class="col-8 text-center">
+		<h1>Catalogues</h1>
+	</div>
+
+	<div class="col-4">
+		<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+			<button class="btn btn-secondary" @onclick="Toggle">
+				<span class="oi oi-grid-three-up"></span>
+				<span>&nbsp;@ToggleCaption</span>
+			</button>
+
+			<button class="btn btn-success" @onclick="fetchData">
+				<span class="oi oi-loop-circular" aria-hidden="true"></span>
+				<span>&nbsp;Refresh</span>
+			</button>
+
+			<a class="btn btn-primary"
+			   href="/catalogues/add"
+			   role="button">
+				<span class="oi oi-plus" aria-hidden="true"></span>
+				<span>&nbsp;Add smth</span>
+			</a>
+		</div>
+	</div>
+
+</div>
+
+<div class="row">
+
+	<div class="col-4">
+		<div class="text-center">
+			<h2>Categories</h2>
+		</div>
+
+		@if (!_dataFetched)
+		{
+			<Loader />
+		}
+		else
+		{
+			if (categories.Count == 0)
+			{
+				<EmptyList />
+			}
+			else
+			{
+				if (_isTable)
+				{
+					<div class="table-responsive">
+						<table class="table table-striped text-center table-hover">
+							<thead class="table-light">
+								<tr>
+									<th>ID</th>
+									<th>Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (categories.Count == 0)
+								{
+									<tr>
+										<td colspan="9">
+											<div class="text-center">
+												Sorry, the list is empty
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="9">
+											<div class="text-center">
+												<img src="./images/empty.gif" height="200" />
+											</div>
+
+										</td>
+									</tr>
+								}
+								else
+								{
+									@foreach (var comp in categories)
+									{
+										<tr>
+											<td>@comp.Id</td>
+											<td>@comp.Name</td>
+										</tr>
+									}
+								}
+
+							</tbody>
+						</table>
+					</div>
+				}
+				else
+				{
+
+				}
+			}
+		}
+	</div>
+
+	<div class="col-4">
+		<div class="text-center">
+			<h2>Languages</h2>
+		</div>
+
+		@if (!_dataFetched)
+		{
+			<Loader />
+		}
+		else
+		{
+			if (categories.Count == 0)
+			{
+				<EmptyList />
+			}
+			else
+			{
+				if (_isTable)
+				{
+					<div class="table-responsive">
+						<table class="table table-striped text-center table-hover">
+							<thead class="table-light">
+								<tr>
+									<th>ID</th>
+									<th>Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (categories.Count == 0)
+								{
+									<tr>
+										<td colspan="9">
+											<div class="text-center">
+												Sorry, the list is empty
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="9">
+											<div class="text-center">
+												<img src="./images/empty.gif" height="200" />
+											</div>
+
+										</td>
+									</tr>
+								}
+								else
+								{
+									@foreach (var lang in langs)
+									{
+										<tr>
+											<td>@lang.Id</td>
+											<td>@lang.Name</td>
+										</tr>
+									}
+								}
+
+							</tbody>
+						</table>
+					</div>
+				}
+				else
+				{
+
+				}
+			}
+		}
+	</div>
+
+	<div class="col-4">
+		<div class="text-center">
+			<h2>Platforms</h2>
+		</div>
+
+		@if (!_dataFetched)
+		{
+			<Loader />
+		}
+		else
+		{
+			if (categories.Count == 0)
+			{
+				<EmptyList />
+			}
+			else
+			{
+				if (_isTable)
+				{
+					<div class="table-responsive">
+						<table class="table table-striped text-center table-hover">
+							<thead class="table-light">
+								<tr>
+									<th>ID</th>
+									<th>Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (categories.Count == 0)
+								{
+									<tr>
+										<td colspan="9">
+											<div class="text-center">
+												Sorry, the list is empty
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="9">
+											<div class="text-center">
+												<img src="./images/empty.gif" height="200" />
+											</div>
+
+										</td>
+									</tr>
+								}
+								else
+								{
+									@foreach (var pltfrm in platforms)
+									{
+										<tr>
+											<td>@pltfrm.Id</td>
+											<td>@pltfrm.Name</td>
+										</tr>
+									}
+								}
+
+							</tbody>
+						</table>
+					</div>
+				}
+				else
+				{
+					//TODO cat cards
+				}
+			}
+		}
+	</div>
+
+</div>
+
+
+
+@code {
+	private bool _dataFetched;
+	private bool _isTable;
+	private string ToggleCaption => _isTable ? "Card view" : "Table view";
+
+	List<ExerciseCategoryDT> categories = new();
+	List<ExerciseLangDT> langs = new();
+	List<ExercisePlatformDT> platforms = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		_dataFetched = false;
+		_isTable = true;
+		await fetchData();
+	}
+
+	public async Task fetchData()
+	{
+		Console.WriteLine("Fetching data...");
+
+		categories = await CatalogueService.GetAllExerciseCategoriesAsync();
+		langs = await CatalogueService.GetAllExerciseLanguagesAsync();
+		platforms = await CatalogueService.GetAllExercisePlatformsAsync();
+
+		_dataFetched = true;
+	}
+
+	private void Toggle()
+	{
+		_isTable = !_isTable;
+	}
+}

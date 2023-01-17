@@ -1,7 +1,9 @@
 ﻿@page "/teams/add"
 @attribute [Authorize]
 
-@if (!flag)
+@inject ITeamService TeamService
+
+@if (!dataSent)
 {
 	<div class="row mb-4">
 
@@ -90,7 +92,10 @@ else
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				...
+				@if (messageFromServer == "Success")
+				{
+					<p></p>
+				}
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -105,7 +110,7 @@ else
 	private TeamDT newTeam = new();
 
 	string messageFromServer = string.Empty;
-	bool flag = false;
+	bool dataSent = false;
 
 	protected override void OnInitialized()
 	{
@@ -114,19 +119,7 @@ else
 
 	public async Task sendNewTeam()
 	{
-		HubConnection connection = new HubConnectionBuilder()
-				.WithUrl("https://localhost:7206/teams")
-				.WithAutomaticReconnect()
-				.Build();
-
-		connection.On<string>("Add", msg =>
-		{
-			messageFromServer = msg;
-			flag = true;
-		});
-
-		await connection.StartAsync();
-		await connection.InvokeAsync("AddNewExercise", newTeam);
-		await connection.DisposeAsync();
+		messageFromServer = await TeamService.AddTeamAsync(newTeam);
+		dataSent = true;
 	}
 }

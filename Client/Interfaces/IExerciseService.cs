@@ -2,12 +2,12 @@
 
 namespace BlazorWeb.Interfaces
 {
-	public interface IExerciseInterface
+	public interface IExerciseService
 	{
 		Task<List<ExerciseDT>> GetAllExercisesAsync();
 		Task<ExerciseDT> GetExerciseByIdAsync(int id);
-		Task AddExercise(ExerciseDT ExerciseDT);
-		Task UpdateExercise(ExerciseDT ExerciseDT);
-		Task DeleteExercise(ExerciseDT ExerciseDT);
+		Task<string> AddExercise(ExerciseDT exerciseDT);
+		Task UpdateExercise(ExerciseDT exerciseDT);
+		Task DeleteExercise(ExerciseDT exerciseDT);
 	}
 }

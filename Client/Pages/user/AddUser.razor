@@ -80,7 +80,7 @@
 					<label for="password" class="col-sm-3 col-form-label">Role</label>
 					<div class="col-sm-9">
 						<InputSelect class="form-select"
-									 @bind-Value="_newUserRole">
+									 @bind-Value="newUser.RoleId">
 							<option selected>Choose a role</option>
 							@foreach (var role in Enum.GetValues(typeof(Roles)))
 							{
@@ -142,7 +142,7 @@
 
 	private async Task sendNewUser()
 	{
-		newUser.RoleId = (int)_newUserRole;
+		newUser.Role = newUser.RoleId.ToString();
 
 		HubConnection connection = new HubConnectionBuilder()
 				.WithUrl("https://localhost:7206/users")

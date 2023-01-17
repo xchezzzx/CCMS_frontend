@@ -6,7 +6,7 @@ namespace BlazorWeb.Interfaces
     {
         Task<List<CompetitionDT>> GetAllCompetitionsAsync();
         Task<CompetitionDT> GetCompetitionByIdAsync(int id);
-        Task AddCompetitionAsync(CompetitionDT competitionDT);
+        Task<string> AddCompetitionAsync(CompetitionDT competitionDT);
         Task UpdateCompetitionAsync(CompetitionDT competitionDT);
         Task DeleteCompetitionAsync(int id);
     }

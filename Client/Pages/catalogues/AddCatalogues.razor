@@ -1,0 +1,236 @@
+﻿@page "/catalogues/add"
+@attribute [Authorize]
+
+@inject ICatalogueService CatalogueService
+
+@if (!_dataSent)
+{
+	<div class="row mb-4">
+
+		<div class="col-1 text-start">
+			<a class="btn btn-primary"
+		   href="/catalogues/"
+		   role="button">
+				<span class="oi oi-arrow-left" aria-hidden="true"></span>
+			</a>
+		</div>
+
+		<div class="col-6">
+			<h3>Adding new task category:</h3>
+		</div>
+
+	</div>
+
+	<div class="row mb-4">
+
+		<EditForm Model="@newCategory" OnValidSubmit="@sendNewCategory">
+			<div class="row">
+				<div class="col-6 offset-1">
+
+					<DataAnnotationsValidator />
+
+					<div class="row mb-4">
+						<label for="catName" class="col-sm-3 col-form-label">Name</label>
+						<div class="col-sm-9">
+							<InputText type="text"
+								   class="form-control"
+								   id="catName"
+								   placeholder="Enter category"
+								   @bind-Value="newCategory.Name" />
+						</div>
+					</div>
+
+					@*buttons*@
+					<div class="row mb-4">
+						<div class="col-sm-6 offset-3">
+							<button type="submit"
+								class="btn btn-primary"
+@*								data-bs-toggle="modal"
+								data-bs-target="#addTeam">
+
+*@								>Add category
+							</button>
+							<button type="reset" class="btn btn-danger">Clear fields</button>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-4">
+					<ValidationSummary />
+				</div>
+
+			</div>
+
+		</EditForm>
+	</div>
+
+	<div class="row mb-4">
+
+		<div class="col-6 offset-1">
+			<h3>Adding new task language:</h3>
+		</div>
+
+	</div>
+
+	<div class="row mb-4">
+
+		<EditForm Model="@newLang" OnValidSubmit="@sendNewLang">
+			<div class="row">
+				<div class="col-6 offset-1">
+
+					<DataAnnotationsValidator />
+
+					<div class="row mb-4">
+						<label for="langName" class="col-sm-3 col-form-label">Name</label>
+						<div class="col-sm-9">
+							<InputText type="text"
+								   class="form-control"
+								   id="langName"
+								   placeholder="Enter language"
+								   @bind-Value="newLang.Name" />
+						</div>
+					</div>
+	
+					@*buttons*@
+					<div class="row mb-4">
+						<div class="col-sm-6 offset-3">
+							<button type="submit"
+								class="btn btn-primary"
+								data-bs-toggle="modal"
+								data-bs-target="#addTeam">
+								Add language
+							</button>
+							<button type="reset" class="btn btn-danger">Clear fields</button>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-4">
+					<ValidationSummary />
+				</div>
+
+			</div>
+
+		</EditForm>
+	</div>
+
+	<div class="row mb-4">
+
+		<div class="col-6 offset-1">
+			<h3>Adding new task language:</h3>
+		</div>
+
+	</div>
+
+	<div class="row mb-4">
+
+		<EditForm Model="@newPlatform" OnValidSubmit="@sendNewPlatform">
+			<div class="row">
+				<div class="col-6 offset-1">
+
+					<DataAnnotationsValidator />
+
+					<div class="row mb-4">
+						<label for="platformName" class="col-sm-3 col-form-label">Name</label>
+						<div class="col-sm-9">
+							<InputText type="text"
+								   class="form-control"
+								   id="platformName"
+								   placeholder="Enter platform"
+								   @bind-Value="newPlatform.Name" />
+						</div>
+					</div>
+
+					
+
+					@*buttons*@
+					<div class="row mb-4">
+						<div class="col-sm-6 offset-3">
+							<button type="submit"
+								class="btn btn-primary"
+								data-bs-toggle="modal"
+								data-bs-target="#addTeam">
+								Add platform
+							</button>
+							<button type="reset" class="btn btn-danger">Clear fields</button>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-4">
+					<ValidationSummary />
+				</div>
+
+			</div>
+
+		</EditForm>
+	</div>
+}
+else
+{
+	<div class="row">
+		<div class="row col-6 offset-1">
+			<h3>@messageFromServer</h3>
+		</div>
+	</div>
+}
+
+@*<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				...
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+*@
+@code {
+
+	private ExerciseCategoryDT newCategory = new();
+	private ExerciseLangDT newLang = new();
+	private ExercisePlatformDT newPlatform = new();
+
+
+	string messageFromServer = string.Empty;
+	bool _dataSent = false;
+
+	protected override void OnInitialized()
+	{
+		newCategory.Name = "The Very New Category";
+		newLang.Name = "The Very New Lang";
+		newPlatform.Name = "The Very New Platform";
+
+	}
+
+	public async Task sendNewCategory()
+	{
+		messageFromServer = await CatalogueService.AddNewExerciseCategoryAsync(newCategory);
+		Console.WriteLine("CatAdded");
+		_dataSent = true;
+	}
+
+	public async Task sendNewLang()
+	{
+		messageFromServer = await CatalogueService.AddNewExerciseLanguageAsync(newLang);
+		_dataSent = true;
+	}
+
+	public async Task sendNewPlatform()
+	{
+		messageFromServer = await CatalogueService.AddNewExercisePlatformAsync(newPlatform);
+		_dataSent = true;
+	}
+}

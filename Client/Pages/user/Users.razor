@@ -1,109 +1,100 @@
 ﻿@page "/users"
 @attribute [Authorize]
 
-
-
 <PageTitle>Users page</PageTitle>
 
-<div class="row">
-	<div class="col-10 text-center align-content-center">
+<div class="row d-flex align-items-center">
+
+	<div class="col-8 text-center">
 		<h1>Users</h1>
 	</div>
-	<div class="col-2 text-end">
+
+	<div class="col-4 text-end">
+
+		<button class="btn btn-secondary" @onclick="Toggle">
+			<span class="oi oi-grid-three-up"></span>
+			<span>&nbsp;@ToggleCaption</span>
+		</button>
+
+		<button class="btn btn-success" @onclick="fetchData">
+			<span class="oi oi-loop-circular" aria-hidden="true"></span>
+			<span>&nbsp;Refresh List</span>
+		</button>
+
 		<a class="btn btn-primary"
-		   href="/users/add"
+		   href="/competitions/add"
 		   role="button">
 			<span class="oi oi-plus" aria-hidden="true"></span>
 			<span>&nbsp;Add user</span>
 		</a>
 	</div>
+
 </div>
 
 @if (!_dataFetched)
 {
-	<div class="text-center">
-		<img src="./images/loading-waiting.gif" />
-	</div>
+	<Loader />
 }
 else
 {
-
-	<div class="table-responsive">
-		<table class="table table-striped text-center table-hover">
-			<thead class="table-light">
-				<tr>
-					<th>ID</th>
-					<th>First name</th>
-					<th>Last name</th>
-					<th>E-mail</th>
-					<th>Role</th>
-					<th>Sum of points</th>
-				</tr>
-			</thead>
-
-			<tbody>
-
-				@if (users.Count == 0)
-				{
-					<tr>
-						<td colspan="6">
-							<div class="text-center">
-								Sorry, the list is empty
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="6">
-							<div class ="text-center">
-								<img src="./images/empty.gif" height="200" />
-							</div>
-
-						</td>
-					</tr>
-				}
-				else
-				{
-					@foreach (var user in users)
-					{
+	if (users.Count == 0)
+	{
+		<EmptyList />
+	}
+	else
+	{
+		if (_isTable)
+		{
+			<div class="table-responsive">
+				<table class="table table-striped text-center table-hover">
+					<thead class="table-light">
 						<tr>
-							<td>@user.Id</td>
-							<td>@user.FirstName</td>
-							<td>@user.LastName</td>
-							<td>@user.Email</td>
-							<td>@user.RoleId</td>
-							<td>@user.PointsSummary</td>
+							<th>ID</th>
+							<th>First name</th>
+							<th>Last name</th>
+							<th>E-mail</th>
+							<th>Role</th>
+							<th>Sum of points</th>
 						</tr>
+					</thead>
 
-					}
-				}
+					<tbody>
 
-			</tbody>
-		</table>
-	</div>
-
-	<div class="row">
-		<div class="col text-center">
-			<button class="btn btn-success" @onclick="fetchData">
-				<span class="oi oi-loop-circular" aria-hidden="true"></span>
-				<span>&nbsp;Refresh List</span>
-			</button>
-		</div>
-	</div>
-
+						@foreach (var user in users)
+						{
+							<tr>
+								<td>@user.Id</td>
+								<td>@user.FirstName</td>
+								<td>@user.LastName</td>
+								<td>@user.Email</td>
+								<td>@user.RoleId</td>
+								<td>@user.PointsSummary</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+		else
+		{
+			//TODO:make user card!
+		}
+	}
 }
 
 
 @code {
+	private bool _isTable;
+	private string ToggleCaption => _isTable ? "Card view" : "Table view";
+
+	private void Toggle()
+	{
+		_isTable = !_isTable;
+	}
 
 	List<UserDT> users = new List<UserDT>();
 
 	private bool _dataFetched;
-
-
-	////[Parameter]
-	////public string Message { get; set; }
-	//string messageFromServer = String.Empty;
-
 
 	protected override async Task OnInitializedAsync()
 	{

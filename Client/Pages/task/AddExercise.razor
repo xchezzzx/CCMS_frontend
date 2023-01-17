@@ -1,14 +1,17 @@
 ﻿@page "/tasks/add"
 @attribute [Authorize]
 
-@if (!flag)
+@inject IExerciseService ExerciseService
+@inject ICatalogueService CatalogueService
+
+@if (!_dataSent)
 {
 	<div class="row mb-4">
 
 		<div class="col-1 text-start">
 			<a class="btn btn-primary"
-				href="/tasks/"
-				role="button">
+		   href="/tasks/"
+		   role="button">
 				<span class="oi oi-arrow-left" aria-hidden="true"></span>
 			</a>
 		</div>
@@ -54,11 +57,11 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.CategoryId">
-								@foreach (var cat in categoryList)
+								<option value="" selected>Choose a category</option>
+								@foreach (var cat in categories)
 								{
 									<option value="@cat.Id">@cat.Name</option>
 								}
-								<option selected>Choose a category</option>
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task category</div>
 						</div>
@@ -69,11 +72,11 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.LangId">
-								@foreach (var lang in langList)
+								<option value="" selected>Choose a language</option>
+								@foreach (var lang in langs)
 								{
 									<option value="@lang.Id">@lang.Name</option>
 								}
-								<option selected>Choose a language</option>
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task language</div>
 						</div>
@@ -84,11 +87,11 @@
 						<div class="col-sm-9">
 							<InputSelect class="form-select"
 									 @bind-Value="newExercise.PlatformId">
-								@foreach (var pltfrm in platformList)
+								<option value="" selected>Choose a platform</option>
+								@foreach (var pltfrm in platforms)
 								{
 									<option value="@pltfrm.Id">@pltfrm.Name</option>
 								}
-								<option selected>Choose a language</option>
 							</InputSelect>
 							<div id="passHelp" class="form-text">Choose a task platform for task</div>
 						</div>
@@ -240,7 +243,7 @@ else
 {
 	<div class="row">
 		<div class="row col-6 offset-1">
-			<h3>@messageFromServer</h3>
+			<h3>@_messageFromServer</h3>
 		</div>
 	</div>
 }
@@ -327,87 +330,44 @@ else
 	</div>
 </div>
 *@
+
 @code {
 
 	private ExerciseDT newExercise = new();
-	private List<ExerciseCategoryDT> categoryList = new();
-	private List<ExercisePlatformDT> platformList = new();
-	private List<ExerciseLangDT> langList = new();
+
+	List<ExerciseCategoryDT> categories = new();
+	List<ExerciseLangDT> langs = new();
+	List<ExercisePlatformDT> platforms = new();
 
 	private int TimeToTimespan;
 	private int TimeToTimespanBonus;
 
+	string _messageFromServer;
+	bool _dataSent;
 
-
-	string messageFromServer = string.Empty;
-	bool flag = false;
-
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
+		_messageFromServer = string.Empty;
+		_dataSent = false;
+
 		newExercise.Name = "The Very New task";
 		TimeToTimespan = 120;
-		TimeToTimespanBonus = 60;
+		//TimeToTimespanBonus = 60;
 
+		categories = await CatalogueService.GetAllExerciseCategoriesAsync();
+		langs = await CatalogueService.GetAllExerciseLanguagesAsync();
+		platforms = await CatalogueService.GetAllExercisePlatformsAsync();
+	}
 
-		categoryList = new()
-		{
-			new ExerciseCategoryDT()
-			{
-				Id = 0,
-				Name = "Without category"
-			},
-			new ExerciseCategoryDT() {
-				Id = 1,
-				Name = "Math"
-			},
-			new ExerciseCategoryDT()
-			{
-				Id = 2,
-				Name = "Physics"
-			},
-			new ExerciseCategoryDT()
-			{
-				Id = 3,
-				Name = "Graphs"
-			}
-		};
+	public async Task sendNewTask()
+	{
+		CreateExercise();
 
-		langList = new()
-		{
-			new ExerciseLangDT()
-				{
-					Id = 0,
-					Name = "Any"
-				},
-			new ExerciseLangDT()
-			{
-				Id = 1,
-				Name = "C"
-			},
-			new ExerciseLangDT()
-			{
-				Id = 2,
-				Name = "JS/TS"
-			}
-		};
-		platformList = new()
-		{
-			new ExercisePlatformDT()
-				{
-					Id = 0,
-					Name = "Any"
-				},
-			new ExercisePlatformDT()
-			{
-				Id = 1,
-				Name = "Windows"
-			},
-			new ExercisePlatformDT()
-			{
-				Id = 2,
-				Name = "MacOS"
-			}
-		};
+		Console.WriteLine("TF: {0}", newExercise.Timeframe.ToString("c"));
+		Console.WriteLine("TFB: {0}", newExercise.BonusTimeframe?.ToString("c"));
+
+		_messageFromServer = await ExerciseService.AddExercise(newExercise);
+		_dataSent = true;
 	}
 
 	private TimeSpan CalcTime(int min)
@@ -420,26 +380,9 @@ else
 		return res;
 	}
 
-	public async Task sendNewTask()
+	private void CreateExercise()
 	{
 		newExercise.Timeframe = CalcTime(TimeToTimespan);
 		newExercise.BonusTimeframe = CalcTime(TimeToTimespanBonus);
-		Console.WriteLine("TF: {0}", newExercise.Timeframe.ToString("c"));
-		Console.WriteLine("TFB: {0}", newExercise.BonusTimeframe?.ToString("c"));
-
-		HubConnection connection = new HubConnectionBuilder()
-				.WithUrl("https://localhost:7206/exercises")
-				.WithAutomaticReconnect()
-				.Build();
-
-		connection.On<string>("Add", msg =>
-		{
-			messageFromServer = msg;
-			flag = true;
-		});
-
-		await connection.StartAsync();
-		await connection.InvokeAsync("AddNewExercise", newExercise);
-		await connection.DisposeAsync();
 	}
 }
