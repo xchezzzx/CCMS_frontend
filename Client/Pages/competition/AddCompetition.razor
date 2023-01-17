@@ -40,17 +40,18 @@
 				</div>
 
 				<div class="row mb-4">
-					<label for="compStartDate" class="col-sm-3 col-form-label">Start date</label>
+					<label for="compStartDate" class="col-sm-3 col-form-label">Start date & time</label>
 					<div class="col-sm-9">
 						<InputDate class="form-control"
 								   id="compStartDate"
-								   @bind-Value="newCompStartDate"
+								   Type="InputDateType.DateTimeLocal"
+								   @bind-Value="newCompetition.StartDateTime"
 								   ParsingErrorMessage="Must be a date" />
 						<div id="compDate" class="form-text">Enter competition start date</div>
 					</div>
 				</div>
 
-				<div class="row mb-4">
+@*				<div class="row mb-4">
 					<label for="compStartTime" class="col-sm-3 col-form-label">Start time</label>
 					<div class="col-sm-9">
 						<input type="time"
@@ -61,19 +62,20 @@
 						<div id="compTime" class="form-text">Enter competition start time</div>
 					</div>
 				</div>
-
+*@
 				<div class="row mb-4">
-					<label for="compEndDate" class="col-sm-3 col-form-label">End date</label>
+					<label for="compEndDate" class="col-sm-3 col-form-label">End date & time</label>
 					<div class="col-sm-9">
 						<InputDate class="form-control"
 								   id="compEndDate"
-								   @bind-Value="newCompEndDate"
+								   Type="InputDateType.DateTimeLocal"
+								   @bind-Value="newCompetition.EndDateTime"
 								   ParsingErrorMessage="Must be a date" />
 						<div id="compEndDate" class="form-text">Enter competition end date</div>
 					</div>
 				</div>
 
-				<div class="row mb-4">
+@*				<div class="row mb-4">
 					<label for="compEndTime" class="col-sm-3 col-form-label">End time</label>
 					<div class="col-sm-9">
 						<input type="time"
@@ -83,7 +85,7 @@
 						<div id="compEndTime" class="form-text">Enter competition start time</div>
 					</div>
 				</div>
-
+*@
 				<div class="row mb-4">
 					<label for="customRange3" class="col-sm-3 col-form-label">Concurrent tasks</label>
 					<div class="col-sm-9">
@@ -195,8 +197,9 @@
 					<thead class="table-light">
 						<tr>
 							<th>Name</th>
-							<th>Date</th>
+							<th>Start Date</th>
 							<th>Start Time</th>
+							<th>End Date</th>
 							<th>End Time</th>
 							<th>Duration</th>
 							<th>Tasks</th>
@@ -208,11 +211,11 @@
 							<td>@newCompetition.Name</td>
 							<td>@newCompetition.StartDateTime.ToLongDateString()</td>
 							<td>@newCompetition.StartDateTime.ToString("t")</td>
+							<td>@newCompetition.EndDateTime.ToLongDateString()</td>
 							<td>@newCompetition.EndDateTime.ToString("t")</td>
 							<td>@newCompetition.Duration.TotalHours hour(s)</td>
 							<td>@newCompetition.NumberConcTasks</td>
 							<td>@newCompetition.Hashtag</td>
-
 						</tr>
 					</tbody>
 				</table>
@@ -224,10 +227,10 @@
 
 @code {
 
-	DateOnly newCompStartDate;
-	DateOnly newCompEndDate;
-	TimeOnly newCompStartTime;
-	TimeOnly newCompEndTime;
+	//DateOnly newCompStartDate;
+	//DateOnly newCompEndDate;
+	//TimeOnly newCompStartTime;
+	//TimeOnly newCompEndTime;
 	//double newCompDurationInt;
 
 	//int newCompetitionDurationInt;/* = Convert.ToInt32(newCompetitionDuration.Hours());*/
@@ -251,14 +254,18 @@
 	//	messageFromServer = string.Empty;
 	//}
 
-	protected override async void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		//operators = await CompetitionService.GetAllOperatorsAsync();
+		//operators = await CompetitionService.GetAllCompetitionOperatorsAsync();
 		newCompetition.Name = "The Very New Competition";
-		newCompStartDate = DateOnly.FromDateTime(DateTime.Now);
-		newCompEndDate = DateOnly.FromDateTime(DateTime.Now);
-		newCompStartTime = new TimeOnly(10, 0);
-		newCompEndTime = new TimeOnly(18, 00);
+
+		//newCompStartDate = DateOnly.FromDateTime(DateTime.Now);
+		//newCompEndDate = DateOnly.FromDateTime(DateTime.Now);
+		//newCompStartTime = new TimeOnly(10, 0);
+		//newCompEndTime = new TimeOnly(18, 00);
+
+		newCompetition.StartDateTime = DateTime.Today;
+		newCompetition.EndDateTime = DateTime.Today;
 		//newCompDurationInt = ((newCompEndDate.ToDateTime(newCompEndTime) - newCompStartDate.ToDateTime(newCompStartTime)).TotalMinutes) / 60;
 		//newCompetitionDuration = newCompetitionEndTime - newCompetitionStartTime;
 		newCompetition.NumberConcTasks = 3;
@@ -266,20 +273,15 @@
 
 	}
 
-	public void AddNewCompetition()
-	{
-		newCompetition.StateId = CompetitionStates.Planned;
-		newCompetition.StartDateTime = newCompStartDate.ToDateTime(newCompStartTime);
-		newCompetition.EndDateTime = newCompEndDate.ToDateTime(newCompEndTime);
-		newCompetition.Duration = newCompetition.EndDateTime - newCompetition.StartDateTime;
-	}
 
 	public async Task sendNewCompetition()
 	{
 		AddNewCompetition();
 
-		var messageFromServer = await CompetitionService.AddCompetitionAsync(newCompetition);
-		await CompetitionService.AddOperatorToCompetitionAsync(OperatorToCompId);
+		var returnedComp = await CompetitionService.AddNewCompetitionAsync(newCompetition);
+		//var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(OperatorToCompId);
+		var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(3, (int)returnedComp?.Id);
+
 		dataFetched = true;
 		ChangeModal(messageFromServer);
 		//messageFromServer = string.Empty;
@@ -312,5 +314,14 @@
 			modalMessage = "Something went wrong. We're fixing it.";
 		}
 	}
+
+	private void AddNewCompetition()
+	{
+		newCompetition.Duration = newCompetition.EndDateTime - newCompetition.StartDateTime;
+		newCompetition.StateId = CompetitionStates.Planned;
+		//newCompetition.StartDateTime = newCompStartDate.ToDateTime(newCompStartTime);
+		//newCompetition.EndDateTime = newCompEndDate.ToDateTime(newCompEndTime);
+	}
+
 
 }

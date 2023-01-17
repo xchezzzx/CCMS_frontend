@@ -19,42 +19,99 @@
 
 </div>
 
+<div class="row">
+	<div class="col-8 offset-1">
 
-@if (!_teamsFetched)
-{
-	<Loader />
-}
-else
-{
-	if (teams.Count == 0)
-	{
-		<EmptyList />
-	}
-	else
-	{
-		<div class="row">
-			<div class="col-6 offset-1">
-				<div class="row mb-4">
-					<label for="compTeams" class="col-sm-3 col-form-label">Teams</label>
-					<div class="col-sm-9">
-						<select class="form-select"
-							 @bind="chosenTeam">
-							<option value="" selected>Choose teams</option>
-							@foreach (var team in teams)
+		<div class="accordion" id="accordionExample">
+
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingOne">
+					<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+						Adding teams
+					</button>
+				</h2>
+
+				<div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
+						@if (!_teamsFetched)
+						{
+							<Loader />
+						}
+						else
+						{
+							if (teams.Count == 0)
 							{
-								<option value="@team.Id">@team.Name</option>
+								<EmptyList />
 							}
-							</select>
+							else
+							{
+								<div class="row">
+									<div class="col-6 offset-1">
+										<div class="row mb-4">
+											<label for="compTeams" class="col-sm-3 col-form-label">Teams</label>
+											<div class="col-sm-9">
+												<select class="form-select"
+												@bind="chosenTeam">
+													<option value="" selected>Choose teams</option>
+													@foreach (var team in teams)
+													{
+														<option value="@team.Id">@team.Name</option>
+													}
+												</select>
 
-						<div id="passHelp" class="form-text">Choose a task platform for task</div>
+												<div id="passHelp" class="form-text">Choose teams for event</div>
 
+											</div>
+										</div>
+
+									</div>
+								</div>
+							}
+						}
+					</div>
+				</div>
+
+			</div>
+			<div class="accordion-item">
+
+				<h2 class="accordion-header" id="headingTwo">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+						Adding Tasks
+					</button>
+				</h2>
+
+				<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
+						<strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+					</div>
+				</div>
+
+			</div>
+			<div class="accordion-item">
+
+				<h2 class="accordion-header" id="headingThree">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+						Accordion Item #3
+					</button>
+				</h2>
+
+				<div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
+						<strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
 					</div>
 				</div>
 
 			</div>
 		</div>
-	}
-}
+
+
+	</div>
+</div>
+
+
+
+
+
 
 
 
