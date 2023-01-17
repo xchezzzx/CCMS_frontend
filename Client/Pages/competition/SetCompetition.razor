@@ -1,0 +1,97 @@
+﻿@page "/competition/set/{Id:int}"
+
+@inject ICompetitionService CompetitionService
+@inject ITeamService TeamService
+
+<div class="row mb-4">
+
+	<div class="col-1 text-start">
+		<a class="btn btn-primary"
+		   href="/competitions/"
+		   role="button">
+			<span class="oi oi-arrow-left" aria-hidden="true"></span>
+		</a>
+	</div>
+
+	<div class="col-6">
+		<h3>Adding teams and tasks for competition #@Id:</h3>
+	</div>
+
+</div>
+
+
+@if (!_teamsFetched)
+{
+	<Loader />
+}
+else
+{
+	if (teams.Count == 0)
+	{
+		<EmptyList />
+	}
+	else
+	{
+		<div class="row">
+			<div class="col-6 offset-1">
+				<div class="row mb-4">
+					<label for="compTeams" class="col-sm-3 col-form-label">Teams</label>
+					<div class="col-sm-9">
+						<select class="form-select"
+							 @bind="chosenTeam">
+							<option value="" selected>Choose teams</option>
+							@foreach (var team in teams)
+							{
+								<option value="@team.Id">@team.Name</option>
+							}
+							</select>
+
+						<div id="passHelp" class="form-text">Choose a task platform for task</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	}
+}
+
+
+
+
+
+
+@code {
+
+	[Parameter]
+	public int Id { get; set; }
+
+	CompetitionDT currentComp = new();
+
+	List<TeamDT> teams = new();
+	bool _teamsFetched;
+
+	int chosenTeam;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		_teamsFetched = false;
+
+		await FetchTeams();
+		//currentComp = await CompetitionService.GetCompetitionByIdAsync(Id);
+	}
+
+	private async Task FetchTeams()
+	{
+		_teamsFetched = false;
+		Console.WriteLine("begin");
+		teams = await TeamService.GetAllTeamsAsync();
+		foreach(var t in teams)
+		{
+			Console.WriteLine(t.Id + "-" + t.Name);
+		};
+		Console.WriteLine("end");
+		_teamsFetched = true;
+	}
+}

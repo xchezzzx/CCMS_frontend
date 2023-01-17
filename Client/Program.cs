@@ -15,12 +15,10 @@ builder.Services.AddSingleton<IExerciseService, ExerciseService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ICatalogueService, CatalogueService>();
 
-var app = builder.Build();
-
 builder.Services.AddOidcAuthentication(options =>
 	{
 		builder.Configuration.Bind("Auth0", options.ProviderOptions);
 		options.ProviderOptions.ResponseType = "code";
 	});
 
-await builder.Build().RunAsync();
+var app = builder.Build().RunAsync();

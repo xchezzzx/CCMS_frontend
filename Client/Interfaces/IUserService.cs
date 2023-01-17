@@ -6,8 +6,8 @@ namespace BlazorWeb.Interfaces
 	{
 		Task<List<UserDT>> GetAllUsersAsync();
 		Task<UserDT> GetUserByIdAsync(int id);
-		Task AddUser(UserDT userDT);
-		Task UpdateUser(int id);
-		Task DeleteUser(int id);
+		Task AddUserAsync(UserDT userDT);
+		Task UpdateUserAsync(int id);
+		Task DeleteUserAsync(int id);
 	}
 }

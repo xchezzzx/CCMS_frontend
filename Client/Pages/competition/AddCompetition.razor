@@ -2,6 +2,7 @@
 @attribute [Authorize]
 
 @inject ICompetitionService CompetitionService
+@inject NavigationManager navigationManager
 
 <div class="row mb-4">
 
@@ -117,11 +118,33 @@
 				</div>
 
 				<div class="row mb-4">
+					<label for="operator" class="col-sm-3 col-form-label">Operator for event</label>
+					<div class="col-sm-9">
+						<InputSelect class="form-select"
+									 aria-label="Default select example"
+									 @bind-Value="OperatorToCompId">
+							@if(operators.Count == 0)
+							{
+								<option value="" selected>Sorry, noone is available</option>
+							}
+							else
+							{
+								<option value="" selected>Choose available operator</option>
+								foreach (var oper in operators)
+								{
+									<option value="@oper.Id">@oper.FirstName @oper.LastName</option>
+								}	
+							}
+							
+						</InputSelect>
+						<div id="emailHelp" class="form-text">Choose amount of concurrent tasks</div>
+					</div>
+				</div>
+
+				<div class="row mb-4">
 					<div class="col-sm-6 offset-3">
 						<button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addingCompetition">Add competition</button>
 						<button type="reset" class="btn btn-danger">Clear fields</button>
-						<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addingCompetition">Check toggle</button>
-
 					</div>
 				</div>
 
@@ -155,13 +178,15 @@
 				   data-bs-dismiss="modal">
 					Back to competitions
 				</a>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add another</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add another competition</button>
+				<button type="button" class="btn btn-success" data-bs-dismiss="modal" @onclick="() => ButtonSetHandler()">Set the competition</button>
 			</div>
 		</div>
 	</div>
 </div>
 
 <div class="row">
+	
 	<div class="col-9">
 		@if (newCompetition != null)
 		{
@@ -184,7 +209,7 @@
 							<td>@newCompetition.StartDateTime.ToLongDateString()</td>
 							<td>@newCompetition.StartDateTime.ToString("t")</td>
 							<td>@newCompetition.EndDateTime.ToString("t")</td>
-							<td>@newCompetition.Duration.ToString("%h") hour(s)</td>
+							<td>@newCompetition.Duration.TotalHours hour(s)</td>
 							<td>@newCompetition.NumberConcTasks</td>
 							<td>@newCompetition.Hashtag</td>
 
@@ -208,30 +233,17 @@
 	//int newCompetitionDurationInt;/* = Convert.ToInt32(newCompetitionDuration.Hours());*/
 
 	CompetitionDT newCompetition = new();
+	List<UserDT> operators = new();
 
-	string messageFromServer = string.Empty;
+	int CompID;
+
+	int OperatorToCompId;
+
+	//string messageFromServer = string.Empty;
 	bool dataFetched = false;
 	string modalMessage = string.Empty;
 	string modalTitle = string.Empty;
 
-	private void ChangeModal()
-	{
-		@if (messageFromServer == "success")
-		{
-			modalTitle = "Hooray!";
-			modalMessage = "Competition added sucesfully.";
-		}
-		else if (messageFromServer == "failed")
-		{
-			modalTitle = "Oops...";
-			modalMessage = "Competition added failed.Please, try again.";
-		}
-		else
-		{
-			modalTitle = "Oops...";
-			modalMessage = "Something went wrong. We're fixing it.";
-		}
-	}
 
 	//private void ToggleDataFetched()
 	//{
@@ -239,10 +251,9 @@
 	//	messageFromServer = string.Empty;
 	//}
 
-
-
-	protected override void OnInitialized()
+	protected override async void OnInitialized()
 	{
+		//operators = await CompetitionService.GetAllOperatorsAsync();
 		newCompetition.Name = "The Very New Competition";
 		newCompStartDate = DateOnly.FromDateTime(DateTime.Now);
 		newCompEndDate = DateOnly.FromDateTime(DateTime.Now);
@@ -267,9 +278,39 @@
 	{
 		AddNewCompetition();
 
-		messageFromServer = await CompetitionService.AddCompetitionAsync(newCompetition);
+		var messageFromServer = await CompetitionService.AddCompetitionAsync(newCompetition);
+		await CompetitionService.AddOperatorToCompetitionAsync(OperatorToCompId);
 		dataFetched = true;
-		ChangeModal();
-		messageFromServer = string.Empty;
+		ChangeModal(messageFromServer);
+		//messageFromServer = string.Empty;
+
+		//TODO change it to result number after adding
+		CompID = 42;
 	}
+
+	private void ButtonSetHandler()
+	{
+		navigationManager
+				.NavigateTo($"/competition/set/{CompID}");
+	}
+
+	private void ChangeModal(string msg)
+	{
+		if (msg == "success")
+		{
+			modalTitle = "Hooray!";
+			modalMessage = "Competition added sucesfully. Do you wan to add teams and tasks?";
+		}
+		else if (msg == "failed")
+		{
+			modalTitle = "Oops...";
+			modalMessage = "Competition added failed.Please, try again.";
+		}
+		else
+		{
+			modalTitle = "Oops...";
+			modalMessage = "Something went wrong. We're fixing it.";
+		}
+	}
+
 }

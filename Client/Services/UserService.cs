@@ -12,12 +12,12 @@ namespace BlazorWeb.Services
 		private UserDT getUser { get; set; }
 		private List<UserDT> _getAllUsers { get; set; }
 
-		public async Task AddUser(UserDT userDT)
+		public async Task AddUserAsync(UserDT userDT)
 		{
 			throw new NotImplementedException();
 		}
 
-		public async Task DeleteUser(int id)
+		public async Task DeleteUserAsync(int id)
 		{
 			throw new NotImplementedException();
 		}
@@ -44,7 +44,7 @@ namespace BlazorWeb.Services
 			throw new NotImplementedException();
 		}
 
-		public async Task UpdateUser(int id)
+		public async Task UpdateUserAsync(int id)
 		{
 			throw new NotImplementedException();
 		}
