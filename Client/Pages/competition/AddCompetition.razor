@@ -124,19 +124,21 @@
 					<div class="col-sm-9">
 						<InputSelect class="form-select"
 									 aria-label="Default select example"
+									 DisplayName="operator"
 									 @bind-Value="OperatorToCompId">
-							@if(operators.Count == 0)
+							@if(users.Count == 0)
 							{
 								<option value="" selected>Sorry, noone is available</option>
 							}
 							else
 							{
 								<option value="" selected>Choose available operator</option>
-								foreach (var oper in operators)
+								foreach (var user in users)
 								{
-									<option value="@oper.Id">@oper.FirstName @oper.LastName</option>
+									<option value="@user.Id">@user.FirstName @user.LastName</option>
 								}	
 							}
+									<option value="3">Test User #3</option>
 							
 						</InputSelect>
 						<div id="emailHelp" class="form-text">Choose amount of concurrent tasks</div>
@@ -153,7 +155,7 @@
 			</div>
 
 			<div class="col-4">
-				<ValidationSummary />
+				<Microsoft.AspNetCore.Components.Forms.ValidationSummary />
 			</div>
 
 		</div>
@@ -171,7 +173,14 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				@modalMessage
+				@if (CompID != 0)
+				{
+					@modalMessage
+				}
+				else
+				{
+					<Loader />
+				}
 			</div>
 			<div class="modal-footer">
 				<a class="btn btn-secondary"
@@ -180,8 +189,8 @@
 				   data-bs-dismiss="modal">
 					Back to competitions
 				</a>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add another competition</button>
-				<button type="button" class="btn btn-success" data-bs-dismiss="modal" @onclick="() => ButtonSetHandler()">Set the competition</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add another</button>
+				<button type="button" class="btn btn-success" data-bs-dismiss="modal" @onclick="() => ButtonSetHandler()">Set this</button>
 			</div>
 		</div>
 	</div>
@@ -236,7 +245,7 @@
 	//int newCompetitionDurationInt;/* = Convert.ToInt32(newCompetitionDuration.Hours());*/
 
 	CompetitionDT newCompetition = new();
-	List<UserDT> operators = new();
+	List<UserDT> users = new();
 
 	int CompID;
 
@@ -256,21 +265,20 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		//operators = await CompetitionService.GetAllCompetitionOperatorsAsync();
+		var _today = DateOnly.FromDateTime(DateTime.Today);
+		var _starttime = new TimeOnly(10, 0, 0);
+		var _endtime = new TimeOnly(18, 0, 0);
+
+		//users = await UserService.GetAllActiveUsersAsync();
 		newCompetition.Name = "The Very New Competition";
 
-		//newCompStartDate = DateOnly.FromDateTime(DateTime.Now);
-		//newCompEndDate = DateOnly.FromDateTime(DateTime.Now);
-		//newCompStartTime = new TimeOnly(10, 0);
-		//newCompEndTime = new TimeOnly(18, 00);
-
-		newCompetition.StartDateTime = DateTime.Today;
-		newCompetition.EndDateTime = DateTime.Today;
-		//newCompDurationInt = ((newCompEndDate.ToDateTime(newCompEndTime) - newCompStartDate.ToDateTime(newCompStartTime)).TotalMinutes) / 60;
-		//newCompetitionDuration = newCompetitionEndTime - newCompetitionStartTime;
+		//newCompetition.StartDateTime = DateTime.Today;
+		newCompetition.StartDateTime = _today.ToDateTime(_starttime);
+		//newCompetition.EndDateTime = DateTime.Today;
+		newCompetition.EndDateTime = _today.ToDateTime(_endtime);
+		newCompetition.Duration = newCompetition.EndDateTime - newCompetition.StartDateTime;
 		newCompetition.NumberConcTasks = 3;
 		newCompetition.Hashtag = "TheCompHashtag";
-
 	}
 
 
@@ -279,15 +287,17 @@
 		AddNewCompetition();
 
 		var returnedComp = await CompetitionService.AddNewCompetitionAsync(newCompetition);
+		CompID = (int)returnedComp?.Id;
+
 		//var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(OperatorToCompId);
-		var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(3, (int)returnedComp?.Id);
+		var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(CompID, OperatorToCompId);
 
 		dataFetched = true;
 		ChangeModal(messageFromServer);
 		//messageFromServer = string.Empty;
 
 		//TODO change it to result number after adding
-		CompID = 42;
+		//CompID = 42;
 	}
 
 	private void ButtonSetHandler()
@@ -306,7 +316,7 @@
 		else if (msg == "failed")
 		{
 			modalTitle = "Oops...";
-			modalMessage = "Competition added failed.Please, try again.";
+			modalMessage = "Competition adding failed.Please, try again.";
 		}
 		else
 		{

@@ -30,7 +30,7 @@ namespace BlazorWeb.Interfaces
 		//TEAMS
 		Task<string> AddNewTeamToCompetitionAsync(int competitionId, int teamId);
 		Task<string> RemoveTeamFromCompetitionAsync(int competitionId, int teamId);
-		Task<List<TeamDT>> GetAllCompetitionTeamsAsync();
+		Task<List<TeamDT>> GetAllCompetitionTeamsAsync(int competitionId);
 
 		//PARTICIPANTS
 		Task<List<UserDT>> GetAllCompetitionParticipantsAsync();

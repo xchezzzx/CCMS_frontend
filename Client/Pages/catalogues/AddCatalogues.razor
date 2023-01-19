@@ -1,6 +1,8 @@
 ﻿@page "/catalogues/add"
 @attribute [Authorize]
 
+@using Microsoft.AspNetCore.Components.Forms
+
 @inject ICatalogueService CatalogueService
 
 @if (!_dataSent)
@@ -57,7 +59,7 @@
 				</div>
 
 				<div class="col-4">
-					<ValidationSummary />
+					<Microsoft.AspNetCore.Components.Forms.ValidationSummary />
 				</div>
 
 			</div>
@@ -108,7 +110,7 @@
 				</div>
 
 				<div class="col-4">
-					<ValidationSummary />
+					<Microsoft.AspNetCore.Components.Forms.ValidationSummary />
 				</div>
 
 			</div>
@@ -161,7 +163,7 @@
 				</div>
 
 				<div class="col-4">
-					<ValidationSummary />
+					<Microsoft.AspNetCore.Components.Forms.ValidationSummary />
 				</div>
 
 			</div>

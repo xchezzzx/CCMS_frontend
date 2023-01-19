@@ -11,7 +11,7 @@ namespace BlazorWeb.Services
 
 		}
 
-		//COMPETITIONS - base operations
+		//COMPETITIONS - basic operations
 		public async Task<CompetitionDT> AddNewCompetitionAsync(CompetitionDT competitionDT)
 		{
 			CompetitionDT newCompetition = new();
@@ -73,10 +73,10 @@ namespace BlazorWeb.Services
 							.WithUrl("https://localhost:7206/competitions")
 							.Build();
 
-			HubConnection.On<List<CompetitionDT>>("GetAllActiveCompetitions", c => _getAllActiveCompetitions = c);
+			HubConnection.On<List<CompetitionDT>>("GetActiveCompetitions", c => _getAllActiveCompetitions = c);
 
 			await HubConnection.StartAsync();
-			await HubConnection.InvokeAsync("GetAllActiveCompetitions");
+			await HubConnection.InvokeAsync("GetActiveCompetitions");
 			await HubConnection.StopAsync();
 
 			return _getAllActiveCompetitions;
@@ -347,7 +347,7 @@ namespace BlazorWeb.Services
 			return messageFromServer;
 		}
 
-		public async Task<List<TeamDT>> GetAllCompetitionTeamsAsync()
+		public async Task<List<TeamDT>> GetAllCompetitionTeamsAsync(int competitionId)
 		{
 			List<TeamDT> _getAllCompetitionTeams = new();
 
@@ -358,7 +358,7 @@ namespace BlazorWeb.Services
 			HubConnection.On<List<TeamDT>>("GetAllCompetitionTeams", c => _getAllCompetitionTeams = c);
 
 			await HubConnection.StartAsync();
-			await HubConnection.InvokeAsync("GetAllCompetitionTeams");
+			await HubConnection.InvokeAsync("GetAllCompetitionTeams", competitionId);
 			await HubConnection.StopAsync();
 
 			return _getAllCompetitionTeams;

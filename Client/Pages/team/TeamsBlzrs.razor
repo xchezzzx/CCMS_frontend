@@ -1,0 +1,53 @@
+﻿@page "/teams/blzrs"
+
+@using Blazorise.DataGrid
+
+@inject ITeamService TeamService
+
+<DataGrid TItem="TeamDT"
+		  Data="@teamsList"
+		  @bind-SelectedRow="@selectedTeam"
+		  PageSize="20"
+		  Editable
+		  Responsive
+		  ShowPager
+		  CommandMode="DataGridCommandMode.ButtonRow">
+	<DataGridColumns>
+		<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
+		<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" Editable />
+		<DataGridColumn Field="@nameof(TeamDT.SumPoints)" Caption="Points" Editable />
+		<DataGridColumn Field="@nameof(TeamDT.CreateDate)" Caption="Created at" />
+		<DataGridColumn Field="@nameof(TeamDT.CreateUserId)" Caption="Created by" />
+		<DataGridColumn Field="@nameof(TeamDT.UpdateDate)" Caption="Updated at" />
+		<DataGridColumn Field="@nameof(TeamDT.UpdateUserId)" Caption="Updated by" />
+		<DataGridColumn Field="@nameof(TeamDT.Status)" Caption="Status" />
+
+	</DataGridColumns>
+	<ButtonRowTemplate>
+		<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+		<Button Color="Color.Primary" Disabled="(selectedTeam is null)" Clicked="context.EditCommand.Clicked">Edit</Button>
+		<Button Color="Color.Danger" Disabled="(selectedTeam is null)" Clicked="context.DeleteCommand.Clicked">Delete</Button>
+	</ButtonRowTemplate>
+</DataGrid>
+
+@code {
+
+	private List<TeamDT> teamsList;
+	private TeamDT selectedTeam;
+
+	bool _dataFetched;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_dataFetched = false;
+		await fetchData();
+		await base.OnInitializedAsync();
+	}
+
+	public async Task fetchData()
+	{
+		_dataFetched = false;
+		teamsList = await TeamService.GetAllTeamsAsync();
+		_dataFetched = true;
+	}
+}

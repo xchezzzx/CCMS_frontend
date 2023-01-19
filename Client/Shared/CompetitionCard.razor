@@ -1,6 +1,7 @@
-﻿<div class="col">
+﻿@inject ICompetitionService CompetitionService
 
-	<div class="card text-start">
+<div class="col" hidden="@HideCard">
+	<div class="card text-start h-100">
 
 		<div class="card-header">
 			<ul class="nav nav-tabs card-header-tabs" id="myTab">
@@ -18,7 +19,7 @@
 				</li>
 
 				<li class="nav-item">
-					<a href="#teams(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+					<a href="#teams(@Competition.Id)" class="nav-link" data-bs-toggle="tab" @onclick="ShowTeams">
 						<span class="oi oi-people" aria-hidden="true"></span> Teams
 					</a>
 				</li>
@@ -53,13 +54,15 @@
 							<div class="row">
 								<div class="col-6 m-0 p-0">
 									<p>
-										Date: @Competition.StartDateTime.ToLongDateString()
+										Date: @Competition.StartDateTime.ToString("dd.MM.yyy")
+										<br />
+										Day of week: @Competition.StartDateTime.DayOfWeek
 										<br />
 										Start at: @Competition.StartDateTime.ToString("t")
 										<br />
 										End at: @Competition.EndDateTime.ToString("t")
 										<br />
-
+										State: @Competition.State
 									</p>
 								</div>
 
@@ -72,9 +75,6 @@
 									<br />
 									Hashtag: <a href="https://twitter.com/search?q=@Competition.Hashtag&src=trend_click&vertical=trends" target="_blank">#@Competition.Hashtag</a>
 									<br />
-									State: @Competition.State
-									<br />
-									Color: @ColorByState
 								</div>
 
 							</div>
@@ -85,8 +85,22 @@
 				</div>
 
 				<div class="tab-pane fade" id="teams(@Competition.Id)">
-					<h5 class="card-title">Bonus task</h5>
-					<p class="card-text">Here is some example text to make up the tab's content. Replace it with your own text anytime.</p>
+					<h5 class="card-title">Teams</h5>
+					<p class="card-text">
+						@if (TeamsFetched)
+						{
+							<ul>
+								@foreach (var team in TeamsInComp)
+								{
+									<li>@team.Id</li>
+								}
+							</ul>
+						}
+						else
+						{
+							<p>Sorry, there were any teams...</p>
+						}
+					</p>
 				</div>
 
 				<div class="tab-pane fade" id="info(@Competition.Id)">
@@ -133,7 +147,9 @@
 
 				<div class="col-6 text-end mb-1">
 
-					<button class="btn btn-success" @onclick="Start">
+					<button class="btn btn-success"
+							disabled=@(IfStartBtnDisabled())
+							@onclick="Start">
 						<span class="oi oi-media-play"></span>
 						<span>&nbsp;Start</span>
 					</button>
@@ -155,19 +171,27 @@
 	</div>
 </div>
 
+
 @code {
 	[Parameter]
 	public CompetitionDT Competition { get; set; }
+
+	List<TeamDT> TeamsInComp = new();
+	bool TeamsFetched;
 
 	private TimeSpan _updated;
 
 	private string ColorByState = "text-bg-primary";
 
-	protected override async void OnInitialized()
-	{
-		ColorByState = "text-bg-primary";
+	bool HideCard;
 
+	protected override async Task OnInitializedAsync()
+	{
+		HideCard = false;
+		ColorByState = "text-bg-primary";
 		ChangeCardColorByState();
+		//Console.WriteLine(Competition.Id);
+
 	}
 
 	protected override void OnParametersSet()
@@ -207,7 +231,7 @@
 		TimeSpan updated = DateTime.Now - Competition.UpdateDate;
 		string timeFromUpdate = "Last updated";
 
-		if (updated.Days == 0 && updated.Hours == 0 && updated.Minutes <=5)
+		if (updated.Days == 0 && updated.Hours == 0 && updated.Minutes <= 5)
 			timeFromUpdate += $" just now";
 		else
 		{
@@ -232,10 +256,25 @@
 				else timeFromUpdate += $" {updated.Minutes} minutes";
 			}
 
-			timeFromUpdate += " ago";	
+			timeFromUpdate += " ago";
 		}
 
 		return timeFromUpdate;
+	}
+
+	private async void ShowTeams()
+	{
+		try
+		{
+			var task = CompetitionService.GetAllCompetitionTeamsAsync((int)Competition?.Id);
+			TeamsInComp = await task;
+			TeamsFetched = true;
+		}
+		catch
+		{
+			TeamsFetched = false;
+		}
+
 	}
 
 	private void Duplicate()
@@ -252,7 +291,9 @@
 
 	private void Delete()
 	{
-		Console.WriteLine("Deleted");
+		var msg = CompetitionService.DeleteCompetitionByIdAsync((int)Competition?.Id);
+		HideCard = true;
+		Console.WriteLine("Deletion: ", msg);
 	}
 
 	private void Expand()
@@ -260,4 +301,20 @@
 		Console.WriteLine("Expanded");
 	}
 
+	private bool IfStartBtnDisabled()
+	{
+		bool state = true;
+		switch (Competition.StateId)
+		{
+			case CompetitionStates.Ended:
+			case CompetitionStates.Dropped:
+			case CompetitionStates.Canceled:
+				state = true;
+				break;
+			case CompetitionStates.Planned:
+				state = false;
+				break;
+		}
+		return state;
+	}
 }

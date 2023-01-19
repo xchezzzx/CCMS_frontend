@@ -1,5 +1,7 @@
 ﻿@page "/competition/set/{Id:int}"
 
+@using Blazorise.DataGrid
+
 @inject ICompetitionService CompetitionService
 @inject ITeamService TeamService
 
@@ -39,7 +41,7 @@
 						}
 						else
 						{
-							if (teams.Count == 0)
+							if (teamsList.Count == 0)
 							{
 								<EmptyList />
 							}
@@ -47,25 +49,97 @@
 							{
 								<div class="row">
 									<div class="col-6 offset-1">
-										<div class="row mb-4">
-											<label for="compTeams" class="col-sm-3 col-form-label">Teams</label>
-											<div class="col-sm-9">
-												<select class="form-select"
-												@bind="chosenTeam">
-													<option value="" selected>Choose teams</option>
-													@foreach (var team in teams)
-													{
-														<option value="@team.Id">@team.Name</option>
-													}
-												</select>
 
-												<div id="passHelp" class="form-text">Choose teams for event</div>
+										<label for="compTeams" class="col-sm-3 col-form-label">Choose teams for event</label>
+										<div class="col-sm-9">
+											<select class="form-select"
+											multiple
+											size="20"
+											aria-label="multiple select"
+											bind="@selectedTeams">
+												<option value="" selected>Choose teams</option>
+												@foreach (var team in teamsList)
+												{
+													<option value="@team)">@team.Name</option>
+												}
+											</select>
 
-											</div>
+											<div id="passHelp" class="form-text">Press and hold CTRL key to select several teams</div>
 										</div>
 
+										<div class="table-responsive">
+											<table class="table table-striped text-center table-hover">
+												<thead class="table-light">
+													<tr>
+														<th>!</th>
+														<th>ID</th>
+														<th>Name</th>
+														<th>Points</th>
+													</tr>
+												</thead>
+												<tbody>
+
+													@foreach (var t in teamsList)
+													{
+														<tr>
+															<td>
+																<InputCheckbox class="form-check-input"
+																   @bind-Value:onchange="selectedTeams">
+																</InputCheckbox>
+															</td>
+															<td>@t.Id</td>
+															<td>@t.Name</td>
+															<td>@t.SumPoints</td>
+														</tr>
+													}
+
+
+												</tbody>
+											</table>
+
+
+										</div>
 									</div>
+
+									<div class="col-4 offset-1">
+										<button class="btn btn-primary">
+											Add teams
+										</button>
+									</div>
+
 								</div>
+
+
+								<DataGrid TItem="TeamDT"
+								  Data="@teamsList"
+								  @bind-SelectedRow="@selectedTeam"
+								  @bind-SelectedRows="@selectedTeams"
+								  PageSize="11"
+								  Responsive
+								  SelectionMode="DataGridSelectionMode.Multiple"
+								  ShowPager
+								  CommandMode="DataGridCommandMode.ButtonRow">
+
+									@*									<DataGridMultiSelectColumn Width="30px"></DataGridMultiSelectColumn>*@
+
+									<DataGridColumns>
+										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
+										<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" Editable />
+										<DataGridColumn Field="@nameof(TeamDT.SumPoints)" Caption="Points" Editable />
+									</DataGridColumns>
+
+									<EmptyTemplate>
+										<div class="box">
+											No teams were found!
+										</div>
+									</EmptyTemplate>
+
+									<ButtonRowTemplate>
+										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked">Submit</Button>
+									</ButtonRowTemplate>
+
+								</DataGrid>
 							}
 						}
 					</div>
@@ -108,47 +182,50 @@
 	</div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
 @code {
 
 	[Parameter]
 	public int Id { get; set; }
 
 	CompetitionDT currentComp = new();
+	private TeamDT selectedTeam;
 
-	List<TeamDT> teams = new();
+	List<TeamDT> teamsList = new();
+	List<ExerciseDT> tasks = new();
+
+	List<TeamDT> selectedTeams = new List<TeamDT>();
+
+
 	bool _teamsFetched;
-
-	int chosenTeam;
+	bool _tasksFetched;
 
 
 	protected override async Task OnInitializedAsync()
 	{
 		_teamsFetched = false;
-
 		await FetchTeams();
-		//currentComp = await CompetitionService.GetCompetitionByIdAsync(Id);
+		currentComp = await CompetitionService.GetCompetitionByIdAsync(Id);
 	}
 
 	private async Task FetchTeams()
 	{
 		_teamsFetched = false;
 		Console.WriteLine("begin");
-		teams = await TeamService.GetAllTeamsAsync();
-		foreach(var t in teams)
+		try
 		{
-			Console.WriteLine(t.Id + "-" + t.Name);
+			teamsList = await TeamService.GetAllTeamsAsync();
+			_teamsFetched = true;
+		}
+		catch (DBNullResponseException)
+		{
+			_teamsFetched = false;
+		}
+
+		foreach (var t in teamsList)
+		{
+			Console.WriteLine(t.Id + " - " + t.Name);
 		};
 		Console.WriteLine("end");
-		_teamsFetched = true;
+		Console.WriteLine(_teamsFetched);
 	}
 }
