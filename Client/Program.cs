@@ -14,11 +14,11 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddSingleton<ICompetitionService, CompetitionService>();
-builder.Services.AddSingleton<ITeamService, TeamService>();
-builder.Services.AddSingleton<IExerciseService, ExerciseService>();
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<ICatalogueService, CatalogueService>();
+builder.Services.AddScoped<ICompetitionService, CompetitionService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICatalogueService, CatalogueService>();
 
 // Auth0
 //builder.Services.AddOidcAuthentication(options =>
