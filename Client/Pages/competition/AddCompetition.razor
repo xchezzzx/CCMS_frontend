@@ -183,12 +183,7 @@
 				}
 			</div>
 			<div class="modal-footer">
-				<a class="btn btn-secondary"
-				   href="/competitions/"
-				   role="button"
-				   data-bs-dismiss="modal">
-					Back to competitions
-				</a>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="() => ButtonBackHandler()">Back to event list</button>
 				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add another</button>
 				<button type="button" class="btn btn-success" data-bs-dismiss="modal" @onclick="() => ButtonSetHandler()">Set this</button>
 			</div>
@@ -304,6 +299,12 @@
 	{
 		navigationManager
 				.NavigateTo($"/competition/set/{CompID}");
+	}
+
+	private void ButtonBackHandler()
+	{
+		navigationManager
+				.NavigateTo($"/competitions");
 	}
 
 	private void ChangeModal(string msg)

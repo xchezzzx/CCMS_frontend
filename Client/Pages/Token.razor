@@ -1,17 +1,28 @@
 ﻿@page "/token"
 
 @using System.Threading.Tasks;
+@using System.Security.Claims;
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+@inject AuthenticationStateProvider AuthProv
 
 <div>
 	@_AccessToken
+	<br />
+	@foreach (var c in cl)
+	{
+		<h1>@c.Type @c.Issuer @c.Value</h1>
+	}
 </div>
 
 @code {
 	[Inject]
 	IAccessTokenProvider TokenProvider { get; set; }
+
+	public Task<AuthenticationState> AuthTask { get; set; }
+
+	List<Claim> cl = new List<Claim>();
 
 	public string _AccessToken { get; set; }
 
@@ -24,5 +35,10 @@
 		{
 			_AccessToken = token.Value;
 		}
+
+		var claims = await AuthProv.GetAuthenticationStateAsync();
+		cl = claims.User.Claims.ToList();
+
+		
 	}
 }
