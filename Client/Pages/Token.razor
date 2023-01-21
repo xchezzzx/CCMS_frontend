@@ -1,28 +1,44 @@
 ﻿@page "/token"
 
 @using System.Threading.Tasks;
+@using System.Security.Claims;
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 <div>
-	@_AccessToken
+    @_AccessToken
+    <br />
+    @foreach (var c in cl)
+    {
+        <h1>@c.Type @c.Issuer @c.Value</h1>
+    }
 </div>
 
 @code {
-	[Inject]
-	IAccessTokenProvider TokenProvider { get; set; }
+    [Inject]
+    IAccessTokenProvider TokenProvider { get; set; }
 
-	public string _AccessToken { get; set; }
+    [Inject]
+    AuthenticationStateProvider AuthProv { get; set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		var accessTokenResult = await TokenProvider.RequestAccessToken();
-		_AccessToken = string.Empty;
+    List<Claim> cl = new List<Claim>();
 
-		if (accessTokenResult.TryGetToken(out var token))
-		{
-			_AccessToken = token.Value;
-		}
-	}
+    public string _AccessToken { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var accessTokenResult = await TokenProvider.RequestAccessToken();
+        _AccessToken = string.Empty;
+
+        if (accessTokenResult.TryGetToken(out var token))
+        {
+            _AccessToken = token.Value;
+        }
+
+        var claims = await AuthProv.GetAuthenticationStateAsync();
+        cl = claims.User.Claims.ToList();
+
+
+    }
 }
