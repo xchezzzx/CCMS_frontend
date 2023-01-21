@@ -7,5 +7,7 @@ namespace BlazorWeb.ConnectionService
 		Task<HubConnection> GetTeamHubConnectionAsync();
 		Task<HubConnection> GetExercisesHubConnectionAsync();
 		Task<HubConnection> GetCompetitionHubConnectionAsync();
+
+		Task<HubConnection> GetUserHubConnectionAsync();
 	}
 }

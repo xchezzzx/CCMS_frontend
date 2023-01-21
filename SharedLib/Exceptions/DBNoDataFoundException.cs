@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedLib.Exceptions
 {
-	internal class DBNoDataFoundException : Exception
+	public class DBNoDataFoundException : Exception
 	{
 		public DBNoDataFoundException(string message, int code) : base(message)
 		{

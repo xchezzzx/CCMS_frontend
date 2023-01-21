@@ -5,13 +5,14 @@
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components;
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+@inject AuthenticationStateProvider AuthProv
 
 <div>
     @_AccessToken
     <br />
     @foreach (var c in cl)
     {
-        <h1>@c.Type @c.Issuer @c.Value</h1>
+        <h1>@c.Type @c.Value </h1>
     }
 </div>
 
@@ -19,16 +20,23 @@
     [Inject]
     IAccessTokenProvider TokenProvider { get; set; }
 
-	public string _AccessToken { get; set; }
+    public Task<AuthenticationState> AuthTask { get; set; }
+
+    List<Claim> cl = new List<Claim>();
+
+    public string _AccessToken { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var accessTokenResult = await TokenProvider.RequestAccessToken();
         _AccessToken = string.Empty;
 
-		if (accessTokenResult.TryGetToken(out var token))
-		{
-			_AccessToken = token.Value;
-		}
-	}
+        if (accessTokenResult.TryGetToken(out var token))
+        {
+            _AccessToken = token.Value;
+        }
+
+        var claims = await AuthProv.GetAuthenticationStateAsync();
+        cl = claims.User.Claims.ToList();
+    }
 }

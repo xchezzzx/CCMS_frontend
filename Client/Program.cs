@@ -25,6 +25,7 @@ builder.Services.AddScoped<ICatalogueService, CatalogueService>();
 builder.Services.AddScoped<IConnectionService, ConnectionService>();
 
 builder.Services.AddScoped<AuthenticationState>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Auth0
 //builder.Services.AddOidcAuthentication(options =>
@@ -32,9 +33,9 @@ builder.Services.AddScoped<AuthenticationState>();
 //		builder.Configuration.Bind("Auth0", options.ProviderOptions);
 //});
 
-builder.Services
-		.AddAuth0Authentication(options =>
+builder.Services.AddAuth0Authentication(options =>
 		{
+			options.ProviderOptions.DefaultScopes.Add("email");
 			builder.Configuration.Bind("auth0", options.ProviderOptions);
 		});
 
