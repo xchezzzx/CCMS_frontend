@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -20,11 +21,16 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ICatalogueService, CatalogueService>();
 
 // Auth0
-builder.Services.AddOidcAuthentication(options =>
-	{
-		builder.Configuration.Bind("Auth0", options.ProviderOptions);
-		options.ProviderOptions.ResponseType = "code";
-	});
+//builder.Services.AddOidcAuthentication(options =>
+//	{
+//		builder.Configuration.Bind("Auth0", options.ProviderOptions);
+//});
+
+builder.Services
+		.AddAuth0Authentication(options =>
+		{
+			builder.Configuration.Bind("auth0", options.ProviderOptions);
+		});
 
 // Blazorise
 builder.Services

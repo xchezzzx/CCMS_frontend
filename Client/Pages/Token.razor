@@ -1,0 +1,28 @@
+﻿@page "/token"
+
+@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+
+<div>
+	@_AccessToken
+</div>
+
+@code {
+	[Inject]
+	IAccessTokenProvider TokenProvider { get; set; }
+
+	public string _AccessToken { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		var accessTokenResult = await TokenProvider.RequestAccessToken();
+		_AccessToken = string.Empty;
+
+		if (accessTokenResult.TryGetToken(out var token))
+		{
+			_AccessToken = token.Value;
+		}
+	}
+}

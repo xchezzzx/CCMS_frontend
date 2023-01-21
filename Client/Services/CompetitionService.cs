@@ -1,6 +1,7 @@
 ﻿using BlazorWeb.Interfaces;
 using SharedLib.DataTransferModels;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 namespace BlazorWeb.Services
 {
@@ -70,7 +71,9 @@ namespace BlazorWeb.Services
 			List<CompetitionDT> _getAllActiveCompetitions = new();
 
 			HubConnection HubConnection = new HubConnectionBuilder()
-							.WithUrl("https://localhost:7206/competitions")
+							.WithUrl("https://localhost:7206/competitions", o => {
+								o.AccessTokenProvider = () => Task.FromResult("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkFiak5GWDVxWjh4SjRXZmtreWk2aCJ9.eyJpc3MiOiJodHRwczovL2NvZGUtY29tcGV0aXRpb24uZXUuYXV0aDAuY29tLyIsInN1YiI6InBocmtOM0tISXdUUExVdHdSRldBUFdwWnVnWDhLSjJQQGNsaWVudHMiLCJhdWQiOiJodHRwczovL0NDTVNfU2VydmVyIiwiaWF0IjoxNjc0MjU3ODc1LCJleHAiOjE2NzQzNDQyNzUsImF6cCI6InBocmtOM0tISXdUUExVdHdSRldBUFdwWnVnWDhLSjJQIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOltdfQ.cPasnbLrVolTQfx5ItH3NL2x91069tlrpBq_-viqOSOO8MgRIMhDomvyE3MOxdDe7Tad6SEXoVRkqfLyMykgbgBCT16L_QyenjBE_9X2K-bAuqo2Tp80v1HUrMux-Pg0bf3vBh4Oj4x5ULY-FvZEsw6zcnVQACeYG1Qi42yI1LRm9SaPcYYdz3nGWVsVEk4TJoPAIBPmeRL2NiS2XOpdT4uTAb6Lu_9HqWOL-9nbQAxlHQcnlqcr2vJlzHUGp2s-nl_rHIGoL0Ze9EXTkb9vWpAGA54gnZ7rTzgRtE7llbJ7GpRpyA7pfCLCbmHrFX1i6n9iGSAgSG6ekQAY-QjDzA");
+							})
 							.Build();
 
 			HubConnection.On<List<CompetitionDT>>("GetActiveCompetitions", c => _getAllActiveCompetitions = c);
