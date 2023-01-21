@@ -8,6 +8,8 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using BlazorWeb.ConnectionService;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -19,6 +21,10 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICatalogueService, CatalogueService>();
+
+builder.Services.AddScoped<IConnectionService, ConnectionService>();
+
+builder.Services.AddScoped<AuthenticationState>();
 
 // Auth0
 //builder.Services.AddOidcAuthentication(options =>

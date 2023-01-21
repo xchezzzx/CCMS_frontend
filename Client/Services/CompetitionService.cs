@@ -2,6 +2,7 @@
 using SharedLib.DataTransferModels;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using BlazorWeb.ConnectionService;
 
 namespace BlazorWeb.Services
 {
@@ -9,9 +10,14 @@ namespace BlazorWeb.Services
 	{
 		IAccessTokenProvider _accessTokenProvider;
 
-		public CompetitionService(IAccessTokenProvider accessTokenProvider)
+
+		private readonly IConnectionService _connectionService;
+
+
+		public CompetitionService(IAccessTokenProvider accessTokenProvider, IConnectionService connectionService)
 		{
-			_accessTokenProvider= accessTokenProvider;
+			_accessTokenProvider = accessTokenProvider;
+			_connectionService = connectionService;
 		}
 
 		//COMPETITIONS - basic operations
@@ -19,17 +25,20 @@ namespace BlazorWeb.Services
 		{
 			CompetitionDT newCompetition = new();
 
-			HubConnection connection = new HubConnectionBuilder()
-								.WithUrl("https://localhost:7206/competitions")
-								.WithAutomaticReconnect()
-								.Build();
+			//HubConnection connection = new HubConnectionBuilder()
+			//					.WithUrl("https://localhost:7206/competitions")
+			//					.WithAutomaticReconnect()
+			//					.Build();
 
-			connection.On<CompetitionDT> (
+
+			var _connection = await _connectionService.GetCompetitionHubConnectionAsync();
+
+			_connection.On<CompetitionDT> (
 				"AddNewCompetition", c => newCompetition = c);
 
-			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewCompetition", competitionDT);
-			await connection.DisposeAsync();
+			await _connection.StartAsync();
+			await _connection.InvokeAsync("AddNewCompetition", competitionDT);
+			await _connection.StopAsync();
 
 			return newCompetition;
 		}
@@ -38,15 +47,15 @@ namespace BlazorWeb.Services
 		{
 			CompetitionDT _getCompetition = new();
 
-			HubConnection HubConnection = new HubConnectionBuilder()
-										.WithUrl("https://localhost:7206/competitions")
-										.Build();
+			//HubConnection HubConnection = new HubConnectionBuilder()
+			//							.WithUrl("https://localhost:7206/competitions")
+			//							.Build();
 
-			HubConnection.On<CompetitionDT>("GetCompetitionById", c => _getCompetition = c);
 
-			await HubConnection.StartAsync();
-			await HubConnection.InvokeAsync("GetCompetitionById", competitionId);
-			await HubConnection.StopAsync();
+			var _connection = await _connectionService.GetCompetitionHubConnectionAsync();
+			_connection.On<CompetitionDT>("GetCompetitionById", c => _getCompetition = c);
+
+			await _connection.InvokeAsync("GetCompetitionById", competitionId);
 
 			return _getCompetition;
 		}
@@ -72,7 +81,7 @@ namespace BlazorWeb.Services
 		{
 			List<CompetitionDT> _getAllActiveCompetitions = new();
 
-			var accessTokenResult = await _accessTokenProvider.RequestAccessToken();
+			/*var accessTokenResult = await _accessTokenProvider.RequestAccessToken();
 			var _AccessToken = string.Empty;
 
 			if (accessTokenResult.TryGetToken(out var token))
@@ -87,11 +96,16 @@ namespace BlazorWeb.Services
 							})
 							.Build();
 
-			HubConnection.On<List<CompetitionDT>>("GetActiveCompetitions", c => _getAllActiveCompetitions = c);
 
-			await HubConnection.StartAsync();
-			await HubConnection.InvokeAsync("GetActiveCompetitions");
-			await HubConnection.StopAsync();
+			await HubConnection.StartAsync();*/
+
+			var _connection = await _connectionService.GetCompetitionHubConnectionAsync();
+
+			_connection.On<List<CompetitionDT>>("GetActiveCompetitions", c => _getAllActiveCompetitions = c);
+
+			await _connection.StartAsync();
+			await _connection.InvokeAsync("GetActiveCompetitions");
+			await _connection.StopAsync();
 
 			return _getAllActiveCompetitions;
 		}
@@ -202,10 +216,13 @@ namespace BlazorWeb.Services
 		{
 			string messageFromServer = string.Empty;
 
-			HubConnection connection = new HubConnectionBuilder()
-							.WithUrl("https://localhost:7206/competitions")
-							.WithAutomaticReconnect()
-							.Build();
+			//HubConnection connection = new HubConnectionBuilder()
+			//				.WithUrl("https://localhost:7206/competitions")
+			//				.WithAutomaticReconnect()
+			//				.Build();
+
+
+			var connection = await _connectionService.GetCompetitionHubConnectionAsync();
 
 			connection.On<string>("AddNewOperatorToCompetition", msg =>
 			{
@@ -214,7 +231,7 @@ namespace BlazorWeb.Services
 
 			await connection.StartAsync();
 			await connection.InvokeAsync("AddNewOperatorToCompetition", competitionId, operatorId);
-			await connection.DisposeAsync();
+			await connection.StopAsync();
 
 			return messageFromServer;
 		}
