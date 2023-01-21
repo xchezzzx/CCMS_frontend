@@ -1,6 +1,6 @@
 ﻿using SharedLib.DataTransferModels;
 
-namespace BlazorWeb.Interfaces
+namespace BlazorWeb.Services.CurrentUserService
 {
     public interface ICurrentUserService
     {

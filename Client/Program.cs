@@ -1,6 +1,4 @@
 using BlazorWeb;
-using BlazorWeb.Interfaces;
-using BlazorWeb.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -8,8 +6,14 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using BlazorWeb.ConnectionService;
 using Microsoft.AspNetCore.Components.Authorization;
+using BlazorWeb.Services.ConnectionService;
+using BlazorWeb.Services.CatalogueService;
+using BlazorWeb.Services.CurrentUserService;
+using BlazorWeb.Services.ExerciseService;
+using BlazorWeb.Services.TeamService;
+using BlazorWeb.Services.UserService;
+using BlazorWeb.Services.CompetitionService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

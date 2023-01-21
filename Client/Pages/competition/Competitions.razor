@@ -1,7 +1,9 @@
 ﻿@page "/competitions"
-@attribute [Authorize]
+@attribute [Authorize(Roles = ("[\"Administrator\"], [\"Operator\"]"))]
 
 @inject ICompetitionService CompetitionService
+
+
 
 <PageTitle>Competition page</PageTitle>
 

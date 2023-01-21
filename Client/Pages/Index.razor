@@ -1,9 +1,61 @@
 ﻿@page "/"
+@inject ICurrentUserService userService
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+@if (!_dataFetched)
+{
+	<Loader />
+}
+else
+{
+	if (!_errorFlag)
+	{
+		<Error exception="@exception"/>
+	}
+	else
+	{
+		if (currentUser == null)
+		{
+			<EmptyList />
+		}
+		else
+		{
+			<Userpage User="@currentUser" />
+		}
+	}
+}
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+
+	UserDT currentUser = new();
+	bool _dataFetched;
+	bool _errorFlag;
+	Exception exception;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await FetchDataAsync();
+	}
+
+	private async Task FetchDataAsync()
+	{
+		try
+		{
+			_dataFetched = false;
+			currentUser = await userService.GetCurrentUserAsync();
+			_dataFetched = true;
+			Console.WriteLine("before success");
+			StateHasChanged();
+			Console.WriteLine("success");
+		}
+		catch (Exception ex)
+		{
+			_dataFetched = true;
+
+			_errorFlag = true;
+			exception = ex;
+		}
+	}
+}

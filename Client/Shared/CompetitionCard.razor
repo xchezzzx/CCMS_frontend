@@ -98,37 +98,42 @@
 						}
 						else
 						{
-							<p>Sorry, there were any teams...</p>
+						<p>Sorry, there were any teams...</p>
 						}
 					</p>
 				</div>
 
-				<div class="tab-pane fade" id="info(@Competition.Id)">
+				<AuthorizeView Roles="Administrator">
+					<Authorized>
+						<div class="tab-pane fade" id="info(@Competition.Id)">
 
-					<div class="row">
-						<h5 class="card-title">Service info</h5>
-					</div>
+							<div class="row">
+								<h5 class="card-title">Service info</h5>
+							</div>
 
-					<div class="row card-text">
+							<div class="row card-text">
 
-						<div class="col-6">
-							ID: @Competition.Id.
-							<br />
-							Status: @Competition.Status
+								<div class="col-6">
+									ID: @Competition.Id.
+									<br />
+									Status: @Competition.Status
+								</div>
+
+								<div class="col-6">
+									Created at @Competition.CreateDate.ToString("R")
+									<br />
+									Created by @Competition.CreateUserId
+									<br />
+									Updated at @Competition.UpdateDate.ToString("R")
+									<br />
+									Updated by @Competition.UpdateUserId
+								</div>
+
+							</div>
 						</div>
+					</Authorized>
+				</AuthorizeView>
 
-						<div class="col-6">
-							Created at @Competition.CreateDate.ToString("R")
-							<br />
-							Created by @Competition.CreateUserId
-							<br />
-							Updated at @Competition.UpdateDate.ToString("R")
-							<br />
-							Updated by @Competition.UpdateUserId
-						</div>
-
-					</div>
-				</div>
 			</div>
 		</div>
 
@@ -158,11 +163,14 @@
 						<span class="oi oi-copywriting"></span>
 						<span>&nbsp;Duplicate</span>
 					</button>
-
-					<button class="btn btn-danger" @onclick="Delete">
-						<span class="oi oi-x"></span>
-						<span>&nbsp;Delete</span>
-					</button>
+					<AuthorizeView Roles="Operator">
+						<Authorized>
+							<button class="btn btn-danger" @onclick="Delete">
+								<span class="oi oi-x"></span>
+								<span>&nbsp;Delete</span>
+							</button>
+						</Authorized>
+					</AuthorizeView>
 
 				</div>
 
@@ -309,11 +317,11 @@
 			case CompetitionStates.Ended:
 			case CompetitionStates.Dropped:
 			case CompetitionStates.Canceled:
-				state = true;
-				break;
+			state = true;
+			break;
 			case CompetitionStates.Planned:
-				state = false;
-				break;
+			state = false;
+			break;
 		}
 		return state;
 	}
