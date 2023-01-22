@@ -2,90 +2,119 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using BlazorWeb.Services.ConnectionService;
+using SharedLib.Constants.Enums;
 
 namespace BlazorWeb.Services.UserService
 {
-    public class UserService : IUserService
-    {
-        private IConnectionService _connectionService;
-        public UserService(IConnectionService connectionService)
-        {
-            _connectionService = connectionService;
-        }
+	public class UserService : IUserService
+	{
+		private IConnectionService _connectionService;
+		public UserService(IConnectionService connectionService)
+		{
+			_connectionService = connectionService;
+		}
 
-        private UserDT getUser { get; set; }
-        private List<UserDT> _getAllUsers { get; set; }
+		public async Task<UserDT> GetCurrentUserAsync(UserDT userDT)
+		{
+			UserDT currentUser = new UserDT();
+			try
+			{
+				var connection = await _connectionService.GetUserHubConnectionAsync();
 
+				connection.On<UserDT>("GetCurrentUser", c => currentUser = c);
 
-        public async Task DeleteUserAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+				await connection.InvokeAsync("GetCurrentUser", userDT);
+			}
+			catch
+			{
+				throw;
+			}
+			return currentUser;
+		}
 
-        public async Task<List<UserDT>> GetAllUsersAsync()
-        {
-            if (_getAllUsers == null)
-            {
-                HubConnection HubConnection = new HubConnectionBuilder()
-                    .WithUrl("https://localhost:7206/users")
-                    .Build();
+		public async Task<UserDT> AddNewUserAsync(UserDT userDT)
+		{
+			UserDT addUser = new();
 
-                HubConnection.On<List<UserDT>>("GetAllUsers", c => _getAllUsers = c);
+			try
+			{
+				var connection = await _connectionService.GetUserHubConnectionAsync();
 
-                await HubConnection.StartAsync();
-                await HubConnection.InvokeAsync("GetAllUsers");
-                await HubConnection.StopAsync();
-            }
-            return _getAllUsers;
-        }
+				connection.On<UserDT>("AddNewUser", c => userDT = c);
 
-        public async Task<UserDT> GetCurrentUserAsync(UserDT userDT)
-        {
-            UserDT currentUser = new UserDT();
-            try
-            {
-                var connection = await _connectionService.GetUserHubConnectionAsync();
+				await connection.StartAsync();
+				await connection.InvokeAsync("AddNewUser", userDT);
+			}
+			catch
+			{
+				throw;
+			}
 
-                connection.On<UserDT>("GetCurrentUser", c => currentUser = c);
+			return addUser;
+		}
 
-                await connection.InvokeAsync("GetCurrentUser", userDT);
+		public async Task<List<UserDT>> GetAllUsersAsync()
+		{
+			List<UserDT> _getAllUsers = new();
 
+			try
+			{
+				var connection = await _connectionService.GetUserHubConnectionAsync();
 
-            }
-            catch
-            {
-                throw;
-            }
-            return currentUser;
-        }
+				connection.On<List<UserDT>>("GetAllUsers", c => _getAllUsers = c);
 
-        public async Task<UserDT> AddNewUserAsync(UserDT userDT)
-        {
+				await connection.StartAsync();
+				await connection.InvokeAsync("GetAllUsers");
+				await connection.StopAsync();
+			}
+			catch
+			{
+				throw;
+			}
 
-            var _userHubConnection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:7206/users")
-                            .Build();
+			return _getAllUsers;
+		}
 
-            Console.WriteLine("a");
-            _userHubConnection.On<UserDT>("AddNewUser", c => userDT = c);
-            Console.WriteLine("b");
+		public async Task<List<UserDT>> GetAllActiveUsersAsync()
+		{
+			List<UserDT> _getAllUsers = new();
 
-            Console.WriteLine(_userHubConnection.State + " asddad");
+			try
+			{
+				var connection = await _connectionService.GetUserHubConnectionAsync();
 
-            await _userHubConnection.StartAsync();
-            await _userHubConnection.InvokeAsync("AddNewUser", userDT);
-            Console.WriteLine("c");
-            return userDT;
-        }
+				connection.On<List<UserDT>>("GetAllActiveUsers", c => _getAllUsers = c);
 
-        public async Task<UserDT> GetUserByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+				await connection.StartAsync();
+				await connection.InvokeAsync("GetAllActiveUsers");
+				await connection.StopAsync();
+			}
+			catch
+			{
+				throw;
+			}
 
-        public async Task UpdateUserAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-    }
+			return _getAllUsers;
+		}
+
+		public async Task UpdateUserAsync(UserDT userDT, int userUpdateId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task DeleteUserByIdAsync(int userId, int userUpdateId)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task<UserDT> GetUserByIdAsync(int id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public async Task AssignRoleToUser(int userId, Roles role, int userUpdateId)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
