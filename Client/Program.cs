@@ -43,6 +43,9 @@ builder.Services.AddAuth0Authentication(options =>
 			builder.Configuration.Bind("auth0", options.ProviderOptions);
 		});
 
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
+
 // Blazorise
 builder.Services
 	.AddBlazorise(options =>

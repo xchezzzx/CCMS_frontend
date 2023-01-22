@@ -4,6 +4,8 @@
 
 @inject ICompetitionService CompetitionService
 @inject ITeamService TeamService
+@inject IExerciseService ExerciseService
+
 
 <div class="row mb-4">
 
@@ -15,7 +17,7 @@
 		</a>
 	</div>
 
-	<div class="col-6">
+	<div class="col-8">
 		<h3>Adding teams and tasks for competition #@Id:</h3>
 	</div>
 
@@ -41,91 +43,28 @@
 						}
 						else
 						{
-							if (teamsList.Count == 0)
+							if (fetchedTeams.Count == 0)
 							{
 								<EmptyList />
 							}
 							else
 							{
-								<div class="row">
-									<div class="col-6 offset-1">
-
-										<label for="compTeams" class="col-sm-3 col-form-label">Choose teams for event</label>
-										<div class="col-sm-9">
-											<select class="form-select"
-											multiple
-											size="20"
-											aria-label="multiple select"
-											bind="@selectedTeams">
-												<option value="" selected>Choose teams</option>
-												@foreach (var team in teamsList)
-												{
-													<option value="@team)">@team.Name</option>
-												}
-											</select>
-
-											<div id="passHelp" class="form-text">Press and hold CTRL key to select several teams</div>
-										</div>
-
-										<div class="table-responsive">
-											<table class="table table-striped text-center table-hover">
-												<thead class="table-light">
-													<tr>
-														<th>!</th>
-														<th>ID</th>
-														<th>Name</th>
-														<th>Points</th>
-													</tr>
-												</thead>
-												<tbody>
-
-													@foreach (var t in teamsList)
-													{
-														<tr>
-															<td>
-																<InputCheckbox class="form-check-input"
-																   @bind-Value:onchange="selectedTeams">
-																</InputCheckbox>
-															</td>
-															<td>@t.Id</td>
-															<td>@t.Name</td>
-															<td>@t.SumPoints</td>
-														</tr>
-													}
-
-
-												</tbody>
-											</table>
-
-
-										</div>
-									</div>
-
-									<div class="col-4 offset-1">
-										<button class="btn btn-primary">
-											Add teams
-										</button>
-									</div>
-
-								</div>
-
-
 								<DataGrid TItem="TeamDT"
-								  Data="@teamsList"
+								  Data="@fetchedTeams"
 								  @bind-SelectedRow="@selectedTeam"
 								  @bind-SelectedRows="@selectedTeams"
-								  PageSize="11"
+								  PageSize="10"
 								  Responsive
 								  SelectionMode="DataGridSelectionMode.Multiple"
 								  ShowPager
 								  CommandMode="DataGridCommandMode.ButtonRow">
 
-									@*									<DataGridMultiSelectColumn Width="30px"></DataGridMultiSelectColumn>*@
+									@*<DataGridMultiSelectColumn Width="30px"></DataGridMultiSelectColumn>*@
 
 									<DataGridColumns>
-										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
-										<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" Editable />
-										<DataGridColumn Field="@nameof(TeamDT.SumPoints)" Caption="Points" Editable />
+@*										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
+*@										<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" />
+										<DataGridColumn Field="@nameof(TeamDT.SumPoints)" Caption="Points" />
 									</DataGridColumns>
 
 									<EmptyTemplate>
@@ -136,7 +75,7 @@
 
 									<ButtonRowTemplate>
 										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked">Submit</Button>
+										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked" Disabled="@(selectedTeams != null && selectedTeams.Count == 0 ? true : false)">Submit @(selectedTeams != null && selectedTeams.Count > 0 ? selectedTeams.Count : "") @(selectedTeams != null && selectedTeams.Count == 1 ? "team" : "teams")</Button>
 									</ButtonRowTemplate>
 
 								</DataGrid>
@@ -156,7 +95,53 @@
 
 				<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
 					<div class="accordion-body">
-						<strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+						@if (!_exercisesFetched)
+						{
+							<Loader />
+						}
+						else
+						{
+							if (fetchedExercises.Count == 0)
+							{
+								<EmptyList />
+							}
+							else
+							{
+								<DataGrid TItem="ExerciseDT"
+								  Data="@fetchedExercises"
+								  @bind-SelectedRow="@selectedExercise"
+								  @bind-SelectedRows="@selectedExercises"
+								  PageSize="10"
+								  Responsive
+								  SelectionMode="DataGridSelectionMode.Multiple"
+								  ShowPager
+								  CommandMode="DataGridCommandMode.ButtonRow">
+
+									<DataGridColumns>
+										<DataGridColumn Field="@nameof(ExerciseDT.Name)" Caption="Name" />
+										<DataGridColumn Field="@nameof(ExerciseDT.CategoryId)" Caption="Category" />
+										<DataGridColumn Field="@nameof(ExerciseDT.LangId)" Caption="Lang" />
+										<DataGridColumn Field="@nameof(ExerciseDT.PlatformId)" Caption="Platform" />
+										<DataGridColumn Field="@nameof(ExerciseDT.Points)" Caption="Points" />
+										<DataGridColumn Field="@nameof(ExerciseDT.Fine)" Caption="Fine" />
+										<DataGridColumn Field="@nameof(ExerciseDT.IfHasBonus)" Caption="Bonus" />
+
+									</DataGridColumns>
+
+									<EmptyTemplate>
+										<div class="box">
+											No teams were found!
+										</div>
+									</EmptyTemplate>
+
+									<ButtonRowTemplate>
+										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked" Disabled="@(selectedExercises != null && selectedExercises.Count == 0 ? true : false)">Submit @(selectedExercises != null && selectedExercises.Count > 0 ? selectedExercises.Count : "") @(selectedExercises != null && selectedExercises.Count == 1 ? "task" : "tasks")</Button>
+										</ButtonRowTemplate>
+
+									</DataGrid>
+							}
+						}
 					</div>
 				</div>
 
@@ -188,32 +173,35 @@
 	public int Id { get; set; }
 
 	CompetitionDT currentComp = new();
+
 	private TeamDT selectedTeam;
+	List<TeamDT> fetchedTeams = new();
+	List<TeamDT> selectedTeams = new();
 
-	List<TeamDT> teamsList = new();
-	List<ExerciseDT> tasks = new();
-
-	List<TeamDT> selectedTeams = new List<TeamDT>();
-
+	private ExerciseDT selectedExercise;
+	List<ExerciseDT> fetchedExercises = new();
+	List<ExerciseDT> selectedExercises = new();
 
 	bool _teamsFetched;
-	bool _tasksFetched;
+	bool _exercisesFetched;
 
 
 	protected override async Task OnInitializedAsync()
 	{
 		_teamsFetched = false;
-		await FetchTeams();
+		_exercisesFetched = false;
+		await FetchTeamsAsync();
+		await FetchExercisesAsync();
 		currentComp = await CompetitionService.GetCompetitionByIdAsync(Id);
 	}
 
-	private async Task FetchTeams()
+	private async Task FetchTeamsAsync()
 	{
 		_teamsFetched = false;
 		Console.WriteLine("begin");
 		try
 		{
-			teamsList = await TeamService.GetAllTeamsAsync();
+			fetchedTeams = await TeamService.GetAllTeamsAsync();
 			_teamsFetched = true;
 		}
 		catch (DBNullResponseException)
@@ -221,11 +209,26 @@
 			_teamsFetched = false;
 		}
 
-		foreach (var t in teamsList)
+		foreach (var t in fetchedTeams)
 		{
 			Console.WriteLine(t.Id + " - " + t.Name);
 		};
 		Console.WriteLine("end");
 		Console.WriteLine(_teamsFetched);
+	}
+
+	private async Task FetchExercisesAsync()
+	{
+		_exercisesFetched = false;
+		Console.WriteLine("begin");
+		try
+		{
+			fetchedExercises = await ExerciseService.GetAllExercisesAsync();
+			_exercisesFetched = true;
+		}
+		catch (DBNullResponseException)
+		{
+			_exercisesFetched = false;
+		}
 	}
 }

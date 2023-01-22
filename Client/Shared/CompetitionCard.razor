@@ -1,4 +1,5 @@
 ﻿@inject ICompetitionService CompetitionService
+@attribute [Authorize(Roles = ("[\"Administrator\"], [\"Operator\"]"))]
 
 <div class="col" hidden="@HideCard">
 	<div class="card text-start h-100">
@@ -24,11 +25,16 @@
 					</a>
 				</li>
 
-				<li class="nav-item">
-					<a href="#info(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
-						<span class="oi oi-wrench" aria-hidden="true"></span> Info
-					</a>
-				</li>
+				<AuthorizeView Roles=@admin>
+					<Authorized>
+						<li class="nav-item">
+							<a href="#info(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+								<span class="oi oi-wrench" aria-hidden="true"></span> Info
+							</a>
+						</li>
+					</Authorized>
+				</AuthorizeView>
+
 			</ul>
 		</div>
 
@@ -103,7 +109,7 @@
 					</p>
 				</div>
 
-				<AuthorizeView Roles="Administrator">
+				<AuthorizeView Roles=@admin>
 					<Authorized>
 						<div class="tab-pane fade" id="info(@Competition.Id)">
 
@@ -163,11 +169,20 @@
 						<span class="oi oi-copywriting"></span>
 						<span>&nbsp;Duplicate</span>
 					</button>
-					<AuthorizeView Roles="Operator">
+					<AuthorizeView Roles=@admin>
 						<Authorized>
 							<button class="btn btn-danger" @onclick="Delete">
 								<span class="oi oi-x"></span>
 								<span>&nbsp;Delete</span>
+							</button>
+						</Authorized>
+					</AuthorizeView>
+
+					<AuthorizeView Roles=@oper>
+						<Authorized>
+							<button class="btn btn-danger" @onclick="Disable">
+								<span class="oi oi-x"></span>
+								<span>&nbsp;Disable</span>
 							</button>
 						</Authorized>
 					</AuthorizeView>
@@ -186,6 +201,9 @@
 
 	List<TeamDT> TeamsInComp = new();
 	bool TeamsFetched;
+
+	string admin = "[\"Administrator\"]";
+	string oper = "[\"Operator\"]";
 
 	private TimeSpan _updated;
 
@@ -302,6 +320,11 @@
 		var msg = CompetitionService.DeleteCompetitionByIdAsync((int)Competition?.Id);
 		HideCard = true;
 		Console.WriteLine("Deletion: ", msg);
+	}
+
+	private void Disable()
+	{
+		Console.WriteLine("Disabled");
 	}
 
 	private void Expand()

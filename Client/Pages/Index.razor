@@ -9,9 +9,9 @@
 }
 else
 {
-	if (!_errorFlag)
+	if (_errorFlag)
 	{
-		<Error exception="@exception"/>
+		<Error Exception="@exception"/>
 	}
 	else
 	{
@@ -31,7 +31,7 @@ else
 
 	UserDT currentUser = new();
 	bool _dataFetched;
-	bool _errorFlag;
+	bool _errorFlag = false;
 	Exception exception;
 
 	protected override async Task OnInitializedAsync()
@@ -50,12 +50,13 @@ else
 			StateHasChanged();
 			Console.WriteLine("success");
 		}
-		catch (Exception ex)
+		catch(Exception ex)
 		{
 			_dataFetched = true;
 
 			_errorFlag = true;
 			exception = ex;
+			Console.WriteLine("EГГОГ");
 		}
 	}
 }

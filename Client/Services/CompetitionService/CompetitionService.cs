@@ -55,9 +55,11 @@ namespace BlazorWeb.Services.CompetitionService
             var _connection = await _connectionService.GetCompetitionHubConnectionAsync();
             _connection.On<CompetitionDT>("GetCompetitionById", c => _getCompetition = c);
 
+			await _connection.StartAsync();
             await _connection.InvokeAsync("GetCompetitionById", competitionId);
+			await _connection.StopAsync();
 
-            return _getCompetition;
+			return _getCompetition;
         }
 
         public async Task<List<CompetitionDT>> GetAllCompetitionsAsync()
@@ -336,6 +338,7 @@ namespace BlazorWeb.Services.CompetitionService
         }
 
         //TEAMS
+        //ADD NEW TEAM
         public async Task<string> AddNewTeamToCompetitionAsync(int competitionId, int teamId)
         {
             string messageFromServer = string.Empty;
