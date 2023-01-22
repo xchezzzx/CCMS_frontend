@@ -267,6 +267,7 @@
 	{
 		Console.WriteLine("Fetching data...");
 
+		_dataFetched = false;
 		categories = await CatalogueService.GetAllExerciseCategoriesAsync();
 		langs = await CatalogueService.GetAllExerciseLanguagesAsync();
 		platforms = await CatalogueService.GetAllExercisePlatformsAsync();

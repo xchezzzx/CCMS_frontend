@@ -116,6 +116,7 @@ else
 
 	public async Task fetchData()
 	{
+		dataFetched = false;
 		competitions = await CompetitionService.GetAllActiveCompetitionsAsync();
 		dataFetched = true;
 	}

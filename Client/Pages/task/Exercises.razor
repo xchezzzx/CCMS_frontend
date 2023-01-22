@@ -18,7 +18,7 @@
 				<span>&nbsp;@ToggleCaption</span>
 			</button>
 
-			<button class="btn btn-success" @onclick="FetchHandler">
+			<button class="btn btn-success" @onclick="async c => {await fetchData();}">
 				<span class="oi oi-loop-circular" aria-hidden="true"></span>
 				<span>&nbsp;Refresh</span>
 			</button>
@@ -218,139 +218,13 @@ else
 		_isTable = !_isTable;
 	}
 
-	//	{
-	//		new()
-	//			{
-	//				Id = 0,
-	//				Name = "Total Text Replacer",
-	//				Content = @"Write a small program that gets a root folder, two strings, and a list of extensions like this: (25 points, any language, 1 Hour)
-	//a.If you choose C#: https://learn.microsoft.com/en-us/training/modules/dotnet-files/
-	//b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
-	//	c.The program reads the content of each file in the root directory and all sub-
-	//	directories that has one of the requested extensions
-	//	d.It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//	e.If a file has changed, it creates a.bak file with the original content and saves the
-	//	changed file",
-	//				CategoryId = 1,
-	//				LangId = 1,
-	//				PlatformId = 1,
-	//				Timeframe = new TimeSpan(1, 30, 0),
-	//				Points = 42,
-	//				Fine = 0,
-	//				IfHasBonus = true,
-	//				BonusContent = @"It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//		e.If a file has changed, it creates a.bak file with the original content and saves the changed file",
-	//				BonusTimeframe = new TimeSpan(0, 30, 0),
-	//				BonusPoints = 18,
-
-	//				CreateDate = DateTime.Now,
-	//				CreateUserId = 1,
-	//				UpdateDate = DateTime.Now,
-	//				UpdateUserId = 1,
-	//				Status = EntityStatuses.Active.ToString(),
-	//				StatusId = EntityStatuses.Active
-	//			},
-	//					new()
-	//			{
-	//				Id = 1,
-	//				Name = "Total Text Replacer",
-	//				Content = @"Write a small program that gets a root folder, two strings, and a list of extensions like this: (25 points, any language, 1 Hour)
-	//a.If you choose C#: https://learn.microsoft.com/en-us/training/modules/dotnet-files/
-	//b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
-	//	c.The program reads the content of each file in the root directory and all sub-
-	//	directories that has one of the requested extensions
-	//	d.It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//	e.If a file has changed, it creates a.bak file with the original content and saves the
-	//	changed file",
-	//				CategoryId = 1,
-	//				LangId = 1,
-	//				PlatformId = 1,
-	//				Timeframe = new TimeSpan(1, 30, 0),
-	//				Points = 42,
-	//				Fine = 0,
-	//				IfHasBonus = true,
-	//				BonusContent = @"It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//		e.If a file has changed, it creates a.bak file with the original content and saves the changed file",
-	//				BonusTimeframe = new TimeSpan(0, 30, 0),
-	//				BonusPoints = 18,
-
-	//				CreateDate = DateTime.Now,
-	//				CreateUserId = 1,
-	//				UpdateDate = DateTime.Now,
-	//				UpdateUserId = 1,
-	//				Status = EntityStatuses.Active.ToString(),
-	//				StatusId = EntityStatuses.Active
-	//			},
-	//					new()
-	//			{
-	//				Id = 2,
-	//				Name = "Total Text Replacer",
-	//				Content = @"Write a small program that gets a root folder, two strings, and a list of extensions like this: (25 points, any language, 1 Hour)
-	//a.If you choose C#: https://learn.microsoft.com/en-us/training/modules/dotnet-files/
-	//b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
-	//	c.The program reads the content of each file in the root directory and all sub-
-	//	directories that has one of the requested extensions
-	//	d.It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//	e.If a file has changed, it creates a.bak file with the original content and saves the
-	//	changed file",
-	//				CategoryId = 1,
-	//				LangId = 1,
-	//				PlatformId = 1,
-	//				Timeframe = new TimeSpan(1, 30, 0),
-	//				Points = 42,
-	//				Fine = 0,
-	//				IfHasBonus = true,
-	//				BonusContent = @"It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//		e.If a file has changed, it creates a.bak file with the original content and saves the changed file",
-	//				BonusTimeframe = new TimeSpan(0, 30, 0),
-	//				BonusPoints = 18,
-
-	//				CreateDate = DateTime.Now,
-	//				CreateUserId = 1,
-	//				UpdateDate = DateTime.Now,
-	//				UpdateUserId = 1,
-	//				Status = EntityStatuses.Active.ToString(),
-	//				StatusId = EntityStatuses.Active
-	//			},
-	//					new()
-	//			{
-	//				Id = 3,
-	//				Name = "Total Text Replacer",
-	//				Content = @"Write a small program that gets a root folder, two strings, and a list of extensions like this: (25 points, any language, 1 Hour)
-	//a.If you choose C#: https://learn.microsoft.com/en-us/training/modules/dotnet-files/
-	//b.ContenRename.exe c:\dev “from” “to” .cs.csproj.sln
-	//	c.The program reads the content of each file in the root directory and all sub-
-	//	directories that has one of the requested extensions
-	//	d.It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//	e.If a file has changed, it creates a.bak file with the original content and saves the
-	//	changed file",
-	//				CategoryId = 1,
-	//				LangId = 1,
-	//				PlatformId = 1,
-	//				Timeframe = new TimeSpan(1, 30, 0),
-	//				Points = 42,
-	//				Fine = 0,
-	//				IfHasBonus = true,
-	//				BonusContent = @"It replaces the & quot; from & quot; with the &quot; to & quot; of all occurrences
-	//		e.If a file has changed, it creates a.bak file with the original content and saves the changed file",
-	//				BonusTimeframe = new TimeSpan(0, 30, 0),
-	//				BonusPoints = 18,
-
-	//				CreateDate = DateTime.Now,
-	//				CreateUserId = 1,
-	//				UpdateDate = DateTime.Now,
-	//				UpdateUserId = 1,
-	//				Status = EntityStatuses.Active.ToString(),
-	//				StatusId = EntityStatuses.Active
-	//			}
-
-	//	};
+	
 
 	protected override async Task OnInitializedAsync()
 	{
-		_dataFetched = true;
 		_isTable = false;
 
+		_dataFetched = false;
 		await fetchData();
 	}
 
@@ -358,15 +232,11 @@ else
 	{
 		//Console.WriteLine("Fetching data...");
 		_dataFetched = false;
-
+		Console.WriteLine("false");
 		exercises = await ExerciseService.GetAllExercisesAsync();
+
+		Console.WriteLine("true");
 		_dataFetched = true;
 	}
 
-	private async void FetchHandler()
-	{
-		await fetchData();
-		StateHasChanged();
-
-	}
 }

@@ -11,7 +11,6 @@ namespace BlazorWeb.Services.ExerciseService
         }
 
         private ExerciseDT _getExercise { get; set; }
-        private List<ExerciseDT> _getAllExercises { get; set; }
 
         public async Task<string> AddExercise(ExerciseDT exerciseDT)
         {
@@ -41,18 +40,18 @@ namespace BlazorWeb.Services.ExerciseService
 
         public async Task<List<ExerciseDT>> GetAllExercisesAsync()
         {
-            if (_getAllExercises == null)
-            {
-                HubConnection HubConnection = new HubConnectionBuilder()
-                    .WithUrl("https://localhost:7206/exercises")
-                    .Build();
+            List<ExerciseDT> _getAllExercises = new();
 
-                HubConnection.On<List<ExerciseDT>>("GetAllExercises", c => _getAllExercises = c);
+			HubConnection HubConnection = new HubConnectionBuilder()
+                .WithUrl("https://localhost:7206/exercises")
+                .Build();
 
-                await HubConnection.StartAsync();
-                await HubConnection.InvokeAsync("GetAllExercises");
-                await HubConnection.StopAsync();
-            }
+            HubConnection.On<List<ExerciseDT>>("GetAllExercises", c => _getAllExercises = c);
+
+            await HubConnection.StartAsync();
+            await HubConnection.InvokeAsync("GetAllExercises");
+            await HubConnection.StopAsync();
+            
             return _getAllExercises;
         }
 

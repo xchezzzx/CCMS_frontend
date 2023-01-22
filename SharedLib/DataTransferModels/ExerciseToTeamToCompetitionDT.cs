@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharedLib.DataTransferModels
 {
-	internal class ExerciseToTeamToCompetitionDT
+	public class ExerciseToTeamToCompetitionDT
 	{
 		public int? Id { get; set; }
 		public int CompetitionId { get; set; }
