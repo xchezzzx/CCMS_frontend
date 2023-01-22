@@ -237,7 +237,7 @@ namespace BlazorWeb.Services.CompetitionService
 
             return messageFromServer;
         }
-		public async Task<string> AddNewOperatorsToCompetitionAsync(int competitionId, List<UserDT> operators)
+		public async Task<string> AddNewOperatorsToCompetitionAsync(int competitionId, List<int?> operatorIds)
 		{
 			string messageFromServer = string.Empty;
 
@@ -255,7 +255,7 @@ namespace BlazorWeb.Services.CompetitionService
 			});
 
 			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewOperatorsToCompetition", competitionId, operators);
+			await connection.InvokeAsync("AddNewOperatorsToCompetition", competitionId, operatorIds);
 			await connection.StopAsync();
 
 			return messageFromServer;
@@ -322,7 +322,7 @@ namespace BlazorWeb.Services.CompetitionService
             return messageFromServer;
         }
 
-		public async Task<string> AddNewExercisesToCompetitionAsync(int competitionId, List<ExerciseDT> excercises)
+		public async Task<string> AddNewExercisesToCompetitionAsync(int competitionId, List<int?> excerciseIds)
 		{
 			string messageFromServer = string.Empty;
 
@@ -339,7 +339,7 @@ namespace BlazorWeb.Services.CompetitionService
 			});
 
 			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewExercisesToCompetition", competitionId, excercises);
+			await connection.InvokeAsync("AddNewExercisesToCompetition", competitionId, excerciseIds);
 			await connection.DisposeAsync();
 
 			return messageFromServer;
@@ -407,7 +407,7 @@ namespace BlazorWeb.Services.CompetitionService
             return messageFromServer;
         }
 
-		public async Task<string> AddNewTeamsToCompetitionAsync(int competitionId, List<TeamDT> teams)
+		public async Task<string> AddNewTeamsToCompetitionAsync(int competitionId, List<int?> teamIds)
 		{
 			string messageFromServer = string.Empty;
 
@@ -424,7 +424,7 @@ namespace BlazorWeb.Services.CompetitionService
 			});
 
 			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewTeamsToCompetition", competitionId, teams);
+			await connection.InvokeAsync("AddNewTeamsToCompetition", competitionId, teamIds);
 			await connection.DisposeAsync();
 
 			return messageFromServer;

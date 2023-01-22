@@ -1,6 +1,8 @@
 ﻿@page "/competition/set/{Id:int}"
 
 @using Blazorise.DataGrid
+@using Blazorise.Components
+@using Blazorise.Snackbar
 
 @inject ICompetitionService CompetitionService
 @inject ITeamService TeamService
@@ -20,6 +22,7 @@
 
 	<div class="col-8">
 		<h3>Adding teams and tasks for competition #@Id:</h3>
+		<h4>@msg</h4>
 	</div>
 
 </div>
@@ -79,10 +82,17 @@
 
 									<ButtonRowTemplate>
 										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked" Disabled="@(selectedTeams != null && selectedTeams.Count == 0 ? true : false)">Submit @(selectedTeams != null && selectedTeams.Count > 0 ? selectedTeams.Count : "") @(selectedTeams != null && selectedTeams.Count == 1 ? "team" : "teams")</Button>
-									</ButtonRowTemplate>
+										<Button Color="Color.Primary" Clicked="@SubmitTeamsAsync" Disabled="@(selectedTeams != null && selectedTeams.Count == 0 ? true : false)">Submit @(selectedTeams != null && selectedTeams.Count > 0 ? selectedTeams.Count : "") @(selectedTeams != null && selectedTeams.Count == 1 ? "team" : "teams")</Button>
+										</ButtonRowTemplate>
 
-								</DataGrid>
+									</DataGrid>
+
+								<Snackbar @ref="snackbarTeams" Color="SnackbarColor.Primary">
+									<SnackbarBody>
+										Single line of text directly related to the operation performed
+										<SnackbarAction Clicked="@(()=>snackbarTeams.Hide())">HIDE</SnackbarAction>
+									</SnackbarBody>
+								</Snackbar>
 							}
 						}
 					</div>
@@ -131,11 +141,11 @@
 										<DataGridColumn Field="@nameof(ExerciseDT.PlatformId)" Caption="Platform" />
 										<DataGridColumn Field="@nameof(ExerciseDT.Points)" Caption="Points" />
 										<DataGridColumn Field="@nameof(ExerciseDT.Fine)" Caption="Fine" />
-										<DataGridColumn Field="@nameof(ExerciseDT.IfHasBonus)" Caption="Bonus" >
+										<DataGridColumn Field="@nameof(ExerciseDT.IfHasBonus)" Caption="Bonus">
 											<DisplayTemplate>
 												@{
 													var bonus = (context as ExerciseDT).IfHasBonus;
-													if(bonus)
+													if (bonus)
 													{
 														@("Yes")
 													}
@@ -156,7 +166,7 @@
 
 									<ButtonRowTemplate>
 										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked" Disabled="@(selectedExercises != null && selectedExercises.Count == 0 ? true : false)">Submit @(selectedExercises != null && selectedExercises.Count > 0 ? selectedExercises.Count : "") @(selectedExercises != null && selectedExercises.Count == 1 ? "task" : "tasks")</Button>
+										<Button Color="Color.Primary" Clicked="@SubmitExcercisesAsync" Disabled="@(selectedExercises != null && selectedExercises.Count == 0 ? true : false)">Submit @(selectedExercises != null && selectedExercises.Count > 0 ? selectedExercises.Count : "") @(selectedExercises != null && selectedExercises.Count == 1 ? "task" : "tasks")</Button>
 										</ButtonRowTemplate>
 
 									</DataGrid>
@@ -257,6 +267,9 @@
 	bool _usersFetched;
 	bool _compFetched;
 
+	string msg = string.Empty;
+
+	Snackbar snackbarTeams;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -347,15 +360,28 @@
 		Console.WriteLine(_usersFetched);
 	}
 
-	private async Task<string> SubmitTeamsAsync()
+	private async Task SubmitTeamsAsync()
 	{
-		var submitTeamsMsg = await CompetitionService.AddNewTeamsToCompetitionAsync(Id, selectedTeams);
-		return submitTeamsMsg;
+		var teamsIds = selectedTeams.Select(x => x.Id).ToList();
+		var submitTeamsMsg = await CompetitionService.AddNewTeamsToCompetitionAsync(Id, teamsIds);
+		Console.WriteLine("teams sent");
+		snackbarTeams.Show();
+		msg = submitTeamsMsg;
 	}
 
-	private async Task<string> SubmitExcercisesAsync()
+	private async Task SubmitExcercisesAsync()
 	{
-		var submitExcercisesMsg = await CompetitionService.AddNewExercisesToCompetitionAsync(Id, selectedExercises);
-		return submitExcercisesMsg;
+		var exIds = selectedExercises.Select(x => x.Id).ToList();
+		var submitExcercisesMsg = await CompetitionService.AddNewExercisesToCompetitionAsync(Id, exIds);
+		Console.WriteLine("exs sent");
+		msg = submitExcercisesMsg;
+	}
+
+	private async Task SubmitOperatorsAsync()
+	{
+		var operIds = selectedUsers.Select(x => x.Id).ToList();
+		var submitOperatorsMsg = await CompetitionService.AddNewOperatorsToCompetitionAsync(Id, operIds);
+		Console.WriteLine("opers sent");
+		msg = submitOperatorsMsg;
 	}
 }
