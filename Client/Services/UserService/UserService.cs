@@ -30,10 +30,10 @@ namespace BlazorWeb.Services.UserService
                     .WithUrl("https://localhost:7206/users")
                     .Build();
 
-                HubConnection.On<List<UserDT>>("Send", c => _getAllUsers = c);
+                HubConnection.On<List<UserDT>>("GetAllUsers", c => _getAllUsers = c);
 
                 await HubConnection.StartAsync();
-                await HubConnection.InvokeAsync("SendCompetitions");
+                await HubConnection.InvokeAsync("GetAllUsers");
                 await HubConnection.StopAsync();
             }
             return _getAllUsers;

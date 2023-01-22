@@ -41,11 +41,9 @@ namespace BlazorWeb.Services.CurrentUserService
                     Console.WriteLine("cur user");
                     CurrentUser = new UserDT();
 
-                    CurrentUser.FirstName = claims.Where(c => c.Type == "given_name").First().Value != null ? claims.Where(c => c.Type == "given_name").First().Value : "Unknown";
-
-                    CurrentUser.LastName = claims.Where(c => c.Type == "family_name").First().Value != null ? claims.Where(c => c.Type == "family_name").First().Value : "Unknown";
-
-                    CurrentUser.Email = claims.Where(c => c.Type == "email").First().Value;
+					CurrentUser.FirstName = claims.Where(c => c.Type == "given_name").ToList().Count != 0 ? claims.Where(c => c.Type == "given_name").First().Value : "Unknown";
+					CurrentUser.LastName = claims.Where(c => c.Type == "family_name").ToList().Count != 0 ? claims.Where(c => c.Type == "family_name").First().Value : "Unknown";
+					CurrentUser.Email = claims.Where(c => c.Type == "email").First().Value;
 
                     if (claims.Where(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").First().Value == "[\"Administrator\"]")
                     {

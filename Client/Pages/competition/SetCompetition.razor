@@ -5,6 +5,7 @@
 @inject ICompetitionService CompetitionService
 @inject ITeamService TeamService
 @inject IExerciseService ExerciseService
+@inject IUserService UserService
 
 
 <div class="row mb-4">
@@ -24,7 +25,7 @@
 </div>
 
 <div class="row">
-	<div class="col-8 offset-1">
+	<div class="col-9 offset-1">
 
 		<div class="accordion" id="accordionExample">
 
@@ -55,15 +56,18 @@
 								  @bind-SelectedRows="@selectedTeams"
 								  PageSize="10"
 								  Responsive
+								  Filterable
 								  SelectionMode="DataGridSelectionMode.Multiple"
 								  ShowPager
-								  CommandMode="DataGridCommandMode.ButtonRow">
+								  CommandMode="DataGridCommandMode.ButtonRow"
+								  Virtualize
+								  VirtualizeOptions="@(new() { DataGridHeight = "500px"})">
 
 									@*<DataGridMultiSelectColumn Width="30px"></DataGridMultiSelectColumn>*@
 
 									<DataGridColumns>
-@*										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
-*@										<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" />
+										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
+										<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" />
 										<DataGridColumn Field="@nameof(TeamDT.SumPoints)" Caption="Points" />
 									</DataGridColumns>
 
@@ -89,7 +93,7 @@
 
 				<h2 class="accordion-header" id="headingTwo">
 					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-						Adding Tasks
+						Adding tasks
 					</button>
 				</h2>
 
@@ -113,19 +117,35 @@
 								  @bind-SelectedRows="@selectedExercises"
 								  PageSize="10"
 								  Responsive
+								  Filterable
+								  FilterMethod="DataGridFilterMethod.StartsWith"
 								  SelectionMode="DataGridSelectionMode.Multiple"
 								  ShowPager
 								  CommandMode="DataGridCommandMode.ButtonRow">
 
 									<DataGridColumns>
+										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
 										<DataGridColumn Field="@nameof(ExerciseDT.Name)" Caption="Name" />
 										<DataGridColumn Field="@nameof(ExerciseDT.CategoryId)" Caption="Category" />
 										<DataGridColumn Field="@nameof(ExerciseDT.LangId)" Caption="Lang" />
 										<DataGridColumn Field="@nameof(ExerciseDT.PlatformId)" Caption="Platform" />
 										<DataGridColumn Field="@nameof(ExerciseDT.Points)" Caption="Points" />
 										<DataGridColumn Field="@nameof(ExerciseDT.Fine)" Caption="Fine" />
-										<DataGridColumn Field="@nameof(ExerciseDT.IfHasBonus)" Caption="Bonus" />
-
+										<DataGridColumn Field="@nameof(ExerciseDT.IfHasBonus)" Caption="Bonus" >
+											<DisplayTemplate>
+												@{
+													var bonus = (context as ExerciseDT).IfHasBonus;
+													if(bonus)
+													{
+														@("Yes")
+													}
+													else
+													{
+														@("No")
+													}
+												}
+											</DisplayTemplate>
+										</DataGridColumn>
 									</DataGridColumns>
 
 									<EmptyTemplate>
@@ -150,13 +170,59 @@
 
 				<h2 class="accordion-header" id="headingThree">
 					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-						Accordion Item #3
+						Adding operators
 					</button>
 				</h2>
 
 				<div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
 					<div class="accordion-body">
-						<strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+						@if (!_usersFetched)
+						{
+							<Loader />
+						}
+						else
+						{
+							if (fetchedUsers.Count == 0)
+							{
+								<EmptyList />
+							}
+							else
+							{
+								<DataGrid TItem="UserDT"
+								  Data="@fetchedUsers"
+								  @bind-SelectedRow="@selectedUser"
+								  @bind-SelectedRows="@selectedUsers"
+								  PageSize="10"
+								  Responsive
+								  SelectionMode="DataGridSelectionMode.Multiple"
+								  ShowPager
+								  CommandMode="DataGridCommandMode.ButtonRow"
+								  Virtualize
+								  VirtualizeOptions="@(new() { DataGridHeight = "500px"})">
+
+									@*<DataGridMultiSelectColumn Width="30px"></DataGridMultiSelectColumn>*@
+
+									<DataGridColumns>
+										<DataGridColumn Field="@nameof(UserDT.Id)" Caption="#" Sortable="false" />
+										<DataGridColumn Field="@nameof(UserDT.FirstName)" Caption="First name" />
+										<DataGridColumn Field="@nameof(UserDT.LastName)" Caption="Last name" />
+									</DataGridColumns>
+
+									<EmptyTemplate>
+										<div class="box">
+											No users were found!
+										</div>
+									</EmptyTemplate>
+
+									<ButtonRowTemplate>
+										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked" Disabled="@(selectedUsers != null && selectedUsers.Count == 0 ? true : false)">Submit @(selectedUsers != null && selectedUsers.Count > 0 ? selectedUsers.Count : "") @(selectedUsers != null && selectedUsers.Count == 1 ? "user" : "users")</Button>
+										</ButtonRowTemplate>
+
+									</DataGrid>
+							}
+						}
+
 					</div>
 				</div>
 
@@ -172,7 +238,7 @@
 	[Parameter]
 	public int Id { get; set; }
 
-	CompetitionDT currentComp = new();
+	CompetitionDT currentCompetition = new();
 
 	private TeamDT selectedTeam;
 	List<TeamDT> fetchedTeams = new();
@@ -182,23 +248,52 @@
 	List<ExerciseDT> fetchedExercises = new();
 	List<ExerciseDT> selectedExercises = new();
 
+	private UserDT selectedUser;
+	List<UserDT> fetchedUsers = new();
+	List<UserDT> selectedUsers = new();
+
 	bool _teamsFetched;
 	bool _exercisesFetched;
+	bool _usersFetched;
+	bool _compFetched;
 
 
 	protected override async Task OnInitializedAsync()
 	{
 		_teamsFetched = false;
 		_exercisesFetched = false;
+		_usersFetched = false;
 		await FetchTeamsAsync();
 		await FetchExercisesAsync();
-		currentComp = await CompetitionService.GetCompetitionByIdAsync(Id);
+		//await FetchUsersAsync();
+		await FetchCurrentCompetitionAsync();
+	}
+
+	private async Task FetchCurrentCompetitionAsync()
+	{
+		_compFetched = false;
+		Console.WriteLine("comp begin");
+		try
+		{
+			currentCompetition = await CompetitionService.GetCompetitionByIdAsync(Id);
+			_compFetched = true;
+
+		}
+		catch
+		{
+			Console.WriteLine("comp failed");
+			_compFetched = false;
+		}
+
+		Console.WriteLine("comp end");
+		Console.WriteLine(_compFetched);
+
 	}
 
 	private async Task FetchTeamsAsync()
 	{
 		_teamsFetched = false;
-		Console.WriteLine("begin");
+		Console.WriteLine("teams begin");
 		try
 		{
 			fetchedTeams = await TeamService.GetAllTeamsAsync();
@@ -209,18 +304,18 @@
 			_teamsFetched = false;
 		}
 
-		foreach (var t in fetchedTeams)
-		{
-			Console.WriteLine(t.Id + " - " + t.Name);
-		};
-		Console.WriteLine("end");
+		//foreach (var t in fetchedTeams)
+		//{
+		//	Console.WriteLine(t.Id + " - " + t.Name);
+		//};
+		Console.WriteLine("teams end");
 		Console.WriteLine(_teamsFetched);
 	}
 
 	private async Task FetchExercisesAsync()
 	{
 		_exercisesFetched = false;
-		Console.WriteLine("begin");
+		Console.WriteLine("tasks begin");
 		try
 		{
 			fetchedExercises = await ExerciseService.GetAllExercisesAsync();
@@ -230,5 +325,37 @@
 		{
 			_exercisesFetched = false;
 		}
+		Console.WriteLine("tasks end");
+		Console.WriteLine(_exercisesFetched);
+
+	}
+
+	private async Task FetchUsersAsync()
+	{
+		_usersFetched = false;
+		Console.WriteLine("users begin");
+		try
+		{
+			fetchedUsers = await UserService.GetAllUsersAsync();
+			_usersFetched = true;
+		}
+		catch (DBNullResponseException)
+		{
+			_usersFetched = true;
+		}
+		Console.WriteLine("users end");
+		Console.WriteLine(_usersFetched);
+	}
+
+	private async Task<string> SubmitTeamsAsync()
+	{
+		var submitTeamsMsg = await CompetitionService.AddNewTeamsToCompetitionAsync(Id, selectedTeams);
+		return submitTeamsMsg;
+	}
+
+	private async Task<string> SubmitExcercisesAsync()
+	{
+		var submitExcercisesMsg = await CompetitionService.AddNewExercisesToCompetitionAsync(Id, selectedExercises);
+		return submitExcercisesMsg;
 	}
 }

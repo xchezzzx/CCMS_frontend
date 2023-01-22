@@ -19,17 +19,23 @@ namespace BlazorWeb.Services.CompetitionService
 
         //OPERATORS
         Task<string> AddNewOperatorToCompetitionAsync(int competitionId, int operatorId);
-        Task<string> RemoveOperatorFromCompetitionAsync(int competitionId, int operatorId);
+		Task<string> AddNewOperatorsToCompetitionAsync(int competitionId, List<UserDT> operators);
+
+		Task<string> RemoveOperatorFromCompetitionAsync(int competitionId, int operatorId);
         Task<List<UserDT>> GetAllCompetitionOperatorsAsync(int competitionId);
 
         //EXERCISES
         Task<string> AddNewExerciseToCompetitionAsync(int competitionId, int exerciseId);
-        Task<string> RemoveExerciseFromCompetitionAsync(int competitionId, int exerciseId);
+		Task<string> AddNewExercisesToCompetitionAsync(int competitionId, List<ExerciseDT> excercises);
+
+		Task<string> RemoveExerciseFromCompetitionAsync(int competitionId, int exerciseId);
         Task<List<ExerciseDT>> GetAllCompetitionExercisesAsync();
 
         //TEAMS
         Task<string> AddNewTeamToCompetitionAsync(int competitionId, int teamId);
-        Task<string> RemoveTeamFromCompetitionAsync(int competitionId, int teamId);
+		Task<string> AddNewTeamsToCompetitionAsync(int competitionId, List<TeamDT> teams);
+
+		Task<string> RemoveTeamFromCompetitionAsync(int competitionId, int teamId);
         Task<List<TeamDT>> GetAllCompetitionTeamsAsync(int competitionId);
 
         //PARTICIPANTS

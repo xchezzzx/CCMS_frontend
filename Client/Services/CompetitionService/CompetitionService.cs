@@ -237,8 +237,31 @@ namespace BlazorWeb.Services.CompetitionService
 
             return messageFromServer;
         }
+		public async Task<string> AddNewOperatorsToCompetitionAsync(int competitionId, List<UserDT> operators)
+		{
+			string messageFromServer = string.Empty;
 
-        public async Task<string> RemoveOperatorFromCompetitionAsync(int competitionId, int operatorId)
+			//HubConnection connection = new HubConnectionBuilder()
+			//				.WithUrl("https://localhost:7206/competitions")
+			//				.WithAutomaticReconnect()
+			//				.Build();
+
+
+			var connection = await _connectionService.GetCompetitionHubConnectionAsync();
+
+			connection.On<string>("AddNewOperatorsToCompetition", msg =>
+			{
+				messageFromServer = msg;
+			});
+
+			await connection.StartAsync();
+			await connection.InvokeAsync("AddNewOperatorsToCompetition", competitionId, operators);
+			await connection.StopAsync();
+
+			return messageFromServer;
+		}
+
+		public async Task<string> RemoveOperatorFromCompetitionAsync(int competitionId, int operatorId)
         {
             string messageFromServer = string.Empty;
 
@@ -299,7 +322,31 @@ namespace BlazorWeb.Services.CompetitionService
             return messageFromServer;
         }
 
-        public async Task<string> RemoveExerciseFromCompetitionAsync(int competitionId, int exerciseId)
+		public async Task<string> AddNewExercisesToCompetitionAsync(int competitionId, List<ExerciseDT> excercises)
+		{
+			string messageFromServer = string.Empty;
+
+			//HubConnection connection = new HubConnectionBuilder()
+			//				.WithUrl("https://localhost:7206/competitions")
+			//				.WithAutomaticReconnect()
+			//				.Build();
+
+			var connection = await _connectionService.GetCompetitionHubConnectionAsync();
+
+			connection.On<string>("AddNewExercisesToCompetition", msg =>
+			{
+				messageFromServer = msg;
+			});
+
+			await connection.StartAsync();
+			await connection.InvokeAsync("AddNewExercisesToCompetition", competitionId, excercises);
+			await connection.DisposeAsync();
+
+			return messageFromServer;
+		}
+
+
+		public async Task<string> RemoveExerciseFromCompetitionAsync(int competitionId, int exerciseId)
         {
             string messageFromServer = string.Empty;
 
@@ -360,7 +407,31 @@ namespace BlazorWeb.Services.CompetitionService
             return messageFromServer;
         }
 
-        public async Task<string> RemoveTeamFromCompetitionAsync(int competitionId, int teamId)
+		public async Task<string> AddNewTeamsToCompetitionAsync(int competitionId, List<TeamDT> teams)
+		{
+			string messageFromServer = string.Empty;
+
+			//HubConnection connection = new HubConnectionBuilder()
+			//				.WithUrl("https://localhost:7206/competitions")
+			//				.WithAutomaticReconnect()
+			//				.Build();
+
+			var connection = await _connectionService.GetCompetitionHubConnectionAsync();
+
+			connection.On<string>("AddNewTeamsToCompetition", msg =>
+			{
+				messageFromServer = msg;
+			});
+
+			await connection.StartAsync();
+			await connection.InvokeAsync("AddNewTeamsToCompetition", competitionId, teams);
+			await connection.DisposeAsync();
+
+			return messageFromServer;
+		}
+
+
+		public async Task<string> RemoveTeamFromCompetitionAsync(int competitionId, int teamId)
         {
             string messageFromServer = string.Empty;
 
