@@ -1,4 +1,7 @@
 ﻿@page "/users"
+
+@inject IUserService UserService
+
 @attribute [Authorize]
 
 <PageTitle>Users page</PageTitle>
@@ -55,6 +58,7 @@ else
 							<th>E-mail</th>
 							<th>Role</th>
 							<th>Sum of points</th>
+							<th>Delete</th>
 						</tr>
 					</thead>
 
@@ -69,6 +73,12 @@ else
 								<td>@user.Email</td>
 								<td>@user.RoleId</td>
 								<td>@user.PointsSummary</td>
+								<td>
+									<button class="btn btn-danger" @onclick="@(() => Delete((int)@user?.Id))">
+										<span class="oi oi-x"></span>
+										<span>&nbsp;Delete</span>
+									</button>
+								</td>
 							</tr>
 						}
 					</tbody>
@@ -77,7 +87,12 @@ else
 		}
 		else
 		{
-			//TODO:make user card!
+			<div class="row row-cols-md-2 g-4">
+				@foreach (var user in users)
+				{
+					<UserCard User="@user" />
+				}
+			</div>
 		}
 	}
 }
@@ -87,10 +102,7 @@ else
 	private bool _isTable;
 	private string ToggleCaption => _isTable ? "Card view" : "Table view";
 
-	private void Toggle()
-	{
-		_isTable = !_isTable;
-	}
+
 
 	List<UserDT> users = new List<UserDT>();
 
@@ -99,14 +111,27 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		_dataFetched = false;
+		_isTable = false;
 		await fetchData();
 	}
 
 	public async Task fetchData()
 	{
-		Console.WriteLine("Fetching data...");
+		//Console.WriteLine("Fetching data...");
 
+		_dataFetched = false;
+		users = await UserService.GetAllUsersAsync();
 		_dataFetched = true;
-		//users = await CompetitionService.GetAllCompetitionsAsync();
+	}
+
+	private async Task Delete(int id)
+	{
+		var msg = await UserService.DeleteUserByIdAsync(id);
+		Console.WriteLine("Deletion: ", msg);
+	}
+
+	private void Toggle()
+	{
+		_isTable = !_isTable;
 	}
 }

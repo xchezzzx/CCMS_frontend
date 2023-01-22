@@ -1,4 +1,4 @@
-﻿@inject ICompetitionService CompetitionService
+﻿@inject IUserService UserService
 
 @attribute [Authorize(Roles = ("[\"Administrator\"], [\"Operator\"]"))]
 
@@ -9,19 +9,13 @@
 			<ul class="nav nav-tabs card-header-tabs" id="myTab">
 
 				<li class="nav-item">
-					<a href="" class="nav-link @ColorByState disabled" data-bs-toggle="tab">
-						<span class="oi oi-bookmark" aria-hidden="true"></span>
-					</a>
-				</li>
-
-				<li class="nav-item">
-					<a href="#event(@Competition.Id)" class="nav-link active" data-bs-toggle="tab">
+					<a href="#event(@User.Id)" class="nav-link active" data-bs-toggle="tab">
 						<span class="oi oi-aperture" aria-hidden="true"></span> About
 					</a>
 				</li>
 
 				<li class="nav-item">
-					<a href="#teams(@Competition.Id)" class="nav-link" data-bs-toggle="tab" @onclick="ShowTeams">
+					<a href="#teams(@User.Id)" class="nav-link" data-bs-toggle="tab" @onclick="ShowTeams">
 						<span class="oi oi-people" aria-hidden="true"></span> Teams
 					</a>
 				</li>
@@ -29,7 +23,7 @@
 				<AuthorizeView Roles=@admin>
 					<Authorized>
 						<li class="nav-item">
-							<a href="#info(@Competition.Id)" class="nav-link" data-bs-toggle="tab">
+							<a href="#info(@User.Id)" class="nav-link" data-bs-toggle="tab">
 								<span class="oi oi-wrench" aria-hidden="true"></span> Info
 							</a>
 						</li>
@@ -42,62 +36,45 @@
 		<div class="card-body">
 			<div class="tab-content">
 
-				<div class="tab-pane fade show active" id="event(@Competition.Id)">
+				<div class="tab-pane fade show active" id="event(@User.Id)">
 
 					<div class="row">
 
 						<div class="col-4">
-							<img src="./images/HackathonLogoDef.jpg" width="200" />
+							<img src="./images/userpic.jpg" width="200" />
 						</div>
 
 						<div class="col-8">
 
 							<div class="row">
 								<div class="col m-0 p-0">
-									<h4 class="card-title font-large"><u>@Competition.Name</u></h4>
+									<h4 class="card-title font-large"><u>@User.FirstName @User.LastName</u></h4>
 								</div>
 							</div>
 
 							<div class="row">
 								<div class="col-6 m-0 p-0">
 									<p>
-										Date: @Competition.StartDateTime.ToString("dd.MM.yyy")
+										E-mail: @User.Email
 										<br />
-										Day of week: @Competition.StartDateTime.DayOfWeek
+										Role: @User.Role
 										<br />
-										Start at: @Competition.StartDateTime.ToString("t")
-										<br />
-										End at: @Competition.EndDateTime.ToString("t")
-										<br />
-										State: @Competition.State
+										Points: @User.PointsSummary
 									</p>
 								</div>
-
-								<div class="col-6 m-0 p-0">
-									Duration: @Competition.Duration.Hours hours @if (Competition.Duration.Minutes != 0)
-									{
-										@Competition.Duration.Minutes <span>minutes</span>
-									}
-
-									<br />
-									Hashtag: <a href="https://twitter.com/search?q=@Competition.Hashtag&src=trend_click&vertical=trends" target="_blank">#@Competition.Hashtag</a>
-									<br />
-								</div>
-
 							</div>
+
 						</div>
 					</div>
-
-
 				</div>
 
-				<div class="tab-pane fade" id="teams(@Competition.Id)">
+				<div class="tab-pane fade" id="teams(@User.Id)">
 					<h5 class="card-title">Teams</h5>
 					<p class="card-text">
-						@if (TeamsFetched)
+						@if (_teamsFetched)
 						{
 							<ul>
-								@foreach (var team in TeamsInComp)
+								@foreach (var team in TeamsWithUser)
 								{
 									<li>@team.Id</li>
 								}
@@ -105,14 +82,14 @@
 						}
 						else
 						{
-							<p>Sorry, there were any teams...</p>
+						<p>Sorry, there were any teams...</p>
 						}
 					</p>
 				</div>
 
 				<AuthorizeView Roles=@admin>
 					<Authorized>
-						<div class="tab-pane fade" id="info(@Competition.Id)">
+						<div class="tab-pane fade" id="info(@User.Id)">
 
 							<div class="row">
 								<h5 class="card-title">Service info</h5>
@@ -121,19 +98,19 @@
 							<div class="row card-text">
 
 								<div class="col-6">
-									ID: @Competition.Id.
+									ID: @User.Id.
 									<br />
-									Status: @Competition.Status
+									Status: @User.Status
 								</div>
 
 								<div class="col-6">
-									Created at @Competition.CreateDate.ToString("R")
+									Created at @User.CreateDate.ToString("R")
 									<br />
-									Created by @Competition.CreateUserId
+									Created by @User.CreateUserId
 									<br />
-									Updated at @Competition.UpdateDate.ToString("R")
+									Updated at @User.UpdateDate.ToString("R")
 									<br />
-									Updated by @Competition.UpdateUserId
+									Updated by @User.UpdateUserId
 								</div>
 
 							</div>
@@ -159,17 +136,6 @@
 
 				<div class="col-6 text-end mb-1">
 
-					<button class="btn btn-success"
-							disabled=@(IfStartBtnDisabled())
-							@onclick="Start">
-						<span class="oi oi-media-play"></span>
-						<span>&nbsp;Start</span>
-					</button>
-
-					<button class="btn btn-secondary" @onclick="Duplicate">
-						<span class="oi oi-copywriting"></span>
-						<span>&nbsp;Duplicate</span>
-					</button>
 					<AuthorizeView Roles=@admin>
 						<Authorized>
 							<button class="btn btn-danger" @onclick="Delete">
@@ -198,10 +164,10 @@
 
 @code {
 	[Parameter]
-	public CompetitionDT Competition { get; set; }
+	public UserDT User { get; set; }
 
-	List<TeamDT> TeamsInComp = new();
-	bool TeamsFetched;
+	List<TeamDT> TeamsWithUser = new();
+	bool _teamsFetched;
 
 	string admin = "[\"Administrator\"]";
 	string oper = "[\"Operator\"]";
@@ -216,9 +182,7 @@
 	{
 		HideCard = false;
 		ColorByState = "text-bg-primary";
-		ChangeCardColorByState();
 		//Console.WriteLine(Competition.Id);
-
 	}
 
 	protected override void OnParametersSet()
@@ -227,35 +191,35 @@
 	}
 
 
-	private void ChangeCardColorByState()
-	{
-		switch (Competition.StateId)
-		{
-			case CompetitionStates.InProgress:
-			ColorByState = "text-bg-success";
-			break;
+	//private void ChangeCardColorByState()
+	//{
+	//	switch (User.StateId)
+	//	{
+	//		case CompetitionStates.InProgress:
+	//		ColorByState = "text-bg-success";
+	//		break;
 
-			case CompetitionStates.Canceled:
-			ColorByState = "text-bg-warning";
-			break;
+	//		case CompetitionStates.Canceled:
+	//		ColorByState = "text-bg-warning";
+	//		break;
 
-			case CompetitionStates.Ended:
-			ColorByState = "text-bg-light";
-			break;
+	//		case CompetitionStates.Ended:
+	//		ColorByState = "text-bg-light";
+	//		break;
 
-			case CompetitionStates.Planned:
-			ColorByState = "text-bg-primary";
-			break;
+	//		case CompetitionStates.Planned:
+	//		ColorByState = "text-bg-primary";
+	//		break;
 
-			case CompetitionStates.Dropped:
-			ColorByState = "text-bg-dark";
-			break;
-		}
-	}
+	//		case CompetitionStates.Dropped:
+	//		ColorByState = "text-bg-dark";
+	//		break;
+	//	}
+	//}
 
 	private string LastUpdated()
 	{
-		TimeSpan updated = DateTime.Now - Competition.UpdateDate;
+		TimeSpan updated = DateTime.Now - User.UpdateDate;
 		string timeFromUpdate = "Last updated";
 
 		if (updated.Days == 0 && updated.Hours == 0 && updated.Minutes <= 5)
@@ -293,21 +257,19 @@
 	{
 		try
 		{
-			var task = CompetitionService.GetAllCompetitionTeamsAsync((int)Competition?.Id);
-			TeamsInComp = await task;
-			TeamsFetched = true;
+			//var task = CompetitionService.GetAllCompetitionTeamsAsync((int)Competition?.Id);
+			//TeamsWithUser = await task;
+			_teamsFetched = true;
 		}
 		catch
 		{
-			TeamsFetched = false;
+			_teamsFetched = false;
 		}
 
 	}
 
 	private void Duplicate()
 	{
-		ChangeCardColorByState();
-
 		Console.WriteLine("Duplicated");
 	}
 
@@ -316,9 +278,9 @@
 		Console.WriteLine("Started");
 	}
 
-	private void Delete()
+	private async Task Delete()
 	{
-		var msg = CompetitionService.DeleteCompetitionByIdAsync((int)Competition?.Id);
+		var msg = await UserService.DeleteUserByIdAsync((int)User?.Id);
 		HideCard = true;
 		Console.WriteLine("Deletion: ", msg);
 	}
@@ -331,22 +293,5 @@
 	private void Expand()
 	{
 		Console.WriteLine("Expanded");
-	}
-
-	private bool IfStartBtnDisabled()
-	{
-		bool state = true;
-		switch (Competition.StateId)
-		{
-			case CompetitionStates.Ended:
-			case CompetitionStates.Dropped:
-			case CompetitionStates.Canceled:
-			state = true;
-			break;
-			case CompetitionStates.Planned:
-			state = false;
-			break;
-		}
-		return state;
 	}
 }

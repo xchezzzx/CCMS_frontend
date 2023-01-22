@@ -241,13 +241,12 @@ namespace BlazorWeb.Services.CompetitionService
 		{
 			string messageFromServer = string.Empty;
 
-			//HubConnection connection = new HubConnectionBuilder()
-			//				.WithUrl("https://localhost:7206/competitions")
-			//				.WithAutomaticReconnect()
-			//				.Build();
+            HubConnection connection = new HubConnectionBuilder()
+                            .WithUrl("https://localhost:7206/competitions")
+                            .WithAutomaticReconnect()
+                            .Build();
 
-
-			var connection = await _connectionService.GetCompetitionHubConnectionAsync();
+            //var connection = await _connectionService.GetCompetitionHubConnectionAsync();
 
 			connection.On<string>("AddNewOperatorsToCompetition", msg =>
 			{
@@ -326,12 +325,12 @@ namespace BlazorWeb.Services.CompetitionService
 		{
 			string messageFromServer = string.Empty;
 
-			//HubConnection connection = new HubConnectionBuilder()
-			//				.WithUrl("https://localhost:7206/competitions")
-			//				.WithAutomaticReconnect()
-			//				.Build();
+            HubConnection connection = new HubConnectionBuilder()
+                            .WithUrl("https://localhost:7206/competitions")
+                            .WithAutomaticReconnect()
+                            .Build();
 
-			var connection = await _connectionService.GetCompetitionHubConnectionAsync();
+            //var connection = await _connectionService.GetCompetitionHubConnectionAsync();
 
 			connection.On<string>("AddNewExercisesToCompetition", msg =>
 			{
@@ -411,14 +410,14 @@ namespace BlazorWeb.Services.CompetitionService
 		{
 			string messageFromServer = string.Empty;
 
-			//HubConnection connection = new HubConnectionBuilder()
-			//				.WithUrl("https://localhost:7206/competitions")
-			//				.WithAutomaticReconnect()
-			//				.Build();
+            HubConnection connection = new HubConnectionBuilder()
+                            .WithUrl("https://localhost:7206/competitions")
+                            .WithAutomaticReconnect()
+                            .Build();
 
-			var connection = await _connectionService.GetCompetitionHubConnectionAsync();
+            //var connection = await _connectionService.GetCompetitionHubConnectionAsync();
 
-			connection.On<string>("AddNewTeamsToCompetition", msg =>
+            connection.On<string>("AddNewTeamsToCompetition", msg =>
 			{
 				messageFromServer = msg;
 			});

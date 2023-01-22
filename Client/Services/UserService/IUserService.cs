@@ -9,9 +9,9 @@ namespace BlazorWeb.Services.UserService
 		Task<UserDT> AddNewUserAsync(UserDT userDT);
 		Task<List<UserDT>> GetAllUsersAsync();
 		Task<List<UserDT>> GetAllActiveUsersAsync();
-		Task UpdateUserAsync(UserDT userDT, int userUpdateId);
-		Task DeleteUserByIdAsync(int userId, int userUpdateId);
+		Task<string> UpdateUserAsync(UserDT userDT);
+		Task<string> DeleteUserByIdAsync(int userId);
 		Task<UserDT> GetUserByIdAsync(int id);
-		Task AssignRoleToUser(int userId, Roles role, int userUpdateId);
+		Task<string> AssignRoleToUser(int userId, Roles role);
 	}
 }

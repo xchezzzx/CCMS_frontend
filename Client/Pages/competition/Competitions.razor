@@ -1,9 +1,8 @@
 ﻿@page "/competitions"
-@attribute [Authorize(Roles = ("[\"Administrator\"], [\"Operator\"]"))]
 
 @inject ICompetitionService CompetitionService
 
-
+@attribute [Authorize(Roles = ("[\"Administrator\"], [\"Operator\"]"))]
 
 <PageTitle>Competition page</PageTitle>
 
@@ -34,8 +33,6 @@
 	</div>
 
 </div>
-
-
 
 @if (!dataFetched)
 {
@@ -102,7 +99,6 @@ else
 	}
 }
 
-
 @code {
 
 	private bool _isTable;
@@ -111,11 +107,6 @@ else
 	bool dataFetched;
 
 	List<CompetitionDT> competitions = new();
-
-	private void Toggle()
-	{
-		_isTable = !_isTable;
-	}
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -127,5 +118,10 @@ else
 	{
 		competitions = await CompetitionService.GetAllActiveCompetitionsAsync();
 		dataFetched = true;
+	}
+	
+	private void Toggle()
+	{
+		_isTable = !_isTable;
 	}
 }

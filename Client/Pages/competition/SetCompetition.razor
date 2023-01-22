@@ -22,7 +22,6 @@
 
 	<div class="col-8">
 		<h3>Adding teams and tasks for competition #@Id:</h3>
-		<h4>@msg</h4>
 	</div>
 
 </div>
@@ -57,20 +56,19 @@
 								  Data="@fetchedTeams"
 								  @bind-SelectedRow="@selectedTeam"
 								  @bind-SelectedRows="@selectedTeams"
-								  PageSize="10"
 								  Responsive
 								  Filterable
 								  SelectionMode="DataGridSelectionMode.Multiple"
 								  ShowPager
 								  CommandMode="DataGridCommandMode.ButtonRow"
 								  Virtualize
-								  VirtualizeOptions="@(new() { DataGridHeight = "500px"})">
+								  VirtualizeOptions="@(new() { DataGridHeight = "570px"})">
 
 									@*<DataGridMultiSelectColumn Width="30px"></DataGridMultiSelectColumn>*@
 
 									<DataGridColumns>
-										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
-										<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" />
+										@*										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
+								*@										<DataGridColumn Field="@nameof(TeamDT.Name)" Caption="Name" />
 										<DataGridColumn Field="@nameof(TeamDT.SumPoints)" Caption="Points" />
 									</DataGridColumns>
 
@@ -82,17 +80,10 @@
 
 									<ButtonRowTemplate>
 										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-										<Button Color="Color.Primary" Clicked="@SubmitTeamsAsync" Disabled="@(selectedTeams != null && selectedTeams.Count == 0 ? true : false)">Submit @(selectedTeams != null && selectedTeams.Count > 0 ? selectedTeams.Count : "") @(selectedTeams != null && selectedTeams.Count == 1 ? "team" : "teams")</Button>
+										<Button Color="Color.Primary" Clicked="@(() => SubmitTeamsAsync())" Disabled="@(selectedTeams != null && selectedTeams.Count == 0 ? true : false)">Submit @(selectedTeams != null && selectedTeams.Count > 0 ? selectedTeams.Count : "") @(selectedTeams != null && selectedTeams.Count == 1 ? "team" : "teams")</Button>
 										</ButtonRowTemplate>
 
 									</DataGrid>
-
-								<Snackbar @ref="snackbarTeams" Color="SnackbarColor.Primary">
-									<SnackbarBody>
-										Single line of text directly related to the operation performed
-										<SnackbarAction Clicked="@(()=>snackbarTeams.Hide())">HIDE</SnackbarAction>
-									</SnackbarBody>
-								</Snackbar>
 							}
 						}
 					</div>
@@ -125,16 +116,16 @@
 								  Data="@fetchedExercises"
 								  @bind-SelectedRow="@selectedExercise"
 								  @bind-SelectedRows="@selectedExercises"
-								  PageSize="10"
 								  Responsive
 								  Filterable
-								  FilterMethod="DataGridFilterMethod.StartsWith"
 								  SelectionMode="DataGridSelectionMode.Multiple"
 								  ShowPager
-								  CommandMode="DataGridCommandMode.ButtonRow">
+								  CommandMode="DataGridCommandMode.ButtonRow"
+								  Virtualize
+								  VirtualizeOptions="@(new() { DataGridHeight = "570px"})">
 
 									<DataGridColumns>
-										<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />
+									@*<DataGridColumn Field="@nameof(TeamDT.Id)" Caption="#" Sortable="false" />*@
 										<DataGridColumn Field="@nameof(ExerciseDT.Name)" Caption="Name" />
 										<DataGridColumn Field="@nameof(ExerciseDT.CategoryId)" Caption="Category" />
 										<DataGridColumn Field="@nameof(ExerciseDT.LangId)" Caption="Lang" />
@@ -202,20 +193,23 @@
 								  Data="@fetchedUsers"
 								  @bind-SelectedRow="@selectedUser"
 								  @bind-SelectedRows="@selectedUsers"
-								  PageSize="10"
 								  Responsive
+								  Filterable
 								  SelectionMode="DataGridSelectionMode.Multiple"
 								  ShowPager
 								  CommandMode="DataGridCommandMode.ButtonRow"
 								  Virtualize
-								  VirtualizeOptions="@(new() { DataGridHeight = "500px"})">
-
-									@*<DataGridMultiSelectColumn Width="30px"></DataGridMultiSelectColumn>*@
+								  VirtualizeOptions="@(new() { DataGridHeight = "570px"})">
 
 									<DataGridColumns>
-										<DataGridColumn Field="@nameof(UserDT.Id)" Caption="#" Sortable="false" />
-										<DataGridColumn Field="@nameof(UserDT.FirstName)" Caption="First name" />
+										@*										<DataGridColumn Field="@nameof(UserDT.Id)" Caption="#" Sortable="false" />
+								*@		<DataGridColumn Field="@nameof(UserDT.FirstName)" Caption="First name" />
 										<DataGridColumn Field="@nameof(UserDT.LastName)" Caption="Last name" />
+										<DataGridColumn Field="@nameof(UserDT.Email)" Caption="E-mail" />
+									@*<DataGridColumn Field="@nameof(UserDT.PointsSummary)" Caption="Has points" />
+								*@		<DataGridColumn Field="@nameof(UserDT.Role)" Caption="Role" />
+
+
 									</DataGridColumns>
 
 									<EmptyTemplate>
@@ -227,9 +221,9 @@
 									<ButtonRowTemplate>
 										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
 										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked" Disabled="@(selectedUsers != null && selectedUsers.Count == 0 ? true : false)">Submit @(selectedUsers != null && selectedUsers.Count > 0 ? selectedUsers.Count : "") @(selectedUsers != null && selectedUsers.Count == 1 ? "user" : "users")</Button>
-										</ButtonRowTemplate>
+									</ButtonRowTemplate>
 
-									</DataGrid>
+								</DataGrid>
 							}
 						}
 
@@ -239,9 +233,15 @@
 			</div>
 		</div>
 
-
 	</div>
 </div>
+
+<Snackbar @ref="snackbarTeams" Color="SnackbarColor.Success">
+	<SnackbarBody>
+		@snackMessage
+@*		<SnackbarAction Clicked="@(() => snackbarTeams.Hide())">HIDE</SnackbarAction>
+*@	</SnackbarBody>
+</Snackbar>
 
 @code {
 
@@ -267,7 +267,7 @@
 	bool _usersFetched;
 	bool _compFetched;
 
-	string msg = string.Empty;
+	string snackMessage = string.Empty;
 
 	Snackbar snackbarTeams;
 
@@ -278,7 +278,7 @@
 		_usersFetched = false;
 		await FetchTeamsAsync();
 		await FetchExercisesAsync();
-		//await FetchUsersAsync();
+		await FetchUsersAsync();
 		await FetchCurrentCompetitionAsync();
 	}
 
@@ -317,10 +317,6 @@
 			_teamsFetched = false;
 		}
 
-		//foreach (var t in fetchedTeams)
-		//{
-		//	Console.WriteLine(t.Id + " - " + t.Name);
-		//};
 		Console.WriteLine("teams end");
 		Console.WriteLine(_teamsFetched);
 	}
@@ -349,7 +345,7 @@
 		Console.WriteLine("users begin");
 		try
 		{
-			fetchedUsers = await UserService.GetAllUsersAsync();
+			fetchedUsers = await UserService.GetAllActiveUsersAsync();
 			_usersFetched = true;
 		}
 		catch (DBNullResponseException)
@@ -365,8 +361,7 @@
 		var teamsIds = selectedTeams.Select(x => x.Id).ToList();
 		var submitTeamsMsg = await CompetitionService.AddNewTeamsToCompetitionAsync(Id, teamsIds);
 		Console.WriteLine("teams sent");
-		snackbarTeams.Show();
-		msg = submitTeamsMsg;
+		ShowPopup(submitTeamsMsg);
 	}
 
 	private async Task SubmitExcercisesAsync()
@@ -374,7 +369,6 @@
 		var exIds = selectedExercises.Select(x => x.Id).ToList();
 		var submitExcercisesMsg = await CompetitionService.AddNewExercisesToCompetitionAsync(Id, exIds);
 		Console.WriteLine("exs sent");
-		msg = submitExcercisesMsg;
 	}
 
 	private async Task SubmitOperatorsAsync()
@@ -382,6 +376,11 @@
 		var operIds = selectedUsers.Select(x => x.Id).ToList();
 		var submitOperatorsMsg = await CompetitionService.AddNewOperatorsToCompetitionAsync(Id, operIds);
 		Console.WriteLine("opers sent");
-		msg = submitOperatorsMsg;
+	}
+
+	private void ShowPopup(string msg)
+	{
+		snackMessage = msg;
+		snackbarTeams.Show();
 	}
 }
