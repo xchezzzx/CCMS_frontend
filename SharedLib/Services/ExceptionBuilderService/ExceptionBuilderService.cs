@@ -26,7 +26,9 @@ namespace SharedLib.Services.ExceptionBuilderService
 					return new HubMethodArgumentNullException($"Exception {(int)ExceptionCodes.DBUpdateException}. Null argument in Hub method at {args[0]}.", (int)ExceptionCodes.HubMethodNullArgumentException);
 				case ExceptionCodes.DBNoDataFoundException:
 					return new DBNoDataFoundException($"Exception {(int)ExceptionCodes.DBUpdateException}. No data found in database at {args[0]}.", (int)ExceptionCodes.DBNoDataFoundException);
-				default:
+                case ExceptionCodes.NotAuthentificatedUserException:
+                    return new NotAuthenticatedUserException($"Exception {(int)ExceptionCodes.NotAuthentificatedUserException}. User is not authentificate {args[0]}.", (int)ExceptionCodes.NotAuthentificatedUserException);
+                default:
 					return new Exception("An unknown error has occurred.");
 			}
 		}

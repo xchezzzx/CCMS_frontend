@@ -6,7 +6,9 @@
 		DBUpdateException = 101,
 		ArgumentNullException = 102,
 		HubMethodNullArgumentException = 103,
-		DBNoDataFoundException = 104
+		DBNoDataFoundException = 104,
 
-	}
+        NotAuthentificatedUserException = 401
+
+    }
 }

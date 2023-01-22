@@ -14,6 +14,7 @@ using BlazorWeb.Services.ExerciseService;
 using BlazorWeb.Services.TeamService;
 using BlazorWeb.Services.UserService;
 using BlazorWeb.Services.CompetitionService;
+using SharedLib.Services.ExceptionBuilderService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -30,6 +31,9 @@ builder.Services.AddScoped<IConnectionService, ConnectionService>();
 
 builder.Services.AddScoped<AuthenticationState>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+
+builder.Services.AddScoped<IExceptionBuilderService, ExceptionBuilderService>();
 
 // Auth0
 //builder.Services.AddOidcAuthentication(options =>

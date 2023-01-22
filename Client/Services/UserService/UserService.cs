@@ -39,7 +39,7 @@ namespace BlazorWeb.Services.UserService
             return _getAllUsers;
         }
 
-        public async Task<UserDT> GetCurrentUserAsync(string auth0Id)
+        public async Task<UserDT> GetCurrentUserAsync(UserDT userDT)
         {
             UserDT currentUser = new UserDT();
             try
@@ -48,8 +48,7 @@ namespace BlazorWeb.Services.UserService
 
                 connection.On<UserDT>("GetCurrentUser", c => currentUser = c);
 
-                await connection.InvokeAsync("GetCurrentUser", auth0Id);
-                Console.WriteLine(connection.State + " asddad");
+                await connection.InvokeAsync("GetCurrentUser", userDT);
 
 
             }

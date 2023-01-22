@@ -46,9 +46,7 @@ else
 			_dataFetched = false;
 			currentUser = await userService.GetCurrentUserAsync();
 			_dataFetched = true;
-			Console.WriteLine("before success");
 			StateHasChanged();
-			Console.WriteLine("success");
 		}
 		catch(Exception ex)
 		{
@@ -56,7 +54,6 @@ else
 
 			_errorFlag = true;
 			exception = ex;
-			Console.WriteLine("EГГОГ");
 		}
 	}
 }
