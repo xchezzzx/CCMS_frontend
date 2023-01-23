@@ -238,7 +238,7 @@
 
 			if (Competition.EndDateTime <= DateTime.Now)
 			{
-				timeString = "This competition will ended soon";
+				timeString = "This competition ends soon";
 				return timeString;
 			}
 			timeSpan = Competition.EndDateTime - DateTime.Now;
@@ -248,7 +248,7 @@
 		{
 			if (Competition.StartDateTime <= DateTime.Now)
 			{
-				timeString = "This competition will started soon";
+				timeString = "This competition starts soon";
 				return timeString;
 			}
 			timeSpan = Competition.StartDateTime - DateTime.Now;
