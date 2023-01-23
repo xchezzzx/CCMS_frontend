@@ -29,7 +29,7 @@ namespace BlazorWeb.Services.CompetitionService
 		Task AddNewExercisesToCompetitionAsync(int competitionId, List<int?> excerciseIds);
 
 		Task RemoveExerciseFromCompetitionAsync(int competitionId, int exerciseId);
-        Task<List<ExerciseDT>> GetAllCompetitionExercisesAsync();
+        Task<List<ExerciseDT>> GetAllCompetitionExercisesAsync(int competitionId);
 
         //TEAMS
         Task AddNewTeamToCompetitionAsync(int competitionId, int teamId);

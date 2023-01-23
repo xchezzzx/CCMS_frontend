@@ -20,23 +20,20 @@
 
 		<div class="card-body">
 
-			<h5 class="card-title">Competition summary</h5>
-
 			<div class="row">
 
 				@*TEAMS BLOCK*@
 				<div class="col-4">
 					@if (!_teamsFetched)
 					{
-						<Loader />
+						<Loader Size="small" />
 					}
 					else
 					{
 						if (_teamsFetchingError)
 						{
-							<h5>Have found no teams.</h5>
-							<br />
-							<h5>Please, add some teams and try again.</h5>
+							<h4>Have found no teams.</h4>
+							<p>Please, add some teams and try again.</p>
 						}
 						else
 						{
@@ -52,29 +49,52 @@
 				</div>
 				@*OPERATORS BLOCK*@
 				<div class="col-4">
-					@if (!_operatorsFetched)
-					{
-						<Loader />
-					}
-					else
-					{
-						if (_operatorsFetchingError)
+					<div class="row">
+						@if (!_excercisesFetched)
 						{
-							<h5>Have found no operators.</h5>
-							<br />
-							<h5>Please, add some teams and try again.</h5>
+							<Loader Size="small"/>
 						}
 						else
 						{
-							<h4>Operators in competition: @operatorsInCompetition.Count</h4>
-							<ul class="list-group list-group-flush">
-								@foreach (var oper in operatorsInCompetition)
-								{
-									<li class="list-group-item">@oper.FirstName @oper.LastName</li>
-								}
-							</ul>
+							if (_excercisesFetchingError)
+							{
+								<h4>Have found no excercises.</h4>
+								<p>Please, add some excercises and try again.</p>
+							}
+							else
+							{
+								<h4>Excercises in competition: @operatorsInCompetition.Count</h4>
+							}
 						}
-					}
+					</div>
+
+					<div class="row">
+						@if (!_operatorsFetched)
+						{
+							<Loader Size="small" />
+						}
+						else
+						{
+							if (_operatorsFetchingError)
+							{
+								<h4>Have found no operators.</h4>
+								<p>Please, add some teams and try again.</p>
+							}
+							else
+							{
+								<h4>Operators in competition: @operatorsInCompetition.Count</h4>
+								<ul class="list-group list-group-flush">
+									@foreach (var oper in operatorsInCompetition)
+									{
+										<li class="list-group-item">@oper.FirstName @oper.LastName</li>
+									}
+								</ul>
+							}
+						}
+					</div>
+
+
+					
 				</div>
 
 				<div class="col-4">
@@ -115,8 +135,8 @@
 				</div>
 
 				<div class="col-4 text-end">
-					<button class="btn btn-primary" @onclick="ButtonSetHandler">Disable this event</button>
-					<button class="btn btn-primary" @onclick="ButtonSetHandler">Delete this event</button>
+					<button class="btn btn-danger" @onclick="ButtonSetHandler">Disable this event</button>
+					<button class="btn btn-danger" @onclick="ButtonSetHandler">Delete this event</button>
 				</div>
 
 			</div>
@@ -137,12 +157,17 @@
 	bool _operatorsFetchingError;
 	List<UserDT> operatorsInCompetition = new();
 
+	bool _excercisesFetched;
+	bool _excercisesFetchingError;
+	List<ExerciseDT> excercisesInCompetition = new();
+
 	string TimeString = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await FetchTeamsInCompetitionAsync();
 		await FetchOperatorsInCompetitionAsync();
+		await FetchExcercisesInCompetitionAsync();
 	}
 
 	protected override void OnParametersSet()
@@ -177,6 +202,21 @@
 		{
 			_operatorsFetchingError = true;
 			_operatorsFetched = true;
+		}
+	}
+
+	private async Task FetchExcercisesInCompetitionAsync()
+	{
+		_excercisesFetched = false;
+		try
+		{
+			excercisesInCompetition = await CompetitionService.GetAllCompetitionExercisesAsync((int)Competition?.Id);
+			_excercisesFetched = true;
+		}
+		catch
+		{
+			_excercisesFetchingError = true;
+			_excercisesFetched = true;
 		}
 	}
 

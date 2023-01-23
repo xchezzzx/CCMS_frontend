@@ -1,7 +1,22 @@
 ﻿<div class="text-center">
-	<img src="./images/loading-waiting.gif" />
+	@switch (Size)
+	{
+		case ("small"):
+		<img src="./images/loading-waiting.gif" width="50"/>
+		break;
+
+		case ("medium"):
+		<img src="./images/loading-waiting.gif" width="100"/>
+		break;
+
+		case ("large"):
+			<img src="./images/loading-waiting.gif" />
+		break;
+	}
 </div>
 
-@code {
 
+@code {
+	[Parameter]
+	public string Size { get; set; }
 }

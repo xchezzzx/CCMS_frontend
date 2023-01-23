@@ -441,7 +441,7 @@ namespace BlazorWeb.Services.CompetitionService
 
         }
 
-        public async Task<List<ExerciseDT>> GetAllCompetitionExercisesAsync()
+        public async Task<List<ExerciseDT>> GetAllCompetitionExercisesAsync(int competitionId)
         {
             List<ExerciseDT> _getAllCompetitionExercises = new();
 
@@ -454,7 +454,7 @@ namespace BlazorWeb.Services.CompetitionService
             await HubConnection.StartAsync();
 			try
 			{
-			    await HubConnection.InvokeAsync("GetAllCompetitionExercises");
+			    await HubConnection.InvokeAsync("GetAllCompetitionExercises", competitionId);
 
 			}
 			catch
