@@ -220,7 +220,7 @@
 
 									<ButtonRowTemplate>
 										<Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-										<Button Color="Color.Primary" Clicked="context.NewCommand.Clicked" Disabled="@(selectedUsers != null && selectedUsers.Count == 0 ? true : false)">Submit @(selectedUsers != null && selectedUsers.Count > 0 ? selectedUsers.Count : "") @(selectedUsers != null && selectedUsers.Count == 1 ? "user" : "users")</Button>
+										<Button Color="Color.Primary" Clicked="@SubmitOperatorsAsync" Disabled="@(selectedUsers != null && selectedUsers.Count == 0 ? true : false)">Submit @(selectedUsers != null && selectedUsers.Count > 0 ? selectedUsers.Count : "") @(selectedUsers != null && selectedUsers.Count == 1 ? "user" : "users")</Button>
 									</ButtonRowTemplate>
 
 								</DataGrid>
@@ -397,6 +397,7 @@
 		var submitOperatorsMsg = "success";
 		try
 		{
+			Console.WriteLine("operIds.Count "+ operIds.Count);
 			await CompetitionService.AddNewOperatorsToCompetitionAsync(Id, operIds);
 		}
 		catch

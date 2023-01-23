@@ -57,14 +57,20 @@
 						}
 						else
 						{
-							if (_excercisesFetchingError)
+							if (_excercisesFetchingError || excercisesInCompetition.Count == 0)
 							{
 								<h4>Have found no excercises.</h4>
 								<p>Please, add some excercises and try again.</p>
 							}
 							else
 							{
-								<h4>Excercises in competition: @operatorsInCompetition.Count</h4>
+								<h4>Excercises in competition: @excercisesInCompetition.Count</h4>
+								<ul class="list-group list-group-flush">
+									@foreach (var exercise in excercisesInCompetition)
+									{
+										<li class="list-group-item">@exercise.Name</li>
+									}
+								</ul>
 							}
 						}
 					</div>
@@ -225,9 +231,11 @@
 		{
 			excercisesInCompetition = await CompetitionService.GetAllCompetitionExercisesAsync((int)Competition?.Id);
 			_excercisesFetched = true;
+			Console.WriteLine(excercisesInCompetition[0].Name + Competition.Name);
 		}
 		catch
 		{
+			Console.WriteLine(_excercisesFetchingError + Competition.Name);
 			_excercisesFetchingError = true;
 			_excercisesFetched = true;
 		}
@@ -240,11 +248,22 @@
 
 		if (Competition.StateId == CompetitionStates.InProgress)
 		{
+
+			if (Competition.EndDateTime <= DateTime.Now)
+			{
+				timeString = "This competition ends soon";
+				return timeString;
+			}
 			timeSpan = Competition.EndDateTime - DateTime.Now;
 			timeString = "The competition ends in ";
 		}
 		else if (Competition.StateId == CompetitionStates.Planned)
 		{
+			if (Competition.StartDateTime <= DateTime.Now)
+			{
+				timeString = "This competition starts soon";
+				return timeString;
+			}
 			timeSpan = Competition.StartDateTime - DateTime.Now;
 			timeString = "Till start remains ";
 		}
