@@ -1,9 +1,53 @@
-﻿@page "/competition/set/{CompetitionId:int}"
+﻿@page "/competition/{CompetitionId:int}"
 
-Competition #@CompetitionId
+@inject ICompetitionService CompetitionService
+
+@if (!_dataFetched)
+{
+	<Loader Size="large" />
+}
+else
+{
+	if (_exceptionFlag)
+	{
+		<div>
+			<h3>You don't have any events, relax</h3>
+		</div>
+	}
+	else
+	{
+		<CurrentCompetitionComponent Competition="currentCompetition" />
+	}
+}
+
 
 @code {
 	[Parameter]
 	public int CompetitionId { get; set; }
 
+	CompetitionDT currentCompetition = new();
+
+	bool _dataFetched;
+	bool _exceptionFlag;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await FetchData();
+	}
+
+	private async Task FetchData()
+	{
+		try
+		{
+			_dataFetched = false;
+			currentCompetition = await CompetitionService.GetCompetitionByIdAsync(CompetitionId);
+			_dataFetched = true;
+		}
+		catch
+		{
+			_dataFetched = true;
+			_exceptionFlag = true;
+			Console.WriteLine("exception");
+		}
+	}
 }

@@ -1,9 +1,11 @@
 ﻿@inject ICompetitionService CompetitionService
+@inject ICurrentUserService CurrentUserService
+@inject IUserService UserService
 
 <div class="row d-flex align-items-center">
 
 	<div class="col-8 text-center">
-		<h1>Current Events for Operator</h1>
+		<h1>Current Event for Operator</h1>
 	</div>
 
 	<div class="col-4 text-end">
@@ -19,7 +21,7 @@
 
 @if (!dataFetched)
 {
-	<Loader />
+	<Loader Size="large" />
 }
 else
 {
@@ -31,20 +33,9 @@ else
 	}
 	else
 	{
-		<h3>Current events</h3>
-		<div class="row">
-			<div class="col-10 offset-1">
-				<CurrentCompetitionPage CompetitionId="(int)currentCompetition?.Id" />
-			</div>
-		</div>
+		<CurrentCompetitionComponent Competition="currentCompetition" />
 	}
 }
-
-
-
-
-
-
 
 
 @code {
@@ -53,8 +44,13 @@ else
 	bool dataFetched;
 	bool _exceptionFlag;
 
+	int curentUserId;
+	int currentCompetitionId;
+
 	protected override async Task OnInitializedAsync()
 	{
+		curentUserId = (await CurrentUserService.GetCurrentUserAsync()).Id.Value;
+		Console.WriteLine(curentUserId + " curentUserId");
 		_exceptionFlag = false;
 		await FetchData();
 	}
@@ -64,12 +60,19 @@ else
 		try
 		{
 			dataFetched = false;
-			//currentCompetition = await CompetitionService.GetAllActiveCompetitionsAsync();//nearest or current
+			Console.WriteLine("cur event start");
+			currentCompetition = await UserService.GetOperatorCurrentOrNearestCompetition(curentUserId);
+			currentCompetitionId = currentCompetition.Id.Value;
 			dataFetched = true;
+			Console.WriteLine("cur event end");
+
 		}
 		catch
 		{
+			dataFetched = true;
 			_exceptionFlag = true;
+			Console.WriteLine("exception");
+
 		}
 
 	}

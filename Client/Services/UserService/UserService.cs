@@ -198,7 +198,7 @@ namespace BlazorWeb.Services.UserService
 
 				var currentUserId = (await _currentUserService.GetCurrentUserAsync()).Id;
 
-				connection.On<CompetitionDT>("DeleGetOperatorCurrentOrNearestCompetitionteUserById", c => _getOperatorCurrentOrNearestCompetition = c);
+				connection.On<CompetitionDT>("GetOperatorCurrentOrNearestCompetition", c => _getOperatorCurrentOrNearestCompetition = c);
 
 				await connection.StartAsync();
 				await connection.InvokeAsync("GetOperatorCurrentOrNearestCompetition", operatorId);
