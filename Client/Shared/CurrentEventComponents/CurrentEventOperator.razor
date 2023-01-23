@@ -1,0 +1,76 @@
+﻿@inject ICompetitionService CompetitionService
+
+<div class="row d-flex align-items-center">
+
+	<div class="col-8 text-center">
+		<h1>Current Events for Operator</h1>
+	</div>
+
+	<div class="col-4 text-end">
+
+		<button class="btn btn-success" @onclick="FetchData">
+			<span class="oi oi-loop-circular" aria-hidden="true"></span>
+			<span>&nbsp;Refresh List</span>
+		</button>
+
+	</div>
+
+</div>
+
+@if (!dataFetched)
+{
+	<Loader />
+}
+else
+{
+	if (_exceptionFlag)
+	{
+		<div>
+			<h3>You don't have any events, relax</h3>
+		</div>
+	}
+	else
+	{
+		<h3>Current events</h3>
+		<div class="row">
+			<div class="col-10 offset-1">
+				
+			</div>
+		</div>
+	}
+}
+
+
+
+
+
+
+
+
+@code {
+
+	CompetitionDT currentCompetition = new();
+	bool dataFetched;
+	bool _exceptionFlag;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_exceptionFlag = false;
+		await FetchData();
+	}
+
+	private async Task FetchData()
+	{
+		try
+		{
+			dataFetched = false;
+			//currentCompetition = await CompetitionService.GetAllActiveCompetitionsAsync();//nearest or current
+			dataFetched = true;
+		}
+		catch
+		{
+			_exceptionFlag = true;
+		}
+
+	}
+}

@@ -1,0 +1,60 @@
+﻿@inject IUserService UserService
+
+
+<div class="row d-flex align-items-center">
+
+	<div class="col-8 text-center">
+		<h1>Current Events for Administrator</h1>
+	</div>
+
+	<div class="col-4 text-end">
+
+		<button class="btn btn-success" @onclick="FetchData">
+			<span class="oi oi-loop-circular" aria-hidden="true"></span>
+			<span>&nbsp;Refresh List</span>
+		</button>
+
+	</div>
+
+</div>
+
+@if (!dataFetched)
+{
+	<Loader />
+}
+else
+{
+	if (currentOrNearestCompetitions.Count == 0)
+	{
+		<EmptyList />
+	}
+	else
+	{
+		<div class="row row-cols-md-1 g-4">
+			@foreach (var comp in currentOrNearestCompetitions)
+			{
+				<CurrentCompetitionCard Competition="@comp" />
+			}
+		</div>
+	}
+}
+
+@code {
+
+	List<CompetitionDT> currentOrNearestCompetitions = new();
+	bool dataFetched;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await FetchData();
+	}
+
+
+
+	private async Task FetchData()
+	{
+		dataFetched = false;
+		//currentOrNearestCompetitions = await UserService.GetFiveCurrentOrNearestCompetitions();
+		dataFetched = true;
+	}
+}

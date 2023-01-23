@@ -1,0 +1,147 @@
+﻿@inject ICompetitionService CompetitionService
+
+<div class="col">
+	<div class="card text-start">
+		<div class="card-header">
+
+			<div class="row">
+
+				<div class="col-6">
+					<h4 class="card-header">@Competition.Name</h4>
+				</div>
+
+				<div class="col-6 text-end">
+					<h4 class="card-header">@TimeString</h4>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="card-body">
+
+			<h5 class="card-title">Competition summary</h5>
+
+			<div class="row">
+
+				<div class="col-4">
+					@if (!_teamsFetched)
+					{
+						<Loader />
+					}
+					else
+					{
+						<p>Teams in competition: @teamsInCompetition.Count</p>
+						<ul class="list-group list-group-flush">
+							@foreach (var team in teamsInCompetition)
+							{
+								<li class="list-group-item">@team.Name</li>
+							}
+						</ul>
+					}
+				</div>
+
+				<div class="col-4">
+					@if (!_teamsFetched)
+					{
+						<Loader />
+					}
+					else
+					{
+						<p>Operators in competition: @operatorsInCompetition.Count</p>
+						<ul class="list-group list-group-flush">
+							@foreach (var oper in operatorsInCompetition)
+							{
+								<li class="list-group-item">@oper.FirstName @oper.LastName</li>
+							}
+						</ul>
+					}
+				</div>
+
+			</div>
+
+			<a href="#" class="btn btn-primary">Go somewhere</a>
+		</div>
+
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public CompetitionDT Competition { get; set; }
+
+	bool _teamsFetched;
+	List<TeamDT> teamsInCompetition = new();
+
+	bool _operatorsFetched;
+	List<UserDT> operatorsInCompetition = new();
+
+	string TimeString = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await FetchTeamsInCompetitionAsync();
+		await FetchOperatorsInCompetitionAsync();
+	}
+
+	protected override void OnParametersSet()
+	{
+		TimeString = FormatTimeString();
+	}
+
+	private async Task FetchTeamsInCompetitionAsync()
+	{
+		_teamsFetched = false;
+		teamsInCompetition = await CompetitionService.GetAllCompetitionTeamsAsync((int)Competition?.Id);
+		_teamsFetched = true;
+	}
+
+	private async Task FetchOperatorsInCompetitionAsync()
+	{
+		_operatorsFetched = false;
+		operatorsInCompetition = await CompetitionService.GetAllCompetitionOperatorsAsync((int)Competition?.Id);
+		_operatorsFetched = true;
+	}
+
+	private string FormatTimeString()
+	{
+		TimeSpan timeSpan = new();
+		string timeString = string.Empty;
+
+		if (Competition.StateId == CompetitionStates.InProgress)
+		{
+			timeSpan = Competition.EndDateTime - DateTime.Now;
+			timeString = "The competition ends in ";
+		}
+		else if (Competition.StateId == CompetitionStates.Planned)
+		{
+			timeSpan = Competition.StartDateTime - DateTime.Now;
+			timeString = "Till start remains ";
+		}
+
+		if (timeSpan.Days != 0)
+		{
+			if (timeSpan.Days == 1)
+				timeString += $" 1 day";
+			else
+				timeString += $" {timeSpan.Days} days";
+		}
+
+		if (timeSpan.Hours != 0)
+		{
+			if (timeSpan.Hours == 1)
+				timeString += $" 1 hour";
+			else
+				timeString += $" {timeSpan.Hours} hours";
+		}
+
+		if (timeSpan.Minutes != 0)
+		{
+			if (timeSpan.Minutes == 1)
+				timeString += $" 1 minute";
+			else
+				timeString += $" {timeSpan.Minutes} minutes";
+		}
+
+		return timeString;
+	}
+}

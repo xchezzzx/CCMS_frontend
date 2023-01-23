@@ -1,0 +1,31 @@
+﻿@page "/currentevent"
+
+@attribute [Authorize(Roles = ("[\"Administrator\"], [\"Operator\"], [\"Participant\"]"))]
+
+<AuthorizeView Roles="@AuthorizationRoles.Administrator">
+	<Authorized>
+		
+		<CurrentEventAdministrator />
+
+	</Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="@AuthorizationRoles.Operator">
+	<Authorized>
+		
+		<CurrentEventOperator />
+
+	</Authorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="@AuthorizationRoles.Participant">
+	<Authorized>
+
+		<CurrentEventParticipant />
+
+	</Authorized>
+</AuthorizeView>
+
+@code {
+
+}
