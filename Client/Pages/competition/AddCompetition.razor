@@ -285,14 +285,18 @@
 		CompID = (int)returnedComp?.Id;
 
 		//var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(OperatorToCompId);
-		var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(CompID, OperatorToCompId);
+		var messageFromServer = "success";
+		try
+		{
+			await CompetitionService.AddNewOperatorToCompetitionAsync(CompID, OperatorToCompId);
+		}
+		catch 
+		{
+			messageFromServer = "failed";
+		}
 
 		dataFetched = true;
 		ChangeModal(messageFromServer);
-		//messageFromServer = string.Empty;
-
-		//TODO change it to result number after adding
-		//CompID = 42;
 	}
 
 	private void ButtonSetHandler()

@@ -37,7 +37,16 @@ namespace BlazorWeb.Services.CompetitionService
                 "AddNewCompetition", c => newCompetition = c);
 
             await _connection.StartAsync();
-            await _connection.InvokeAsync("AddNewCompetition", competitionDT);
+            try
+            {
+                await _connection.InvokeAsync("AddNewCompetition", competitionDT);
+
+            }
+            catch 
+            {
+
+                throw;
+            }
             await _connection.StopAsync();
 
             return newCompetition;
@@ -56,7 +65,17 @@ namespace BlazorWeb.Services.CompetitionService
             _connection.On<CompetitionDT>("GetCompetitionById", c => _getCompetition = c);
 
 			await _connection.StartAsync();
-            await _connection.InvokeAsync("GetCompetitionById", competitionId);
+
+			try
+			{
+			    await _connection.InvokeAsync("GetCompetitionById", competitionId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
 			await _connection.StopAsync();
 
 			return _getCompetition;
@@ -73,7 +92,17 @@ namespace BlazorWeb.Services.CompetitionService
             HubConnection.On<List<CompetitionDT>>("GetAllCompetitions", c => _getAllCompetitions = c);
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllCompetitions");
+
+			try
+			{
+			    await HubConnection.InvokeAsync("GetAllCompetitions");
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
             return _getAllCompetitions;
@@ -83,202 +112,230 @@ namespace BlazorWeb.Services.CompetitionService
         {
             List<CompetitionDT> _getAllActiveCompetitions = new();
 
-            /*var accessTokenResult = await _accessTokenProvider.RequestAccessToken();
-			var _AccessToken = string.Empty;
+            var accessTokenResult = await _accessTokenProvider.RequestAccessToken();
+            var _AccessToken = string.Empty;
 
-			if (accessTokenResult.TryGetToken(out var token))
-			{
-				_AccessToken = token.Value;
-			}
-
-
-			HubConnection HubConnection = new HubConnectionBuilder()
-							.WithUrl("https://localhost:7206/competitions", o => {
-								o.AccessTokenProvider = () => Task.FromResult(_AccessToken);
-							})
-							.Build();
+            if (accessTokenResult.TryGetToken(out var token))
+            {
+                _AccessToken = token.Value;
+            }
 
 
-			await HubConnection.StartAsync();*/
+            HubConnection _connection = new HubConnectionBuilder()
+                            .WithUrl("https://localhost:7206/competitions", o =>
+                            {
+                                o.AccessTokenProvider = () => Task.FromResult(_AccessToken);
+                            })
+                            .Build();
 
-            var _connection = await _connectionService.GetCompetitionHubConnectionAsync();
+
 
             _connection.On<List<CompetitionDT>>("GetActiveCompetitions", c => _getAllActiveCompetitions = c);
 
             await _connection.StartAsync();
-            await _connection.InvokeAsync("GetActiveCompetitions");
+
+			try
+			{
+			    await _connection.InvokeAsync("GetActiveCompetitions");
+			}
+			catch
+			{
+
+				throw;
+			}
             await _connection.StopAsync();
 
             return _getAllActiveCompetitions;
         }
 
-        public async Task<string> UpdateCompetitionAsync(CompetitionDT competitionDT)
+        public async Task UpdateCompetitionAsync(CompetitionDT competitionDT)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection HubConnection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .Build();
 
-            HubConnection.On<string>("GetAllActiveCompetitions", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllActiveCompetitions", competitionDT);
+			try
+			{
+			    await HubConnection.InvokeAsync("GetAllActiveCompetitions", competitionDT);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
-            return messageFromServer;
         }
 
-        public async Task<string> DeleteCompetitionByIdAsync(int competitionId)
+        public async Task DeleteCompetitionByIdAsync(int competitionId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection HubConnection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .Build();
 
-            HubConnection.On<string>("DeleteCompetitionById", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("DeleteCompetitionById", competitionId);
+			try
+			{
+			    await HubConnection.InvokeAsync("DeleteCompetitionById", competitionId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
-            return messageFromServer;
         }
 
         //COMPETITIONS - lifecycle
-        public async Task<string> DisableCompetitionByIdAsync(int competitionId)
+        public async Task DisableCompetitionByIdAsync(int competitionId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection HubConnection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .Build();
 
-            HubConnection.On<string>("DisableCompetitionById", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("DisableCompetitionById", competitionId);
+			try
+			{
+			    await HubConnection.InvokeAsync("DisableCompetitionById", competitionId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
-            return messageFromServer;
         }
 
-        public async Task<string> StartCompetitionByIdAsync(int competitionId)
+        public async Task StartCompetitionByIdAsync(int competitionId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection HubConnection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .Build();
 
-            HubConnection.On<string>("StartCompetitionById", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("StartCompetitionById", competitionId);
+			try
+			{
+			    await HubConnection.InvokeAsync("StartCompetitionById", competitionId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
-            return messageFromServer;
         }
 
-        public async Task<string> EndCompetitionByIdAsync(int competitionId)
+        public async Task EndCompetitionByIdAsync(int competitionId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection HubConnection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .Build();
 
-            HubConnection.On<string>("EndCompetitionById", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("EndCompetitionById", competitionId);
+			try
+			{
+			    await HubConnection.InvokeAsync("EndCompetitionById", competitionId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
-            return messageFromServer;
         }
 
         //OPERATORS
-        public async Task<string> AddNewOperatorToCompetitionAsync(int competitionId, int operatorId)
+        public async Task AddNewOperatorToCompetitionAsync(int competitionId, int operatorId)
         {
             string messageFromServer = string.Empty;
 
-            //HubConnection connection = new HubConnectionBuilder()
-            //				.WithUrl("https://localhost:7206/competitions")
-            //				.WithAutomaticReconnect()
-            //				.Build();
+            HubConnection connection = new HubConnectionBuilder()
+                            .WithUrl("https://localhost:7206/competitions")
+                            .WithAutomaticReconnect()
+                            .Build();
 
-
-            var connection = await _connectionService.GetCompetitionHubConnectionAsync();
-
-            connection.On<string>("AddNewOperatorToCompetition", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await connection.StartAsync();
-            await connection.InvokeAsync("AddNewOperatorToCompetition", competitionId, operatorId);
+			try
+			{
+			    await connection.InvokeAsync("AddNewOperatorToCompetition", competitionId, operatorId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await connection.StopAsync();
 
-            return messageFromServer;
         }
-		public async Task<string> AddNewOperatorsToCompetitionAsync(int competitionId, List<int?> operatorIds)
+		public async Task AddNewOperatorsToCompetitionAsync(int competitionId, List<int?> operatorIds)
 		{
-			string messageFromServer = string.Empty;
 
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .WithAutomaticReconnect()
                             .Build();
 
-            //var connection = await _connectionService.GetCompetitionHubConnectionAsync();
 
-			connection.On<string>("AddNewOperatorsToCompetition", msg =>
-			{
-				messageFromServer = msg;
-			});
 
 			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewOperatorsToCompetition", competitionId, operatorIds);
+			try
+			{
+			    await connection.InvokeAsync("AddNewOperatorsToCompetition", competitionId, operatorIds);
+
+			}
+			catch
+			{
+
+				throw;
+			}
 			await connection.StopAsync();
 
-			return messageFromServer;
 		}
 
-		public async Task<string> RemoveOperatorFromCompetitionAsync(int competitionId, int operatorId)
+		public async Task RemoveOperatorFromCompetitionAsync(int competitionId, int operatorId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .WithAutomaticReconnect()
                             .Build();
 
-            connection.On<string>("RemoveOperatorFromCompetition", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await connection.StartAsync();
-            await connection.InvokeAsync("RemoveOperatorFromCompetition", competitionId, operatorId);
+			try
+			{
+			    await connection.InvokeAsync("RemoveOperatorFromCompetition", competitionId, operatorId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await connection.DisposeAsync();
 
-            return messageFromServer;
         }
 
         public async Task<List<UserDT>> GetAllCompetitionOperatorsAsync(int competitionId)
@@ -293,14 +350,23 @@ namespace BlazorWeb.Services.CompetitionService
             HubConnection.On<List<UserDT>>("GetAllCompetitionOperators", c => _getAllCompetitionOperators = c);
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllCompetitionOperators", competitionId);
+			try
+			{
+			    await HubConnection.InvokeAsync("GetAllCompetitionOperators", competitionId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
             return _getAllCompetitionOperators;
         }
 
         //EXERCISES
-        public async Task<string> AddNewExerciseToCompetitionAsync(int competitionId, int exerciseId)
+        public async Task AddNewExerciseToCompetitionAsync(int competitionId, int exerciseId)
         {
             string messageFromServer = string.Empty;
 
@@ -309,19 +375,23 @@ namespace BlazorWeb.Services.CompetitionService
                             .WithAutomaticReconnect()
                             .Build();
 
-            connection.On<string>("AddNewExerciseToCompetition", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await connection.StartAsync();
-            await connection.InvokeAsync("AddNewExerciseToCompetition", competitionId, exerciseId);
+			try
+			{
+			    await connection.InvokeAsync("AddNewExerciseToCompetition", competitionId, exerciseId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await connection.DisposeAsync();
 
-            return messageFromServer;
         }
 
-		public async Task<string> AddNewExercisesToCompetitionAsync(int competitionId, List<int?> excerciseIds)
+		public async Task AddNewExercisesToCompetitionAsync(int competitionId, List<int?> excerciseIds)
 		{
 			string messageFromServer = string.Empty;
 
@@ -330,40 +400,45 @@ namespace BlazorWeb.Services.CompetitionService
                             .WithAutomaticReconnect()
                             .Build();
 
-            //var connection = await _connectionService.GetCompetitionHubConnectionAsync();
 
-			connection.On<string>("AddNewExercisesToCompetition", msg =>
-			{
-				messageFromServer = msg;
-			});
 
 			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewExercisesToCompetition", competitionId, excerciseIds);
+			try
+			{
+			    await connection.InvokeAsync("AddNewExercisesToCompetition", competitionId, excerciseIds);
+
+			}
+			catch
+			{
+
+				throw;
+			}
 			await connection.DisposeAsync();
 
-			return messageFromServer;
 		}
 
 
-		public async Task<string> RemoveExerciseFromCompetitionAsync(int competitionId, int exerciseId)
+		public async Task RemoveExerciseFromCompetitionAsync(int competitionId, int exerciseId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .WithAutomaticReconnect()
                             .Build();
 
-            connection.On<string>("RemoveExerciseFromCompetition", msg =>
-            {
-                messageFromServer = msg;
-            });
-
             await connection.StartAsync();
-            await connection.InvokeAsync("RemoveExerciseFromCompetition", competitionId, exerciseId);
+			try
+			{
+			    await connection.InvokeAsync("RemoveExerciseFromCompetition", competitionId, exerciseId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await connection.DisposeAsync();
 
-            return messageFromServer;
         }
 
         public async Task<List<ExerciseDT>> GetAllCompetitionExercisesAsync()
@@ -377,7 +452,16 @@ namespace BlazorWeb.Services.CompetitionService
             HubConnection.On<List<ExerciseDT>>("GetAllCompetitionExercises", c => _getAllCompetitionExercises = c);
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllCompetitionExercises");
+			try
+			{
+			    await HubConnection.InvokeAsync("GetAllCompetitionExercises");
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
             return _getAllCompetitionExercises;
@@ -385,70 +469,74 @@ namespace BlazorWeb.Services.CompetitionService
 
         //TEAMS
         //ADD NEW TEAM
-        public async Task<string> AddNewTeamToCompetitionAsync(int competitionId, int teamId)
+        public async Task AddNewTeamToCompetitionAsync(int competitionId, int teamId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .WithAutomaticReconnect()
                             .Build();
-
-            connection.On<string>("AddNewTeamToCompetition", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await connection.StartAsync();
-            await connection.InvokeAsync("AddNewTeamToCompetition", competitionId, teamId);
-            await connection.DisposeAsync();
+			try
+			{
+			    await connection.InvokeAsync("AddNewTeamToCompetition", competitionId, teamId);
 
-            return messageFromServer;
+			}
+			catch
+			{
+
+				throw;
+			}
+            await connection.DisposeAsync();
         }
 
-		public async Task<string> AddNewTeamsToCompetitionAsync(int competitionId, List<int?> teamIds)
+		public async Task AddNewTeamsToCompetitionAsync(int competitionId, List<int?> teamIds)
 		{
-			string messageFromServer = string.Empty;
 
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .WithAutomaticReconnect()
                             .Build();
 
-            //var connection = await _connectionService.GetCompetitionHubConnectionAsync();
-
-            connection.On<string>("AddNewTeamsToCompetition", msg =>
-			{
-				messageFromServer = msg;
-			});
-
 			await connection.StartAsync();
-			await connection.InvokeAsync("AddNewTeamsToCompetition", competitionId, teamIds);
+			try
+			{
+			    await connection.InvokeAsync("AddNewTeamsToCompetition", competitionId, teamIds);
+
+			}
+			catch
+			{
+
+				throw;
+			}
 			await connection.DisposeAsync();
 
-			return messageFromServer;
 		}
 
 
-		public async Task<string> RemoveTeamFromCompetitionAsync(int competitionId, int teamId)
+		public async Task RemoveTeamFromCompetitionAsync(int competitionId, int teamId)
         {
-            string messageFromServer = string.Empty;
 
             HubConnection connection = new HubConnectionBuilder()
                             .WithUrl("https://localhost:7206/competitions")
                             .WithAutomaticReconnect()
                             .Build();
 
-            connection.On<string>("RemoveTeamFromCompetition", msg =>
-            {
-                messageFromServer = msg;
-            });
 
             await connection.StartAsync();
-            await connection.InvokeAsync("RemoveTeamFromCompetition", competitionId, teamId);
+			try
+			{
+			    await connection.InvokeAsync("RemoveTeamFromCompetition", competitionId, teamId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await connection.DisposeAsync();
 
-            return messageFromServer;
         }
 
         public async Task<List<TeamDT>> GetAllCompetitionTeamsAsync(int competitionId)
@@ -462,7 +550,16 @@ namespace BlazorWeb.Services.CompetitionService
             HubConnection.On<List<TeamDT>>("GetAllCompetitionTeams", c => _getAllCompetitionTeams = c);
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllCompetitionTeams", competitionId);
+			try
+			{
+			    await HubConnection.InvokeAsync("GetAllCompetitionTeams", competitionId);
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
             return _getAllCompetitionTeams;
@@ -479,7 +576,16 @@ namespace BlazorWeb.Services.CompetitionService
             HubConnection.On<List<UserDT>>("GetAllCompetitionParticipants", c => _getAllCompetitionParticipants = c);
 
             await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllCompetitionParticipants");
+			try
+			{
+			    await HubConnection.InvokeAsync("GetAllCompetitionParticipants");
+
+			}
+			catch
+			{
+
+				throw;
+			}
             await HubConnection.StopAsync();
 
             return _getAllCompetitionParticipants;

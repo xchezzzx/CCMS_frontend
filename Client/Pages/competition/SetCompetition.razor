@@ -359,7 +359,16 @@
 	private async Task SubmitTeamsAsync()
 	{
 		var teamsIds = selectedTeams.Select(x => x.Id).ToList();
-		var submitTeamsMsg = await CompetitionService.AddNewTeamsToCompetitionAsync(Id, teamsIds);
+		var submitTeamsMsg = "success";
+		try
+		{
+			
+			await CompetitionService.AddNewTeamsToCompetitionAsync(Id, teamsIds);
+		}
+		catch 
+		{
+			submitTeamsMsg = "failed";
+		}
 		Console.WriteLine("teams sent");
 		ShowPopup(submitTeamsMsg);
 	}
@@ -367,14 +376,34 @@
 	private async Task SubmitExcercisesAsync()
 	{
 		var exIds = selectedExercises.Select(x => x.Id).ToList();
-		var submitExcercisesMsg = await CompetitionService.AddNewExercisesToCompetitionAsync(Id, exIds);
+		var submitExcercisesMsg = "success";
+		try
+		{
+
+			await CompetitionService.AddNewExercisesToCompetitionAsync(Id, exIds);
+		}
+		catch
+		{
+			submitExcercisesMsg = "failed";
+		}
+
 		Console.WriteLine("exs sent");
 	}
 
 	private async Task SubmitOperatorsAsync()
 	{
 		var operIds = selectedUsers.Select(x => x.Id).ToList();
-		var submitOperatorsMsg = await CompetitionService.AddNewOperatorsToCompetitionAsync(Id, operIds);
+		var submitOperatorsMsg = "success";
+		try
+		{
+
+			await CompetitionService.AddNewOperatorsToCompetitionAsync(Id, operIds);
+		}
+		catch
+		{
+			submitOperatorsMsg = "failed";
+		}
+
 		Console.WriteLine("opers sent");
 	}
 
