@@ -42,7 +42,7 @@
 					<div class="accordion-body">
 						@if (!_teamsFetched)
 						{
-							<Loader />
+							<Loader Size="medium" />
 						}
 						else
 						{
@@ -102,7 +102,7 @@
 					<div class="accordion-body">
 						@if (!_exercisesFetched)
 						{
-							<Loader />
+							<Loader Size="medium" />
 						}
 						else
 						{
@@ -179,7 +179,7 @@
 					<div class="accordion-body">
 						@if (!_usersFetched)
 						{
-							<Loader />
+							<Loader Size="medium" />
 						}
 						else
 						{
@@ -336,7 +336,6 @@
 		}
 		Console.WriteLine("tasks end");
 		Console.WriteLine(_exercisesFetched);
-
 	}
 
 	private async Task FetchUsersAsync()
@@ -388,6 +387,8 @@
 		}
 
 		Console.WriteLine("exs sent");
+		ShowPopup(submitExcercisesMsg);
+
 	}
 
 	private async Task SubmitOperatorsAsync()
@@ -404,6 +405,8 @@
 		}
 
 		Console.WriteLine("opers sent");
+		ShowPopup(submitOperatorsMsg);
+
 	}
 
 	private void ShowPopup(string msg)

@@ -47,6 +47,7 @@
 						}
 					}
 				</div>
+
 				@*OPERATORS BLOCK*@
 				<div class="col-4">
 					<div class="row">
@@ -92,8 +93,6 @@
 							}
 						}
 					</div>
-
-
 					
 				</div>
 
@@ -127,14 +126,28 @@
 			<div class="row">
 
 				<div class="col-4 text-start">
-					<button class="btn btn-primary" @onclick="ButtonSetHandler">Set this event</button>
+
+					<button class="btn btn-success"
+							disabled=@(IfStartButtonDisabled())
+							@onclick="Start">
+						<span class="oi oi-media-play"></span>
+						<span>&nbsp;Start</span>
+					</button>
+
+					<button class="btn btn-warning"
+							disabled=@(IfStopButtonDisabled())
+							@onclick="Stop">
+						<span class="oi oi-media-stop"></span>
+						<span>&nbsp;Stop</span>
+					</button>
+
 				</div>
 
 				<div class="col-4 text-start">
-					<button class="btn btn-primary" @onclick="ButtonSetHandler">Set this event</button>
 				</div>
 
 				<div class="col-4 text-end">
+					<button class="btn btn-success" @onclick="ButtonSetHandler">Set this event</button>
 					<button class="btn btn-danger" @onclick="ButtonSetHandler">Disable this event</button>
 					<button class="btn btn-danger" @onclick="ButtonSetHandler">Delete this event</button>
 				</div>
@@ -267,5 +280,65 @@
 	{
 		NavigationManager
 				.NavigateTo($"/competition/set/{Competition.Id}");
+	}
+
+	private async void Start()
+	{
+		try
+		{
+			await CompetitionService.StartCompetitionByIdAsync((int)Competition?.Id);
+			Console.WriteLine("started yes");
+		}
+		catch
+		{
+			Console.WriteLine("started no");
+		}
+	}
+
+	private async void Stop()
+	{
+		try
+		{
+			await CompetitionService.EndCompetitionByIdAsync((int)Competition?.Id);
+			Console.WriteLine("stopped yes");
+		}
+		catch
+		{
+			Console.WriteLine("stopped no");
+		}
+	}
+
+	private bool IfStartButtonDisabled()
+	{
+		bool state = true;
+		switch (Competition.StateId)
+		{
+			case CompetitionStates.Ended:
+			case CompetitionStates.Dropped:
+			case CompetitionStates.Canceled:
+			state = true;
+			break;
+			case CompetitionStates.Planned:
+			state = false;
+			break;
+		}
+		return state;
+	}
+
+	private bool IfStopButtonDisabled()
+	{
+		bool state = true;
+		switch (Competition.StateId)
+		{
+			case CompetitionStates.Ended:
+			case CompetitionStates.Dropped:
+			case CompetitionStates.Canceled:
+			state = true;
+			break;
+			case CompetitionStates.InProgress:
+			state = false;
+			break;
+		}
+		return state;
 	}
 }
