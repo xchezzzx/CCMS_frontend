@@ -366,7 +366,15 @@ else
 		Console.WriteLine("TF: {0}", newExercise.Timeframe.ToString("c"));
 		Console.WriteLine("TFB: {0}", newExercise.BonusTimeframe?.ToString("c"));
 
-		_messageFromServer = await ExerciseService.AddExercise(newExercise);
+		try
+		{
+			await ExerciseService.AddNewExercise(newExercise);
+			_messageFromServer = "success";
+		}
+		catch 
+		{
+			_messageFromServer = "failed";
+		}
 		_dataSent = true;
 	}
 

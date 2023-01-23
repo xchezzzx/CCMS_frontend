@@ -119,7 +119,14 @@ else
 
 	public async Task sendNewTeam()
 	{
-		messageFromServer = await TeamService.AddTeamAsync(newTeam);
+		try
+		{
+			await TeamService.AddTeamAsync(newTeam);
+		}
+		catch 
+		{
+			throw;
+		}
 		dataSent = true;
 	}
 }

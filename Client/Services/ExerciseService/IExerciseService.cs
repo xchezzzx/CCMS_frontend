@@ -6,7 +6,7 @@ namespace BlazorWeb.Services.ExerciseService
     {
         Task<List<ExerciseDT>> GetAllExercisesAsync();
         Task<ExerciseDT> GetExerciseByIdAsync(int id);
-        Task<string> AddExercise(ExerciseDT exerciseDT);
+        Task<ExerciseDT> AddNewExercise(ExerciseDT exerciseDT);
         Task UpdateExercise(ExerciseDT exerciseDT);
         Task DeleteExercise(ExerciseDT exerciseDT);
     }

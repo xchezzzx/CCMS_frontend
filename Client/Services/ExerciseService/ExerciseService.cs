@@ -12,25 +12,32 @@ namespace BlazorWeb.Services.ExerciseService
 
         private ExerciseDT _getExercise { get; set; }
 
-        public async Task<string> AddExercise(ExerciseDT exerciseDT)
+        public async Task<ExerciseDT> AddNewExercise(ExerciseDT exerciseDT)
         {
-            string messageFromServer = string.Empty;
-
-            HubConnection HubConnection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:7206/exercises")
-                            .WithAutomaticReconnect()
-                            .Build();
-
-            HubConnection.On<string>("Add", msg =>
+            try
             {
-                messageFromServer = msg;
-            });
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("AddNewExercise", exerciseDT);
-            await HubConnection.DisposeAsync();
+				HubConnection HubConnection = new HubConnectionBuilder()
+								.WithUrl("https://localhost:7206/exercises")
+								.WithAutomaticReconnect()
+								.Build();
 
-            return messageFromServer;
+				HubConnection.On<ExerciseDT>("AddNewExercise", msg =>
+				{
+					exerciseDT = msg;
+				});
+
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("AddNewExercise", exerciseDT);
+				await HubConnection.DisposeAsync();
+
+				return exerciseDT;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
         public async Task DeleteExercise(ExerciseDT exerciseDT)
@@ -40,19 +47,27 @@ namespace BlazorWeb.Services.ExerciseService
 
         public async Task<List<ExerciseDT>> GetAllExercisesAsync()
         {
-            List<ExerciseDT> _getAllExercises = new();
+            try
+            {
+				List<ExerciseDT> _getAllExercises = new();
 
-			HubConnection HubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7206/exercises")
-                .Build();
+				HubConnection HubConnection = new HubConnectionBuilder()
+					.WithUrl("https://localhost:7206/exercises")
+					.Build();
 
-            HubConnection.On<List<ExerciseDT>>("GetAllExercises", c => _getAllExercises = c);
+				HubConnection.On<List<ExerciseDT>>("GetAllExercises", c => _getAllExercises = c);
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllExercises");
-            await HubConnection.StopAsync();
-            
-            return _getAllExercises;
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("GetAllExercises");
+				await HubConnection.StopAsync();
+
+				return _getAllExercises;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
         public async Task<ExerciseDT> GetExerciseByIdAsync(int id)
