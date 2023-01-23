@@ -13,5 +13,10 @@ namespace BlazorWeb.Services.UserService
 		Task<string> DeleteUserByIdAsync(int userId);
 		Task<UserDT> GetUserByIdAsync(int id);
 		Task<string> AssignRoleToUser(int userId, Roles role);
+
+		Task<CompetitionDT> GetOperatorCurrentOrNearestCompetition(int operatorId);
+		Task<CompetitionDT> GetParticipantCurrentOrNearestCompetition(int participantId);
+		Task<List<CompetitionDT>> GetFiveCurrentOrNearestCompetitions();
+		Task<TeamDT> GetParticipantTeam(int participantId);
 	}
 }

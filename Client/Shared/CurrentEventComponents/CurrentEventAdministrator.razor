@@ -54,7 +54,7 @@ else
 	private async Task FetchData()
 	{
 		dataFetched = false;
-		//currentOrNearestCompetitions = await UserService.GetFiveCurrentOrNearestCompetitions();
+		currentOrNearestCompetitions = await UserService.GetFiveCurrentOrNearestCompetitions();
 		dataFetched = true;
 	}
 }

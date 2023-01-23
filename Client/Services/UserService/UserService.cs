@@ -185,5 +185,109 @@ namespace BlazorWeb.Services.UserService
 
 			return messageFromServer;
 		}
+
+		public async Task<CompetitionDT> GetOperatorCurrentOrNearestCompetition(int operatorId)
+		{
+			CompetitionDT _getOperatorCurrentOrNearestCompetition = new();
+
+			try
+			{
+				HubConnection connection = new HubConnectionBuilder()
+									.WithUrl("https://localhost:7206/users")
+									.Build();
+
+				var currentUserId = (await _currentUserService.GetCurrentUserAsync()).Id;
+
+				connection.On<CompetitionDT>("DeleGetOperatorCurrentOrNearestCompetitionteUserById", c => _getOperatorCurrentOrNearestCompetition = c);
+
+				await connection.StartAsync();
+				await connection.InvokeAsync("GetOperatorCurrentOrNearestCompetition", operatorId);
+				await connection.StopAsync();
+			}
+			catch
+			{
+				throw;
+			}
+
+			return _getOperatorCurrentOrNearestCompetition;
+		}
+
+		public async Task<CompetitionDT> GetParticipantCurrentOrNearestCompetition(int participantId)
+		{
+			CompetitionDT _getParticipantCurrentOrNearestCompetition = new();
+			
+			try
+			{
+				HubConnection connection = new HubConnectionBuilder()
+									.WithUrl("https://localhost:7206/users")
+									.Build();
+
+				var currentUserId = (await _currentUserService.GetCurrentUserAsync()).Id;
+
+				connection.On<CompetitionDT>("GetParticipantCurrentOrNearestCompetition", c => _getParticipantCurrentOrNearestCompetition = c);
+
+				await connection.StartAsync();
+				await connection.InvokeAsync("GetParticipantCurrentOrNearestCompetition", participantId);
+				await connection.StopAsync();
+			}
+			catch
+			{
+				throw;
+			}
+
+			return _getParticipantCurrentOrNearestCompetition;
+		}
+
+		public async Task<List<CompetitionDT>> GetFiveCurrentOrNearestCompetitions()
+		{
+			List<CompetitionDT> _getFiveCurrentOrNearestCompetitions = new();
+
+			try
+			{
+				HubConnection connection = new HubConnectionBuilder()
+									.WithUrl("https://localhost:7206/users")
+									.Build();
+
+				var currentUserId = (await _currentUserService.GetCurrentUserAsync()).Id;
+
+				connection.On<List<CompetitionDT>>("GetFiveCurrentOrNearestCompetitions", c => _getFiveCurrentOrNearestCompetitions = c);
+
+				await connection.StartAsync();
+				await connection.InvokeAsync("GetFiveCurrentOrNearestCompetitions");
+				await connection.StopAsync();
+			}
+			catch
+			{
+				throw;
+			}
+
+			return _getFiveCurrentOrNearestCompetitions;
+		}
+
+		public async Task<TeamDT> GetParticipantTeam(int participantId)
+		{
+			TeamDT _getParticipantTeam = new();
+
+			try
+			{
+				HubConnection connection = new HubConnectionBuilder()
+									.WithUrl("https://localhost:7206/users")
+									.Build();
+
+				var currentUserId = (await _currentUserService.GetCurrentUserAsync()).Id;
+
+				connection.On<TeamDT>("GetParticipantTeam", c => _getParticipantTeam = c);
+
+				await connection.StartAsync();
+				await connection.InvokeAsync("GetParticipantTeam", participantId);
+				await connection.StopAsync();
+			}
+			catch
+			{
+				throw;
+			}
+
+			return _getParticipantTeam;
+		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿@inject ICompetitionService CompetitionService
+@inject NavigationManager NavigationManager
 
 <div class="col">
 	<div class="card text-start">
@@ -23,6 +24,7 @@
 
 			<div class="row">
 
+				@*TEAMS BLOCK*@
 				<div class="col-4">
 					@if (!_teamsFetched)
 					{
@@ -30,36 +32,94 @@
 					}
 					else
 					{
-						<p>Teams in competition: @teamsInCompetition.Count</p>
-						<ul class="list-group list-group-flush">
-							@foreach (var team in teamsInCompetition)
-							{
-								<li class="list-group-item">@team.Name</li>
-							}
-						</ul>
+						if (_teamsFetchingError)
+						{
+							<h5>Have found no teams.</h5>
+							<br />
+							<h5>Please, add some teams and try again.</h5>
+						}
+						else
+						{
+							<h4>Teams in competition: @teamsInCompetition.Count</h4>
+							<ul class="list-group list-group-flush">
+								@foreach (var team in teamsInCompetition)
+								{
+									<li class="list-group-item">@team.Name</li>
+								}
+							</ul>
+						}
+					}
+				</div>
+				@*OPERATORS BLOCK*@
+				<div class="col-4">
+					@if (!_operatorsFetched)
+					{
+						<Loader />
+					}
+					else
+					{
+						if (_operatorsFetchingError)
+						{
+							<h5>Have found no operators.</h5>
+							<br />
+							<h5>Please, add some teams and try again.</h5>
+						}
+						else
+						{
+							<h4>Operators in competition: @operatorsInCompetition.Count</h4>
+							<ul class="list-group list-group-flush">
+								@foreach (var oper in operatorsInCompetition)
+								{
+									<li class="list-group-item">@oper.FirstName @oper.LastName</li>
+								}
+							</ul>
+						}
 					}
 				</div>
 
 				<div class="col-4">
-					@if (!_teamsFetched)
-					{
-						<Loader />
-					}
-					else
-					{
-						<p>Operators in competition: @operatorsInCompetition.Count</p>
-						<ul class="list-group list-group-flush">
-							@foreach (var oper in operatorsInCompetition)
-							{
-								<li class="list-group-item">@oper.FirstName @oper.LastName</li>
-							}
-						</ul>
-					}
+					<p>
+						Date: @Competition.StartDateTime.ToString("dd.MM.yyy")
+						<br />
+						Day of week: @Competition.StartDateTime.DayOfWeek
+						<br />
+						Start at: @Competition.StartDateTime.ToString("t")
+						<br />
+						End at: @Competition.EndDateTime.ToString("t")
+						<br />
+						State: @Competition.State
+						<br />
+						Duration: @Competition.Duration.Hours hours @if (Competition.Duration.Minutes != 0)
+						{
+							@Competition.Duration.Minutes <span>minutes</span>
+						}
+						<br />
+						Hashtag: <a href="https://twitter.com/search?q=@Competition.Hashtag&src=trend_click&vertical=trends" target="_blank">#@Competition.Hashtag</a>
+						<br />
+					</p>
 				</div>
 
 			</div>
 
-			<a href="#" class="btn btn-primary">Go somewhere</a>
+		</div>
+
+		<div class="card-footer">
+			<div class="row">
+
+				<div class="col-4 text-start">
+					<button class="btn btn-primary" @onclick="ButtonSetHandler">Set this event</button>
+				</div>
+
+				<div class="col-4 text-start">
+					<button class="btn btn-primary" @onclick="ButtonSetHandler">Set this event</button>
+				</div>
+
+				<div class="col-4 text-end">
+					<button class="btn btn-primary" @onclick="ButtonSetHandler">Disable this event</button>
+					<button class="btn btn-primary" @onclick="ButtonSetHandler">Delete this event</button>
+				</div>
+
+			</div>
 		</div>
 
 	</div>
@@ -70,9 +130,11 @@
 	public CompetitionDT Competition { get; set; }
 
 	bool _teamsFetched;
+	bool _teamsFetchingError;
 	List<TeamDT> teamsInCompetition = new();
 
 	bool _operatorsFetched;
+	bool _operatorsFetchingError;
 	List<UserDT> operatorsInCompetition = new();
 
 	string TimeString = string.Empty;
@@ -91,15 +153,31 @@
 	private async Task FetchTeamsInCompetitionAsync()
 	{
 		_teamsFetched = false;
-		teamsInCompetition = await CompetitionService.GetAllCompetitionTeamsAsync((int)Competition?.Id);
-		_teamsFetched = true;
+		try
+		{
+			teamsInCompetition = await CompetitionService.GetAllCompetitionTeamsAsync((int)Competition?.Id);
+			_teamsFetched = true;
+		}
+		catch
+		{
+			_teamsFetchingError = true;
+			_teamsFetched = true;
+		}
 	}
 
 	private async Task FetchOperatorsInCompetitionAsync()
 	{
 		_operatorsFetched = false;
-		operatorsInCompetition = await CompetitionService.GetAllCompetitionOperatorsAsync((int)Competition?.Id);
-		_operatorsFetched = true;
+		try
+		{
+			operatorsInCompetition = await CompetitionService.GetAllCompetitionOperatorsAsync((int)Competition?.Id);
+			_operatorsFetched = true;
+		}
+		catch
+		{
+			_operatorsFetchingError = true;
+			_operatorsFetched = true;
+		}
 	}
 
 	private string FormatTimeString()
@@ -143,5 +221,11 @@
 		}
 
 		return timeString;
+	}
+
+	private void ButtonSetHandler()
+	{
+		NavigationManager
+				.NavigateTo($"/competition/set/{Competition.Id}");
 	}
 }

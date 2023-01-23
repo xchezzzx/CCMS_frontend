@@ -2,6 +2,8 @@
 @attribute [Authorize]
 
 @inject ICompetitionService CompetitionService
+@inject IUserService UserService
+
 @inject NavigationManager navigationManager
 
 <div class="row mb-4">
@@ -137,9 +139,7 @@
 								{
 									<option value="@user.Id">@user.FirstName @user.LastName</option>
 								}	
-							}
-									<option value="3">Test User #3</option>
-							
+							}				
 						</InputSelect>
 						<div id="emailHelp" class="form-text">Choose amount of concurrent tasks</div>
 					</div>
@@ -231,14 +231,6 @@
 
 @code {
 
-	//DateOnly newCompStartDate;
-	//DateOnly newCompEndDate;
-	//TimeOnly newCompStartTime;
-	//TimeOnly newCompEndTime;
-	//double newCompDurationInt;
-
-	//int newCompetitionDurationInt;/* = Convert.ToInt32(newCompetitionDuration.Hours());*/
-
 	CompetitionDT newCompetition = new();
 	List<UserDT> users = new();
 
@@ -246,7 +238,7 @@
 
 	int OperatorToCompId;
 
-	//string messageFromServer = string.Empty;
+	string messageFromServer = string.Empty;
 	bool dataFetched = false;
 	string modalMessage = string.Empty;
 	string modalTitle = string.Empty;
@@ -264,12 +256,10 @@
 		var _starttime = new TimeOnly(10, 0, 0);
 		var _endtime = new TimeOnly(18, 0, 0);
 
-		//users = await UserService.GetAllActiveUsersAsync();
-		newCompetition.Name = "The Very New Competition";
+		users = await UserService.GetAllActiveUsersAsync();
 
-		//newCompetition.StartDateTime = DateTime.Today;
+		newCompetition.Name = "The Very New Competition";
 		newCompetition.StartDateTime = _today.ToDateTime(_starttime);
-		//newCompetition.EndDateTime = DateTime.Today;
 		newCompetition.EndDateTime = _today.ToDateTime(_endtime);
 		newCompetition.Duration = newCompetition.EndDateTime - newCompetition.StartDateTime;
 		newCompetition.NumberConcTasks = 3;
@@ -284,18 +274,18 @@
 		var returnedComp = await CompetitionService.AddNewCompetitionAsync(newCompetition);
 		CompID = (int)returnedComp?.Id;
 
-		//var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(OperatorToCompId);
-		var messageFromServer = "success";
+		//var messageFromServer = await CompetitionService.AddNewOperatorToCompetitionAsync(CompID, OperatorToCompId);
 		try
 		{
 			await CompetitionService.AddNewOperatorToCompetitionAsync(CompID, OperatorToCompId);
+			messageFromServer = "success";
 		}
 		catch 
 		{
 			messageFromServer = "failed";
 		}
 
-		dataFetched = true;
+		//dataFetched = true;
 		ChangeModal(messageFromServer);
 	}
 
