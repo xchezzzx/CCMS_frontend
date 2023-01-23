@@ -455,7 +455,6 @@ namespace BlazorWeb.Services.CompetitionService
 			try
 			{
 			    await HubConnection.InvokeAsync("GetAllCompetitionExercises", competitionId);
-
 			}
 			catch
 			{
