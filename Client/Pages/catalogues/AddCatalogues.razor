@@ -219,20 +219,44 @@ else
 
 	public async Task sendNewCategory()
 	{
-		messageFromServer = await CatalogueService.AddNewExerciseCategoryAsync(newCategory);
+		try
+		{
+			await CatalogueService.AddNewExerciseCategoryAsync(newCategory);
+			messageFromServer = "success";
+		}
+		catch
+		{
+			messageFromServer = "failed";
+		}
 		Console.WriteLine("CatAdded");
 		_dataSent = true;
 	}
 
 	public async Task sendNewLang()
 	{
-		messageFromServer = await CatalogueService.AddNewExerciseLanguageAsync(newLang);
+		try
+		{
+			await CatalogueService.AddNewExerciseLanguageAsync(newLang);
+			messageFromServer = "success";
+		}
+		catch
+		{
+			messageFromServer = "failed";
+		}
 		_dataSent = true;
 	}
 
 	public async Task sendNewPlatform()
 	{
-		messageFromServer = await CatalogueService.AddNewExercisePlatformAsync(newPlatform);
+		try
+		{
+			await CatalogueService.AddNewExercisePlatformAsync(newPlatform);
+			messageFromServer = "success";
+		}
+		catch
+		{
+			messageFromServer = "failed";
+		}
 		_dataSent = true;
 	}
 }

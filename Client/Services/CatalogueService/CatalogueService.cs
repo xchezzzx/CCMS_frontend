@@ -16,66 +16,90 @@ namespace BlazorWeb.Services.CatalogueService
         private ExercisePlatformDT getPlatform { get; set; }
 
 
-        public async Task<string> AddNewExerciseCategoryAsync(ExerciseCategoryDT ExerciseCategoryDT)
+        public async Task<ExerciseCategoryDT> AddNewExerciseCategoryAsync(ExerciseCategoryDT ExerciseCategoryDT)
         {
-            string messageFromServer = string.Empty;
-
-            HubConnection HubConnection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:7206/exercises")
-                            .WithAutomaticReconnect()
-                            .Build();
-
-            HubConnection.On<string>("Add", msg =>
+            try
             {
-                messageFromServer = msg;
-            });
+				string messageFromServer = string.Empty;
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("AddNewExerciseCategory", ExerciseCategoryDT);
+				HubConnection HubConnection = new HubConnectionBuilder()
+								.WithUrl("https://localhost:7206/exercises")
+								.WithAutomaticReconnect()
+								.Build();
 
-            return messageFromServer;
+				HubConnection.On<ExerciseCategoryDT>("AddNewExerciseCategory", msg =>
+				{
+					ExerciseCategoryDT = msg;
+				});
+
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("AddNewExerciseCategory", ExerciseCategoryDT);
+
+				return ExerciseCategoryDT;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
-        public async Task<string> AddNewExerciseLanguageAsync(ExerciseLangDT ExerciseLangDT)
+        public async Task<ExerciseLangDT> AddNewExerciseLanguageAsync(ExerciseLangDT ExerciseLangDT)
         {
-            string messageFromServer = string.Empty;
-
-            HubConnection HubConnection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:7206/exercises")
-                            .WithAutomaticReconnect()
-                            .Build();
-
-            HubConnection.On<string>("Add", msg =>
+            try
             {
-                messageFromServer = msg;
-            });
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("AddNewExerciseLang", ExerciseLangDT);
-            await HubConnection.DisposeAsync();
+				HubConnection HubConnection = new HubConnectionBuilder()
+								.WithUrl("https://localhost:7206/exercises")
+								.WithAutomaticReconnect()
+								.Build();
 
-            return messageFromServer;
+				HubConnection.On<ExerciseLangDT>("AddNewExerciseLang", msg =>
+				{
+					ExerciseLangDT = msg;
+				});
+
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("AddNewExerciseLang", ExerciseLangDT);
+				await HubConnection.DisposeAsync();
+
+				return ExerciseLangDT;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
-        public async Task<string> AddNewExercisePlatformAsync(ExercisePlatformDT ExercisePlatformDT)
+        public async Task<ExercisePlatformDT> AddNewExercisePlatformAsync(ExercisePlatformDT ExercisePlatformDT)
         {
-            string messageFromServer = string.Empty;
-
-            HubConnection HubConnection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:7206/exercises")
-                            .WithAutomaticReconnect()
-                            .Build();
-
-            HubConnection.On<string>("Add", msg =>
+            try
             {
-                messageFromServer = msg;
-            });
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("AddNewExercisePlatform", ExercisePlatformDT);
-            await HubConnection.DisposeAsync();
+				string messageFromServer = string.Empty;
 
-            return messageFromServer;
+				HubConnection HubConnection = new HubConnectionBuilder()
+								.WithUrl("https://localhost:7206/exercises")
+								.WithAutomaticReconnect()
+								.Build();
+
+				HubConnection.On<ExercisePlatformDT>("AddNewExercisePlatform", msg =>
+				{
+					ExercisePlatformDT = msg;
+				});
+
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("AddNewExercisePlatform", ExercisePlatformDT);
+				await HubConnection.DisposeAsync();
+
+				return ExercisePlatformDT;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
         public async Task DeleteExerciseCategoryAsync(ExerciseCategoryDT ExerciseCategoryDT)
@@ -95,47 +119,72 @@ namespace BlazorWeb.Services.CatalogueService
 
         public async Task<List<ExerciseCategoryDT>> GetAllExerciseCategoriesAsync()
         {
-            HubConnection HubConnection = new HubConnectionBuilder()
-                            .WithUrl("https://localhost:7206/exercises")
-                            .Build();
+            try
+            {
 
-            HubConnection.On<List<ExerciseCategoryDT>>("Get", c => _getAllCategories = c);
+				HubConnection HubConnection = new HubConnectionBuilder()
+								.WithUrl("https://localhost:7206/exercises")
+								.Build();
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllExerciseCategories");
-            await HubConnection.StopAsync();
+				HubConnection.On<List<ExerciseCategoryDT>>("GetAllExerciseCategories", c => _getAllCategories = c);
 
-            return _getAllCategories;
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("GetAllExerciseCategories");
+				await HubConnection.StopAsync();
+
+				return _getAllCategories;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
         public async Task<List<ExerciseLangDT>> GetAllExerciseLanguagesAsync()
         {
-            HubConnection HubConnection = new HubConnectionBuilder()
-                                        .WithUrl("https://localhost:7206/exercises")
-                                        .Build();
+            try
+            {
+				HubConnection HubConnection = new HubConnectionBuilder()
+										.WithUrl("https://localhost:7206/exercises")
+										.Build();
 
-            HubConnection.On<List<ExerciseLangDT>>("Get", c => _getAllLangs = c);
+				HubConnection.On<List<ExerciseLangDT>>("GetAllExerciseLangs", c => _getAllLangs = c);
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllExerciseLangs");
-            await HubConnection.StopAsync();
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("GetAllExerciseLangs");
+				await HubConnection.StopAsync();
 
-            return _getAllLangs;
+				return _getAllLangs;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
         public async Task<List<ExercisePlatformDT>> GetAllExercisePlatformsAsync()
         {
-            HubConnection HubConnection = new HubConnectionBuilder()
-                                        .WithUrl("https://localhost:7206/exercises")
-                                        .Build();
+            try
+            {
+				HubConnection HubConnection = new HubConnectionBuilder()
+														.WithUrl("https://localhost:7206/exercises")
+														.Build();
 
-            HubConnection.On<List<ExercisePlatformDT>>("Get", c => _getAllPlatforms = c);
+				HubConnection.On<List<ExercisePlatformDT>>("GetAllExercisePlatforms", c => _getAllPlatforms = c);
 
-            await HubConnection.StartAsync();
-            await HubConnection.InvokeAsync("GetAllExercisePlatforms");
-            await HubConnection.StopAsync();
+				await HubConnection.StartAsync();
+				await HubConnection.InvokeAsync("GetAllExercisePlatforms");
+				await HubConnection.StopAsync();
 
-            return _getAllPlatforms;
+				return _getAllPlatforms;
+			}
+            catch 
+            {
+
+                throw;
+            }
         }
 
         public async Task<ExerciseCategoryDT> GetExerciseCategoryByIdAsync(int id)
