@@ -26,7 +26,7 @@
 				<div class="col-4">
 					@if (!_teamsFetched)
 					{
-						<Loader Size="small" />
+						<Loader Size="S" />
 					}
 					else
 					{
@@ -37,23 +37,38 @@
 						}
 						else
 						{
-							<h4>Teams in competition: @teamsInCompetition.Count</h4>
-							<ul class="list-group list-group-flush">
-								@foreach (var team in teamsInCompetition)
-								{
-									<li class="list-group-item">@team.Name</li>
-								}
-							</ul>
+							<div class="row">
+								<div class="col-9">
+									<h4>Teams in competition: @teamsInCompetition.Count</h4>
+
+								</div>
+
+								<div class="col-3 text-start">
+									<button class="btn btn-outline-secondary mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTeams" aria-expanded="false" aria-controls="collapseTeams">
+										<span class="oi oi-arrow-thick-bottom"></span>
+									</button>
+								</div>
+							</div>
+
+							<div class="collapse" id="collapseTeams">
+								<ul class="list-group list-group-flush">
+									@foreach (var team in teamsInCompetition)
+									{
+										<li class="list-group-item">@team.Name</li>
+									}
+								</ul>
+							</div>
 						}
 					}
 				</div>
 
-				@*OPERATORS BLOCK*@
+				@*EXERCISES BLOCK*@
+
 				<div class="col-4">
 					<div class="row">
 						@if (!_excercisesFetched)
 						{
-							<Loader Size="small"/>
+							<Loader Size="S" />
 						}
 						else
 						{
@@ -64,21 +79,38 @@
 							}
 							else
 							{
-								<h4>Excercises in competition: @excercisesInCompetition.Count</h4>
-								<ul class="list-group list-group-flush">
-									@foreach (var exercise in excercisesInCompetition)
-									{
-										<li class="list-group-item">@exercise.Name</li>
-									}
-								</ul>
+								<div class="row">
+									<div class="col-8">
+										<h4>Excercises in competition: @excercisesInCompetition.Count</h4>
+									</div>
+
+									<div class="col-4">
+										<button class="btn btn-outline-secondary mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTasks" aria-expanded="false" aria-controls="collapseTasks">
+											<span class="oi oi-arrow-thick-bottom"></span>
+										</button>
+									</div>
+								</div>
+
+								<div class="collapse" id="collapseTasks">
+
+									<ul class="list-group list-group-flush">
+										@foreach (var exercise in excercisesInCompetition)
+										{
+											<li class="list-group-item">@exercise.Name</li>
+										}
+									</ul>
+								</div>
+
 							}
 						}
 					</div>
 
+					@*OPERATORS BLOCK*@
+
 					<div class="row">
 						@if (!_operatorsFetched)
 						{
-							<Loader Size="small" />
+							<Loader Size="S" />
 						}
 						else
 						{
@@ -89,17 +121,30 @@
 							}
 							else
 							{
-								<h4>Operators in competition: @operatorsInCompetition.Count</h4>
-								<ul class="list-group list-group-flush">
-									@foreach (var oper in operatorsInCompetition)
-									{
-										<li class="list-group-item">@oper.FirstName @oper.LastName</li>
-									}
-								</ul>
+								<div class="row">
+									<div class="col-8">
+										<h4>Operators in competition: @operatorsInCompetition.Count</h4>
+									</div>
+
+									<div class="col-4">
+										<button class="btn btn-outline-secondary mb-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOperators" aria-expanded="false" aria-controls="collapseOperators">
+											<span class="oi oi-arrow-thick-bottom"></span>
+										</button>
+									</div>
+								</div>								
+
+								<div class="collapse" id="collapseOperators">
+									<ul class="list-group list-group-flush">
+										@foreach (var oper in operatorsInCompetition)
+										{
+											<li class="list-group-item">@oper.FirstName @oper.LastName</li>
+										}
+									</ul>
+								</div>
 							}
 						}
 					</div>
-					
+
 				</div>
 
 				<div class="col-4">
@@ -154,7 +199,7 @@
 
 				<div class="col-4 text-end">
 					<button class="btn btn-success" @onclick="ButtonSetHandler">Set this event</button>
-					<button class="btn btn-danger" @onclick="ButtonSetHandler">Disable this event</button>
+					<button class="btn btn-secondary" @onclick="ButtonSetHandler">Disable this event</button>
 					<button class="btn btn-danger" @onclick="ButtonSetHandler">Delete this event</button>
 				</div>
 
@@ -231,7 +276,7 @@
 		{
 			excercisesInCompetition = await CompetitionService.GetAllCompetitionExercisesAsync((int)Competition?.Id);
 			_excercisesFetched = true;
-			Console.WriteLine(excercisesInCompetition[0].Name + Competition.Name);
+			Console.WriteLine(excercisesInCompetition[0].Name + " | " + Competition.Name);
 		}
 		catch
 		{
